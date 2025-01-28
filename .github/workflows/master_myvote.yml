@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read # This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +19,7 @@ jobs:
         run: echo "NODE_ENV=production" >> $GITHUB_ENV
 
       - name: Create required directories
-        run: mkdir -p D:/a/MyVote/MyVote/myvote.client/some-required-directory
+        run: mkdir -p D:/a/MyVote/MyVote/myvote.client/.vite-temp
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
@@ -56,15 +56,15 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # This is required for requesting the JWT
-      contents: read # This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
           name: .net-app
-      
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
