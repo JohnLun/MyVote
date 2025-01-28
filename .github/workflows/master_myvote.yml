@@ -18,9 +18,6 @@ jobs:
       - name: Set environment to production
         run: echo "NODE_ENV=production" >> $GITHUB_ENV
 
-      - name: Create required directories
-        run: mkdir -p D:/a/MyVote/MyVote/myvote.client/.vite-temp
-
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
@@ -40,14 +37,18 @@ jobs:
         working-directory: myvote.client
 
       - name: Build backend
-        run: dotnet publish -c Release -o ${{ github.workspace }}/myapp
+        run: dotnet publish -c Release -o ${{ github.workspace }}/publish
         working-directory: myvote.server
+
+      - name: Verify published files
+        run: dir ${{ github.workspace }}/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: dotnet-app
-          path: ${{ github.workspace }}/myapp
+          path: ${{ github.workspace }}/publish
+          retention-days: 1
 
   deploy:
     runs-on: windows-latest
@@ -63,9 +64,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dotnet-app
+          path: ${{ github.workspace }}/dotnet-app
 
-      - name: List downloaded files
-        run: dir ${{ runner.workspace }}/dotnet-app
+      - name: Verify downloaded files
+        run: dir ${{ github.workspace }}/dotnet-app
 
       - name: Login to Azure
         uses: azure/login@v2
@@ -80,4 +82,4 @@ jobs:
         with:
           app-name: 'MyVote'
           slot-name: 'Production'
-          package: ${{ runner.workspace }}/dotnet-app
+          package: ${{ github.workspace }}/dotnet-app
