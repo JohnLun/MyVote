@@ -1,6 +1,3 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
-# More GitHub Actions for Azure: https://github.com/Azure/actions
-
 name: Build and deploy ASP.Net Core app to Azure Web App - MyVote
 
 on:
@@ -13,27 +10,44 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read #This is required for actions/checkout
+      contents: read # This is required for actions/checkout
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set environment to production
+        run: echo "NODE_ENV=production" >> $GITHUB_ENV
+
+      - name: Create required directories
+        run: mkdir -p D:/a/MyVote/MyVote/myvote.client/some-required-directory
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
-      - name: Build with dotnet
-        run: dotnet build --configuration Release
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18.x'
 
-      - name: dotnet publish
-        run: dotnet publish -c Release -o "${{env.DOTNET_ROOT}}/myapp"
+      - name: Install dependencies
+        run: npm install
+        working-directory: myvote.client
+
+      - name: Build frontend
+        run: npm run build
+        working-directory: myvote.client
+
+      - name: Build backend
+        run: dotnet publish -c Release -o ${{ github.workspace }}/myapp
+        working-directory: myvote.server
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: .net-app
-          path: ${{env.DOTNET_ROOT}}/myapp
+          path: ${{ github.workspace }}/myapp
 
   deploy:
     runs-on: windows-latest
@@ -42,8 +56,8 @@ jobs:
       name: 'Production'
       url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-      contents: read #This is required for actions/checkout
+      id-token: write # This is required for requesting the JWT
+      contents: read # This is required for actions/checkout
 
     steps:
       - name: Download artifact from build job
@@ -54,9 +68,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2084DB6B18554D359266D63D203957AB }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_16BDCFA16AC24F55970BF28C041B1637 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_E7042F9CBAAA4B6DB59EBF967619DD36 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
@@ -64,5 +78,4 @@ jobs:
         with:
           app-name: 'MyVote'
           slot-name: 'Production'
-          package: .
-          
+          package: ${{ github.workspace }}/myapp
