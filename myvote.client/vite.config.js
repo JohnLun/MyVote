@@ -35,8 +35,8 @@ if (!isProduction && (!fs.existsSync(certFilePath) || !fs.existsSync(keyFilePath
 const target = env.ASPNETCORE_HTTPS_PORT
     ? `https://localhost:${env.ASPNETCORE_HTTPS_PORT}`
     : env.ASPNETCORE_URLS
-        ? env.ASPNETCORE_URLS.split(';')[0]
-        : 'https://localhost:7054';
+    ? env.ASPNETCORE_URLS.split(';')[0]
+    : 'https://localhost:7054';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -56,9 +56,9 @@ export default defineConfig({
         port: 5173,
         https: !isProduction
             ? {
-                key: fs.readFileSync(keyFilePath),
-                cert: fs.readFileSync(certFilePath),
-            }
+                  key: fs.readFileSync(keyFilePath),
+                  cert: fs.readFileSync(certFilePath),
+              }
             : false, // Disable HTTPS in production
     },
 });
