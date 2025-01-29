@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using MyVote.Server.Dtos;
 using MyVote.Server.Models;
 using System.Linq;
 
@@ -14,25 +15,40 @@ namespace MyVote.Server.Controllers
 
         public MyVoteController(ILogger<MyVoteController> logger, AppDbContext dbContext)
         {
-
             _logger = logger;
             _db = dbContext;
         }
 
-
         // GET: /polls (Get all active polls)
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Poll>>> GetActivePolls()
+        public async Task<ActionResult<IEnumerable<PollDto>>> GetActivePolls()
         {
-            return await _db.Polls
+            var polls = await _db.Polls
                 .Where(p => p.IsActive)
                 .Include(p => p.Choices)
                 .ToListAsync();
+
+            var pollDtos = polls.Select(p => new PollDto
+            {
+                PollId = p.PollId,
+                Title = p.Title,
+                Description = p.Description,
+                TimeLimit = p.TimeLimit,
+                IsActive = p.IsActive,
+                Choices = p.Choices.Select(c => new ChoiceDto
+                {
+                    ChoiceId = c.ChoiceId,
+                    Name = c.Name,
+                    NumVotes = c.NumVotes
+                }).ToList()
+            }).ToList();
+
+            return Ok(pollDtos);
         }
 
-         // GET: /poll/{pollid} (Get poll details)
+        // GET: /poll/{pollid} (Get poll details)
         [HttpGet("{pollid}")]
-        public async Task<ActionResult<Poll>> GetPoll(int pollid)
+        public async Task<ActionResult<PollDto>> GetPoll(int pollid)
         {
             var poll = await _db.Polls
                 .Include(p => p.Choices)
@@ -41,120 +57,114 @@ namespace MyVote.Server.Controllers
             if (poll == null)
                 return NotFound();
 
-            return poll;
+            var pollDto = new PollDto
+            {
+                PollId = poll.PollId,
+                Title = poll.Title,
+                Description = poll.Description,
+                TimeLimit = poll.TimeLimit,
+                IsActive = poll.IsActive,
+                Choices = poll.Choices.Select(c => new ChoiceDto
+                {
+                    ChoiceId = c.ChoiceId,
+                    Name = c.Name,
+                    NumVotes = c.NumVotes
+                }).ToList()
+            };
+
+            return Ok(pollDto);
         }
 
-         // GET: /choices/{pollid} (Get choices for a poll)
+        // GET: /choices/{pollid} (Get choices for a poll)
         [HttpGet("choices/{pollid}")]
-        public async Task<ActionResult<IEnumerable<Choice>>> GetPollChoices(int pollid)
+        public async Task<ActionResult<IEnumerable<ChoiceDto>>> GetPollChoices(int pollid)
         {
             var choices = await _db.Choices
                 .Where(c => c.PollId == pollid)
                 .ToListAsync();
 
-            return choices.Any() ? Ok(choices) : NotFound();
+            if (!choices.Any()) return NotFound();
+
+            var choiceDtos = choices.Select(c => new ChoiceDto
+            {
+                ChoiceId = c.ChoiceId,
+                Name = c.Name,
+                NumVotes = c.NumVotes
+            }).ToList();
+
+            return Ok(choiceDtos);
         }
 
-           // GET: /votedpolls/{userid} (Get polls a user has voted in)
-            [HttpGet("votedpolls/{userid}")]
-            public async Task<ActionResult<IEnumerable<Poll>>> GetVotedPolls(int userid)
-            {
-                var votedPolls = await _db.UserPolls
-                    .Where(up => up.UserId == userid)
-                    .Select(up => up.Poll)
-                    .Include(p => p.Choices)
-                    .ToListAsync();
+        // PATCH: /choice/{choiceid} (Update choice)
+        [HttpPatch("choice/{choiceid}")]
+        public async Task<IActionResult> UpdateChoice(int choiceid, [FromBody] ChoiceDto updatedChoice)
+        {
+            var choice = await _db.Choices.FindAsync(choiceid);
+            if (choice == null)
+                return NotFound();
 
-                return Ok(votedPolls);
-            }
+            choice.Name = updatedChoice.Name ?? choice.Name;
+            choice.NumVotes = updatedChoice.NumVotes;
 
-             // GET: /createdpolls/{userid} (Get polls created by a user)
-    [HttpGet("createdpolls/{userid}")]
-    public async Task<ActionResult<IEnumerable<Poll>>> GetCreatedPolls(int userid)
-    {
-        var createdPolls = await _db.Polls
-            .Where(p => p.UserId == userid)
-            .Include(p => p.Choices)
-            .ToListAsync();
+            _db.Choices.Update(choice);
+            await _db.SaveChangesAsync();
 
-        return Ok(createdPolls);
-    }
+            return NoContent();
+        }
 
-    // PATCH: /choice/{choiceid} (Update choice)
-    [HttpPatch("choice/{choiceid}")]
-    public async Task<IActionResult> UpdateChoice(int choiceid, [FromBody] Choice updatedChoice)
-    {
-        var choice = await _db.Choices.FindAsync(choiceid);
-        if (choice == null)
-            return NotFound();
+        // PUT: /poll (Update poll)
+        [HttpPut("poll")]
+        public async Task<IActionResult> UpdatePoll([FromBody] PollDto updatedPollDto)
+        {
+            var poll = await _db.Polls.FindAsync(updatedPollDto.PollId);
+            if (poll == null)
+                return NotFound();
 
-        choice.Name = updatedChoice.Name ?? choice.Name;
-        choice.NumVotes = updatedChoice.NumVotes;
+            poll.Title = updatedPollDto.Title ?? poll.Title;
+            poll.Description = updatedPollDto.Description ?? poll.Description;
+            poll.TimeLimit = updatedPollDto.TimeLimit;
+            poll.IsActive = updatedPollDto.IsActive;
 
-        _db.Choices.Update(choice);
-        await _db.SaveChangesAsync();
+            _db.Polls.Update(poll);
+            await _db.SaveChangesAsync();
 
-        return NoContent();
-    }
+            return NoContent();
+        }
 
-    // PUT: /poll (Update poll)
-    [HttpPut("poll")]
-    public async Task<IActionResult> UpdatePoll([FromBody] Poll updatedPoll)
-    {
-        var poll = await _db.Polls.FindAsync(updatedPoll.PollId);
-        if (poll == null)
-            return NotFound();
+        // PUT: /user (Update user)
+        [HttpPut("user")]
+        public async Task<IActionResult> UpdateUser([FromBody] UserDto updatedUserDto)
+        {
+            var user = await _db.Users.FindAsync(updatedUserDto.UserId);
+            if (user == null)
+                return NotFound();
 
-        poll.Title = updatedPoll.Title ?? poll.Title;
-        poll.Description = updatedPoll.Description ?? poll.Description;
-        poll.TimeLimit = updatedPoll.TimeLimit;
-        poll.IsActive = updatedPoll.IsActive;
+            user.FirstName = updatedUserDto.FirstName ?? user.FirstName;
+            user.LastName = updatedUserDto.LastName ?? user.LastName;
 
-        _db.Polls.Update(poll);
-        await _db.SaveChangesAsync();
+            _db.Users.Update(user);
+            await _db.SaveChangesAsync();
 
-        return NoContent();
-    }
+            return NoContent();
+        }
 
-    // PUT: /user (Update user)
-    [HttpPut("user")]
-    public async Task<IActionResult> UpdateUser([FromBody] User updatedUser)
-    {
-        var user = await _db.Users.FindAsync(updatedUser.UserId);
-        if (user == null)
-            return NotFound();
+        // DELETE: /poll/{pollid} (Delete poll and cascade choices)
+        [HttpDelete("poll/{pollid}")]
+        public async Task<IActionResult> DeletePoll(int pollid)
+        {
+            var poll = await _db.Polls
+                .Include(p => p.Choices)
+                .FirstOrDefaultAsync(p => p.PollId == pollid);
 
-        user.FirstName = updatedUser.FirstName ?? user.FirstName;
-        user.LastName = updatedUser.LastName ?? user.LastName;
+            if (poll == null)
+                return NotFound();
 
-        _db.Users.Update(user);
-        await _db.SaveChangesAsync();
+            // Remove related choices first due to FK constraints
+            _db.Choices.RemoveRange(poll.Choices);
+            _db.Polls.Remove(poll);
 
-        return NoContent();
-    }
-
-    // DELETE: /poll/{pollid} (Delete poll and cascade choices)
-    [HttpDelete("poll/{pollid}")]
-    public async Task<IActionResult> DeletePoll(int pollid)
-    {
-        var poll = await _db.Polls
-            .Include(p => p.Choices)
-            .FirstOrDefaultAsync(p => p.PollId == pollid);
-
-        if (poll == null)
-            return NotFound();
-
-        // Remove related choices first due to FK constraints
-        _db.Choices.RemoveRange(poll.Choices);
-        _db.Polls.Remove(poll);
-
-        await _db.SaveChangesAsync();
-        return NoContent();
-    }
-
-
-
-
-
+            await _db.SaveChangesAsync();
+            return NoContent();
+        }
     }
 }
