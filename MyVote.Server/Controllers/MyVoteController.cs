@@ -20,8 +20,8 @@ namespace MyVote.Server.Controllers
         }
 
         // GET: /polls (Get all active polls)
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<PollDto>>> GetActivePolls()
+        [HttpGet("polls")]
+        public async Task<ActionResult<IEnumerable<Poll>>> GetActivePolls()
         {
             var polls = await _db.Polls
                 .Where(p => p.IsActive)
@@ -46,9 +46,9 @@ namespace MyVote.Server.Controllers
             return Ok(pollDtos);
         }
 
-        // GET: /poll/{pollid} (Get poll details)
-        [HttpGet("{pollid}")]
-        public async Task<ActionResult<PollDto>> GetPoll(int pollid)
+         // GET: /poll/{pollid} (Get poll details)
+        [HttpGet("poll/{pollid}")]
+        public async Task<ActionResult<Poll>> GetPoll(int pollid)
         {
             var poll = await _db.Polls
                 .Include(p => p.Choices)
