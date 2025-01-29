@@ -1,0 +1,1 @@
+MyVote is a voting platform that allows people to create/participate in polls. This is a secure application for anything from quick small group polls, to multi-day large user polls. This application also allows reporting on the poll after participation or at anytime for the creator. 

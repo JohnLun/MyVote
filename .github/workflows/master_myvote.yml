@@ -10,16 +10,13 @@ jobs:
   build:
     runs-on: windows-latest
     permissions:
-      contents: read # This is required for actions/checkout
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
 
       - name: Set environment to production
         run: echo "NODE_ENV=production" >> $GITHUB_ENV
-
-      - name: Create required directories
-        run: mkdir -p D:/a/MyVote/MyVote/myvote.client/some-required-directory
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
@@ -40,31 +37,38 @@ jobs:
         working-directory: myvote.client
 
       - name: Build backend
-        run: dotnet publish -c Release -o ${{ github.workspace }}/myapp
+        run: dotnet publish -c Release -o ${{ github.workspace }}/publish
         working-directory: myvote.server
+
+      - name: Verify published files
+        run: dir ${{ github.workspace }}/publish
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
-          name: .net-app
-          path: ${{ github.workspace }}/myapp
+          name: dotnet-app
+          path: ${{ github.workspace }}/publish
+          retention-days: 1
 
   deploy:
     runs-on: windows-latest
     needs: build
     environment:
       name: 'Production'
-      url: ${{ steps.deploy-to-webapp.outputs.webapp-url }}
     permissions:
-      id-token: write # This is required for requesting the JWT
-      contents: read # This is required for actions/checkout
+      id-token: write
+      contents: read
 
     steps:
       - name: Download artifact from build job
         uses: actions/download-artifact@v4
         with:
-          name: .net-app
-      
+          name: dotnet-app
+          path: ${{ github.workspace }}/dotnet-app
+
+      - name: Verify downloaded files
+        run: dir ${{ github.workspace }}/dotnet-app
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
@@ -78,4 +82,4 @@ jobs:
         with:
           app-name: 'MyVote'
           slot-name: 'Production'
-          package: ${{ github.workspace }}/myapp
+          package: ${{ github.workspace }}/dotnet-app
