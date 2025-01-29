@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyVote.Server.Dtos;
@@ -8,6 +9,7 @@ namespace MyVote.Server.Controllers
 {
     [ApiController]
     [Route("/api")]
+    [EnableCors("AllowSpecificOrigin")]
     public class MyVoteController : ControllerBase
     {
         private readonly ILogger<MyVoteController> _logger;
