@@ -1,48 +1,60 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import PollCard from './components/PollCard';
 
 function App() {
-    const [forecasts, setForecasts] = useState();
+    const [polls, setPolls] = useState([]);
 
     useEffect(() => {
-        populateWeatherData();
+        fetchPolls();
     }, []);
 
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
+    const contents = polls.length === 0
+        ? <p><em>Loading... Please refresh once the ASP.NET backend has started.</em></p>
+        : polls.map(poll => <PollCard key={poll.pollId} poll={poll} />);
 
     return (
         <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
+            <h1>MyVote</h1>
             {contents}
         </div>
     );
-    
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        const data = await response.json();
-        setForecasts(data);
+
+    async function fetchPolls() {
+        const dummyPolls = [
+            {
+                pollId: 1,
+                title: "Favorite Programming Language",
+                description: "Vote for your favorite programming language.",
+                timeLimit: new Date().toISOString(),
+                isActive: true,
+                choices: [
+                    { choiceId: 1, name: "JavaScript", numVotes: 10 },
+                    { choiceId: 2, name: "Python", numVotes: 15 },
+                    { choiceId: 3, name: "Java", numVotes: 5 }
+                ],
+                userId: 1,
+                user: { userId: 1, userName: "admin" },
+                userPolls: []
+            },
+            {
+                pollId: 2,
+                title: "Best Frontend Framework",
+                description: "Vote for the best frontend framework.",
+                timeLimit: new Date().toISOString(),
+                isActive: true,
+                choices: [
+                    { choiceId: 1, name: "React", numVotes: 20 },
+                    { choiceId: 2, name: "Vue", numVotes: 10 },
+                    { choiceId: 3, name: "Angular", numVotes: 5 }
+                ],
+                userId: 1,
+                user: { userId: 1, userName: "admin" },
+                userPolls: []
+            }
+        ];
+
+        setPolls(dummyPolls);
     }
 }
 
