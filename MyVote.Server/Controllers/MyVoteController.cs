@@ -21,7 +21,7 @@ namespace MyVote.Server.Controllers
 
 
         // GET: /polls (Get all active polls)
-        [HttpGet]
+        [HttpGet("polls")]
         public async Task<ActionResult<IEnumerable<Poll>>> GetActivePolls()
         {
             return await _db.Polls
@@ -31,7 +31,7 @@ namespace MyVote.Server.Controllers
         }
 
          // GET: /poll/{pollid} (Get poll details)
-        [HttpGet("{pollid}")]
+        [HttpGet("poll/{pollid}")]
         public async Task<ActionResult<Poll>> GetPoll(int pollid)
         {
             var poll = await _db.Polls
