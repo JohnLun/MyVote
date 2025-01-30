@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import './App.css';
 import PollCard from './components/PollCard';
+import CreatePollButton from './components/CreatePollButton';
+import Header from './components/Header';
 
 function App() {
     const [polls, setPolls] = useState([]);
@@ -15,9 +17,16 @@ function App() {
         : polls.map(poll => <PollCard key={poll.pollId} poll={poll} />);
 
     return (
-        <div>
+        <div className="main-container">
+            <Header />
+            <div className="spacer"></div>
             <h1>MyVote</h1>
-            {contents}
+            <div className="main-content">
+                <div className="polls-container">
+                    {contents}
+                </div>
+                <CreatePollButton />
+            </div>
         </div>
     );
 

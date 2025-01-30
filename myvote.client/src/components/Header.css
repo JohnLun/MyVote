@@ -1,0 +1,35 @@
+.header {
+    position: fixed;
+    top: 0;
+    width: 98%;
+    background-color: #008C99;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.header-icon {
+    color: white;
+}
+
+.header-search {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+    .header-search input {
+        width: 100%;
+        max-width: 400px;
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+
+        .header-search input::placeholder {
+            color: #888;
+        }
