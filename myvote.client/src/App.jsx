@@ -1,48 +1,39 @@
 import { useEffect, useState } from 'react';
 import './App.css';
+import PollCard from './components/PollCard';
 
 function App() {
-    const [forecasts, setForecasts] = useState();
+    const [polls, setPolls] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        populateWeatherData();
+        fetchPolls();
     }, []);
 
-    const contents = forecasts === undefined
-        ? <p><em>Loading... Please refresh once the ASP.NET backend has started. See <a href="https://aka.ms/jspsintegrationreact">https://aka.ms/jspsintegrationreact</a> for more details.</em></p>
-        : <table className="table table-striped" aria-labelledby="tableLabel">
-            <thead>
-                <tr>
-                    <th>Date</th>
-                    <th>Temp. (C)</th>
-                    <th>Temp. (F)</th>
-                    <th>Summary</th>
-                </tr>
-            </thead>
-            <tbody>
-                {forecasts.map(forecast =>
-                    <tr key={forecast.date}>
-                        <td>{forecast.date}</td>
-                        <td>{forecast.temperatureC}</td>
-                        <td>{forecast.temperatureF}</td>
-                        <td>{forecast.summary}</td>
-                    </tr>
-                )}
-            </tbody>
-        </table>;
+    const contents = loading
+        ? <p><em>Loading... Please refresh once the ASP.NET backend has started.</em></p>
+        : polls.map(poll => <PollCard key={poll.pollId} poll={poll} />);
 
     return (
         <div>
-            <h1 id="tableLabel">Weather forecast</h1>
-            <p>This component demonstrates fetching data from the server.</p>
+            <h1>MyVote</h1>
             {contents}
         </div>
     );
-    
-    async function populateWeatherData() {
-        const response = await fetch('weatherforecast');
-        const data = await response.json();
-        setForecasts(data);
+
+    async function fetchPolls() {
+        try {
+            const response = await fetch('https://localhost:7054/api/polls');
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            const data = await response.json();
+            setPolls(data);
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        } finally {
+            setLoading(false);
+        }
     }
 }
 

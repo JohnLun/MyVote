@@ -28,5 +28,27 @@ namespace MyVote.Server.Dtos
         public string LastName { get; set; }
     }
 
+    public class CreateUserDto
+    {
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+    }
+
+    public class CreatePollDto
+    {
+        public int UserId { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public DateTime TimeLimit { get; set; }
+        public bool IsActive { get; set; }
+        public List<CreateChoiceDto> Choices { get; set; }
+    }
+
+    public class CreateChoiceDto
+    {
+        public string Name { get; set; }
+        public int NumVotes { get; set; }
+    }
+
 
 }

@@ -1,0 +1,14 @@
+.poll-card {
+    background-color: #333;
+    color: #fff;
+    border: 1px solid #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    margin: 20px;
+    transition: transform 0.2s;
+  }
+  
+  .poll-card:hover {
+    transform: scale(1.05);
+  }

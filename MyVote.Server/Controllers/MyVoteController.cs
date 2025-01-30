@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyVote.Server.Dtos;
@@ -8,6 +9,7 @@ namespace MyVote.Server.Controllers
 {
     [ApiController]
     [Route("/api")]
+    [EnableCors("AllowSpecificOrigin")]
     public class MyVoteController : ControllerBase
     {
         private readonly ILogger<MyVoteController> _logger;
@@ -46,7 +48,7 @@ namespace MyVote.Server.Controllers
             return Ok(pollDtos);
         }
 
-         // GET: /poll/{pollid} (Get poll details)
+        // GET: /poll/{pollid} (Get poll details)
         [HttpGet("poll/{pollid}")]
         public async Task<ActionResult<Poll>> GetPoll(int pollid)
         {
@@ -112,40 +114,69 @@ namespace MyVote.Server.Controllers
             return NoContent();
         }
 
-        // PUT: /poll (Update poll)
-        [HttpPut("poll")]
-        public async Task<IActionResult> UpdatePoll([FromBody] PollDto updatedPollDto)
+        // POST: /poll (Create new poll)
+        [HttpPost("poll")]
+        public async Task<IActionResult> CreatePoll([FromBody] CreatePollDto newPollDto)
         {
-            var poll = await _db.Polls.FindAsync(updatedPollDto.PollId);
-            if (poll == null)
-                return NotFound();
+            // Check if the UserId exists in the Users table
+            var user = await _db.Users.FindAsync(newPollDto.UserId);
+            if (user == null)
+            {
+                return BadRequest("Invalid UserId");
+            }
 
-            poll.Title = updatedPollDto.Title ?? poll.Title;
-            poll.Description = updatedPollDto.Description ?? poll.Description;
-            poll.TimeLimit = updatedPollDto.TimeLimit;
-            poll.IsActive = updatedPollDto.IsActive;
+            var poll = new Poll
+            {
+                UserId = newPollDto.UserId,
+                Title = newPollDto.Title,
+                Description = newPollDto.Description,
+                TimeLimit = newPollDto.TimeLimit,
+                IsActive = newPollDto.IsActive,
+                Choices = newPollDto.Choices.Select(c => new Choice
+                {
+                    Name = c.Name,
+                    NumVotes = c.NumVotes
+                }).ToList()
+            };
 
-            _db.Polls.Update(poll);
+            _db.Polls.Add(poll);
             await _db.SaveChangesAsync();
 
-            return NoContent();
+            return CreatedAtAction(nameof(GetPoll), new { pollid = poll.PollId }, newPollDto);
         }
 
-        // PUT: /user (Update user)
-        [HttpPut("user")]
-        public async Task<IActionResult> UpdateUser([FromBody] UserDto updatedUserDto)
+        // POST: /user (Create new user)
+        [HttpPost("user")]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUserDto)
         {
-            var user = await _db.Users.FindAsync(updatedUserDto.UserId);
+            var user = new User
+            {
+                FirstName = newUserDto.FirstName,
+                LastName = newUserDto.LastName
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUser), new { userid = user.UserId }, newUserDto);
+        }
+
+        // GET: /user/{userid} (Get user details)
+        [HttpGet("user/{userid}")]
+        public async Task<ActionResult<UserDto>> GetUser(int userid)
+        {
+            var user = await _db.Users.FindAsync(userid);
             if (user == null)
                 return NotFound();
 
-            user.FirstName = updatedUserDto.FirstName ?? user.FirstName;
-            user.LastName = updatedUserDto.LastName ?? user.LastName;
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
 
-            _db.Users.Update(user);
-            await _db.SaveChangesAsync();
-
-            return NoContent();
+            return Ok(userDto);
         }
 
         // DELETE: /poll/{pollid} (Delete poll and cascade choices)
