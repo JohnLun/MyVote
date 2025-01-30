@@ -26,7 +26,7 @@ namespace MyVote.Server.Controllers
         public async Task<ActionResult<IEnumerable<Poll>>> GetActivePolls()
         {
             var polls = await _db.Polls
-                .Where(p => p.IsActive)
+                .Where(p => p.IsActive=="t")
                 .Include(p => p.Choices)
                 .ToListAsync();
 

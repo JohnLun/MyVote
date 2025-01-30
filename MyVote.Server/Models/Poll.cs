@@ -10,9 +10,9 @@ namespace MyVote.Server.Models
 
         public string Description { get; set; }
 
-        public DateTime TimeLimit { get; set; }
+        public float TimeLimit { get; set; }
 
-        public bool IsActive { get; set; }
+        public string IsActive { get; set; } = "t";
 
         public List<Choice> Choices { get; set; }
 
