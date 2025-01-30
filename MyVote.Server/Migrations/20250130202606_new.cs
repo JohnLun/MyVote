@@ -57,18 +57,65 @@ namespace MyVote.Server.Migrations
                     Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     TimeLimit = table.Column<float>(type: "real", nullable: false),
                     IsActive = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserId = table.Column<int>(type: "int", nullable: false),
-                    UserId1 = table.Column<int>(type: "int", nullable: false)
+                    UserId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Polls", x => x.PollId);
                     table.ForeignKey(
-                        name: "FK_Polls_Users_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Polls_Users_UserId",
+                        column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "UserId",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserChoice",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    ChoiceId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserChoice", x => new { x.UserId, x.ChoiceId });
+                    table.ForeignKey(
+                        name: "FK_UserChoice_Choices_ChoiceId",
+                        column: x => x.ChoiceId,
+                        principalTable: "Choices",
+                        principalColumn: "ChoiceId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserChoice_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "UserPoll",
+                columns: table => new
+                {
+                    UserId = table.Column<int>(type: "int", nullable: false),
+                    PollId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_UserPoll", x => new { x.UserId, x.PollId });
+                    table.ForeignKey(
+                        name: "FK_UserPoll_Polls_PollId",
+                        column: x => x.PollId,
+                        principalTable: "Polls",
+                        principalColumn: "PollId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_UserPoll_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "UserId",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -77,9 +124,19 @@ namespace MyVote.Server.Migrations
                 column: "PollId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Polls_UserId1",
+                name: "IX_Polls_UserId",
                 table: "Polls",
-                column: "UserId1");
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserChoice_ChoiceId",
+                table: "UserChoice",
+                column: "ChoiceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_UserPoll_PollId",
+                table: "UserPoll",
+                column: "PollId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Users_ChoiceId",
@@ -101,6 +158,12 @@ namespace MyVote.Server.Migrations
             migrationBuilder.DropForeignKey(
                 name: "FK_Choices_Polls_PollId",
                 table: "Choices");
+
+            migrationBuilder.DropTable(
+                name: "UserChoice");
+
+            migrationBuilder.DropTable(
+                name: "UserPoll");
 
             migrationBuilder.DropTable(
                 name: "Polls");

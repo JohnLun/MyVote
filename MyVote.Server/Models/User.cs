@@ -9,11 +9,11 @@ namespace MyVote.Server.Models
         public string FirstName { get; set; }
         public string LastName {get; set; }
 
-        [ForeignKey("PollId")]
+        //[ForeignKey("PollId")]
         public int PollId { get; set; }
         public Poll Poll;
 
-        [ForeignKey("ChoiceId")]
+        //[ForeignKey("ChoiceId")]
         public int ChoiceId { get; set; }
         public Choice Choice;
 

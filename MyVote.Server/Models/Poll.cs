@@ -16,8 +16,6 @@ namespace MyVote.Server.Models
 
         public List<Choice> Choices { get; set; }
 
-
-        [ForeignKey("UserId")]
         public int UserId { get; set; }
         public User User { get; set; }
     }

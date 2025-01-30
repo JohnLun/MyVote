@@ -71,12 +71,9 @@ namespace MyVote.Server.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("PollId");
 
-                    b.HasIndex("UserId1");
+                    b.HasIndex("UserId");
 
                     b.ToTable("Polls");
                 });
@@ -110,6 +107,36 @@ namespace MyVote.Server.Migrations
                     b.ToTable("Users");
                 });
 
+            modelBuilder.Entity("UserChoice", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ChoiceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "ChoiceId");
+
+                    b.HasIndex("ChoiceId");
+
+                    b.ToTable("UserChoice");
+                });
+
+            modelBuilder.Entity("UserPoll", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("PollId")
+                        .HasColumnType("int");
+
+                    b.HasKey("UserId", "PollId");
+
+                    b.HasIndex("PollId");
+
+                    b.ToTable("UserPoll");
+                });
+
             modelBuilder.Entity("MyVote.Server.Models.Choice", b =>
                 {
                     b.HasOne("MyVote.Server.Models.Poll", "Poll")
@@ -125,8 +152,8 @@ namespace MyVote.Server.Migrations
                 {
                     b.HasOne("MyVote.Server.Models.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId1")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("User");
@@ -139,6 +166,44 @@ namespace MyVote.Server.Migrations
                         .HasForeignKey("ChoiceId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("UserChoice", b =>
+                {
+                    b.HasOne("MyVote.Server.Models.Choice", "Choice")
+                        .WithMany()
+                        .HasForeignKey("ChoiceId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MyVote.Server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Choice");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("UserPoll", b =>
+                {
+                    b.HasOne("MyVote.Server.Models.Poll", "Poll")
+                        .WithMany()
+                        .HasForeignKey("PollId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("MyVote.Server.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Poll");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("MyVote.Server.Models.Choice", b =>

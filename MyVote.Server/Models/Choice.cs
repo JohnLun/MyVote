@@ -10,7 +10,7 @@ namespace MyVote.Server.Models
     
         public List<User> Users {get; set; }
 
-        [ForeignKey("PollId")]
+        //[ForeignKey("PollId")]
         public int PollId {get; set; }
         public Poll Poll {get; set; }
 
