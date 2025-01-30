@@ -14,14 +14,12 @@ namespace MyVote.Server.Models
 
         public bool IsActive { get; set; }
 
-        public ICollection<Choice> Choices { get; set; } = new HashSet<Choice>();
+        public List<Choice> Choices { get; set; }
 
 
         [ForeignKey("UserId")]
         public int UserId { get; set; }
         public User User { get; set; }
-
-        public ICollection<UserPoll> UserPolls { get; set; } = new HashSet<UserPoll>();
     }
 
 }

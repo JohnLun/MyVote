@@ -7,8 +7,8 @@ namespace MyVote.Server.Models
         public int ChoiceId {get; set; }
         public string Name {get; set; }
         public int NumVotes {get; set; }
-
-        public ICollection<UserChoice> UserChoices { get; set; } = new HashSet<UserChoice>();
+    
+        public List<User> Users {get; set; }
 
         [ForeignKey("PollId")]
         public int PollId {get; set; }
