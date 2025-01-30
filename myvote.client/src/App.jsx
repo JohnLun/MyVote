@@ -5,6 +5,11 @@ import CreatePollButton from './components/CreatePollButton';
 import Header from './components/Header';
 
 function App() {
+    const API_BASE_URL =
+        window.location.hostname === 'localhost'
+            ? 'https://localhost:7054/api'
+            : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
+
     const [polls, setPolls] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -32,14 +37,14 @@ function App() {
 
     async function fetchPolls() {
         try {
-            const response = await fetch('https://localhost:7054/api/polls');
+            const response = await fetch(`${API_BASE_URL}/polls`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
             const data = await response.json();
             setPolls(data);
         } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
+            console.error('There was a problem with the fetch operation:', error.message);
         } finally {
             setLoading(false);
         }

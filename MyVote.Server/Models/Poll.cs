@@ -10,18 +10,14 @@ namespace MyVote.Server.Models
 
         public string Description { get; set; }
 
-        public DateTime TimeLimit { get; set; }
+        public float TimeLimit { get; set; }
 
-        public bool IsActive { get; set; }
+        public string IsActive { get; set; } = "t";
 
-        public ICollection<Choice> Choices { get; set; } = new HashSet<Choice>();
+        public List<Choice> Choices { get; set; }
 
-
-        [ForeignKey("UserId")]
         public int UserId { get; set; }
         public User User { get; set; }
-
-        public ICollection<UserPoll> UserPolls { get; set; } = new HashSet<UserPoll>();
     }
 
 }

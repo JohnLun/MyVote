@@ -1,4 +1,6 @@
-﻿namespace MyVote.Server.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace MyVote.Server.Models
 {
     public class User
     {
@@ -7,14 +9,13 @@
         public string FirstName { get; set; }
         public string LastName {get; set; }
 
-        public ICollection<Poll> CreatedPolls { get; set; } = new HashSet<Poll>();
+        //[ForeignKey("PollId")]
+        public int? PollId { get; set; }
+        public Poll Poll;
 
-        // Many-to-Many with Poll (Voted Polls)
-        public ICollection<UserPoll> UserPolls { get; set; } = new HashSet<UserPoll>();
-
-        // Many-to-Many with Choice (Voted Choices)
-        public ICollection<UserChoice> UserChoices { get; set; } = new HashSet<UserChoice>();
-
+        //[ForeignKey("ChoiceId")]
+        public int? ChoiceId { get; set; }
+        public Choice Choice;
 
     }
 }

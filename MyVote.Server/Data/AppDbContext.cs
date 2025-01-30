@@ -8,31 +8,33 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Poll> Polls { get; set; }
     public DbSet<Choice> Choices { get; set; }
-    public DbSet<UserPoll> UserPolls { get; set; }
-    public DbSet<UserChoice> UserChoices { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
         // User -> Poll (One-to-Many)
         modelBuilder.Entity<Poll>()
             .HasOne(p => p.User)
-            .WithMany(u => u.CreatedPolls)
+            .WithMany()
             .HasForeignKey(p => p.UserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
 
         // Poll <-> User (Many-to-Many)
         modelBuilder.Entity<UserPoll>()
             .HasKey(up => new { up.UserId, up.PollId });
 
+
         modelBuilder.Entity<UserPoll>()
             .HasOne(up => up.User)
-            .WithMany(u => u.UserPolls)
-            .HasForeignKey(up => up.UserId);
+            .WithMany()
+            .HasForeignKey(up => up.UserId)
+        .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<UserPoll>()
             .HasOne(up => up.Poll)
-            .WithMany(p => p.UserPolls)
-            .HasForeignKey(up => up.PollId);
+            .WithMany()
+            .HasForeignKey(up => up.PollId)
+        .OnDelete(DeleteBehavior.Restrict);
 
         // Choice <-> User (Many-to-Many)
         modelBuilder.Entity<UserChoice>()
@@ -40,12 +42,15 @@ public class AppDbContext : DbContext
 
         modelBuilder.Entity<UserChoice>()
             .HasOne(uc => uc.User)
-            .WithMany(u => u.UserChoices)
-            .HasForeignKey(uc => uc.UserId);
+            .WithMany()
+            .HasForeignKey(uc => uc.UserId)
+        .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<UserChoice>()
             .HasOne(uc => uc.Choice)
-            .WithMany(c => c.UserChoices)
-            .HasForeignKey(uc => uc.ChoiceId);
+            .WithMany()
+            .HasForeignKey(uc => uc.ChoiceId)
+            .OnDelete(DeleteBehavior.Restrict);
+
     }
 }
