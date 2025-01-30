@@ -5,7 +5,7 @@ import PollCard from './components/PollCard';
 function App() {
     const API_BASE_URL =
         window.location.hostname === 'localhost'
-            ? 'http://localhost:7054/api'
+            ? 'https://localhost:7054/api'
             : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
 
     const [polls, setPolls] = useState([]);
