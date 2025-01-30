@@ -5,7 +5,7 @@
 namespace MyVote.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class @new : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -33,8 +33,8 @@ namespace MyVote.Server.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    PollId = table.Column<int>(type: "int", nullable: false),
-                    ChoiceId = table.Column<int>(type: "int", nullable: false)
+                    PollId = table.Column<int>(type: "int", nullable: true),
+                    ChoiceId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -43,8 +43,7 @@ namespace MyVote.Server.Migrations
                         name: "FK_Users_Choices_ChoiceId",
                         column: x => x.ChoiceId,
                         principalTable: "Choices",
-                        principalColumn: "ChoiceId",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "ChoiceId");
                 });
 
             migrationBuilder.CreateTable(

@@ -86,7 +86,7 @@ namespace MyVote.Server.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("UserId"));
 
-                    b.Property<int>("ChoiceId")
+                    b.Property<int?>("ChoiceId")
                         .HasColumnType("int");
 
                     b.Property<string>("FirstName")
@@ -97,7 +97,7 @@ namespace MyVote.Server.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("PollId")
+                    b.Property<int?>("PollId")
                         .HasColumnType("int");
 
                     b.HasKey("UserId");
@@ -163,9 +163,7 @@ namespace MyVote.Server.Migrations
                 {
                     b.HasOne("MyVote.Server.Models.Choice", null)
                         .WithMany("Users")
-                        .HasForeignKey("ChoiceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("ChoiceId");
                 });
 
             modelBuilder.Entity("UserChoice", b =>
