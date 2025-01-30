@@ -3,6 +3,11 @@ import './App.css';
 import PollCard from './components/PollCard';
 
 function App() {
+    const API_BASE_URL =
+        window.location.hostname === 'localhost'
+            ? 'http://localhost:7054/api'
+            : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
+
     const [polls, setPolls] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -23,7 +28,7 @@ function App() {
 
     async function fetchPolls() {
         try {
-            const response = await fetch('https://localhost:7054/api/polls');
+            const response = await fetch(`${API_BASE_URL}/polls`);
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
