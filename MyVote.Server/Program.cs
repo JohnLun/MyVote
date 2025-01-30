@@ -34,7 +34,7 @@ namespace MyVote.Server
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
                 if (environment == "Production") // Use CosmosDB in Production
-                    options.UseCosmos(connectionString, databaseName: "myvotedb");
+                    options.UseSqlServer(connectionString);
                 else // Use PostgreSQL locally
                     options.UseNpgsql(connectionString);
             });
