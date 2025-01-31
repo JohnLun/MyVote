@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MyVote.Server.Dtos;
 using MyVote.Server.Models;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace MyVote.Server.Controllers
 {
@@ -99,19 +100,20 @@ namespace MyVote.Server.Controllers
 
         // PATCH: /choice/{choiceid} (Update choice)
         [HttpPatch("choice/{choiceid}")]
-        public async Task<IActionResult> UpdateChoice(int choiceid, [FromBody] ChoiceDto updatedChoice)
+        public async Task<IActionResult> UpdateChoice(int choiceid, int userid)
         {
-            var choice = await _db.Choices.FindAsync(choiceid);
-            if (choice == null)
-                return NotFound();
+            var choice = await _db.Choices
+                .Include(c => c.Users)
+                .FirstOrDefaultAsync(c => c.ChoiceId == choiceid);
 
-            choice.Name = updatedChoice.Name ?? choice.Name;
-            choice.NumVotes = updatedChoice.NumVotes;
+            var user = await _db.Users
+                .FirstOrDefaultAsync(u => u.UserId == userid);
 
-            _db.Choices.Update(choice);
-            await _db.SaveChangesAsync();
+            choice.Users.Add(user);
+            choice.NumVotes++;
+            _db.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: /poll (Create new poll)
@@ -179,23 +181,38 @@ namespace MyVote.Server.Controllers
             return Ok(userDto);
         }
 
-        // DELETE: /poll/{pollid} (Delete poll and cascade choices)
         [HttpDelete("poll/{pollid}")]
         public async Task<IActionResult> DeletePoll(int pollid)
         {
             var poll = await _db.Polls
                 .Include(p => p.Choices)
+                    .ThenInclude(c => c.Users) // Ensure Users list is loaded
                 .FirstOrDefaultAsync(p => p.PollId == pollid);
 
             if (poll == null)
                 return NotFound();
 
-            // Remove related choices first due to FK constraints
+            // Unassign Users from Choices before deleting Choices
+            foreach (var choice in poll.Choices)
+            {
+                foreach (var user in choice.Users)
+                {
+                    user.ChoiceId = null; // Remove FK reference
+                }
+            }
+
+            // Save changes before deleting Choices
+            await _db.SaveChangesAsync();
+
+            // Remove related Choices
             _db.Choices.RemoveRange(poll.Choices);
+
+            // Remove the Poll
             _db.Polls.Remove(poll);
 
             await _db.SaveChangesAsync();
             return NoContent();
         }
+
     }
 }

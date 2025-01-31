@@ -33,9 +33,8 @@ namespace MyVote.Server
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
-               
-                    options.UseSqlServer(connectionString);
-              
+                options.UseSqlServer(connectionString);
+                //options.UseNpgsql(connectionString);
             });
 
             //builder.Services.AddDbContext<AppDbContext>(options =>
