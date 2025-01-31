@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import './App.css';
 import PollCard from './components/PollCard';
+import CreatePollButton from './components/CreatePollButton';
+import Header from './components/Header';
+import CreatePoll from './pages/CreatePoll';
 
 function App() {
     const API_BASE_URL =
@@ -20,10 +24,27 @@ function App() {
         : polls.map(poll => <PollCard key={poll.pollId} poll={poll} />);
 
     return (
-        <div>
-            <h1>MyVote</h1>
-            {contents}
-        </div>
+        <Router>
+            <div className="main-container">
+                <Header />
+                <div className="spacer"></div>
+              
+                <div className="main-content">
+                    <Routes>
+                        <Route path="/createpoll" element={<CreatePoll />} />
+                        <Route path="/" element={
+                            <>
+                                <h1>MyVote</h1>
+                                <div className="polls-container">
+                                    {contents}
+                                    <CreatePollButton />
+                                </div>
+                            </>
+                        } />
+                    </Routes>
+                </div>
+            </div>
+        </Router>
     );
 
     async function fetchPolls() {
