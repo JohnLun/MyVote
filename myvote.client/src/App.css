@@ -1,7 +1,7 @@
 ﻿#root {
     max-width: 100%;
     text-align: center;
-    width: 10006px;
+    width: 100%;
 }
 
 .main-container {
@@ -14,7 +14,6 @@ th, td {
 }
 
 .main-content {
-    display: flex;
     align-items: center;
     padding: 20px;
 }
@@ -22,7 +21,6 @@ th, td {
 .polls-container {
     flex: 1;
     padding: 20px;
-
 }
 
 .spacer {
