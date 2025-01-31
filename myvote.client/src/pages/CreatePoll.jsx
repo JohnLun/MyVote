@@ -40,6 +40,11 @@ const CreatePoll = () => {
         setChoices([...choices, '']);
     };
 
+    const removeChoice = (index) => {
+        const newChoices = choices.filter((_, i) => i !== index);
+        setChoices(newChoices);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -98,14 +103,16 @@ const CreatePoll = () => {
                     </div>
                     <div>
                         <label>Choices:</label>
-                        <br></br>
                         {choices.map((choice, index) => (
-                            <div key={index}>
+                            <div key={index} className="choice-container">
                                 <input
                                     type="text"
                                     value={choice}
                                     onChange={(e) => handleChoiceChange(index, e)}
                                 />
+                                <button type="button" className="remove-choice-button" onClick={() => removeChoice(index)}>
+                                    <i className="fas fa-trash"></i>
+                                </button>
                             </div>
                         ))}
                     </div>
