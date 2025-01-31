@@ -29,14 +29,11 @@ namespace MyVote.Server
             builder.Services.AddSwaggerGen();
 
             var environment = builder.Environment.IsProduction() ? "Production" : "Local";
-            var connectionString = builder.Configuration.GetConnectionString(environment);
+            var connectionString = builder.Configuration.GetConnectionString("Production");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
-                if (environment == "Production") // Use CosmosDB in Production
-                    options.UseSqlServer(connectionString);
-                else // Use PostgreSQL locally
-                    options.UseNpgsql(connectionString);
+                options.UseSqlServer(connectionString);
             });
 
             //builder.Services.AddDbContext<AppDbContext>(options =>
