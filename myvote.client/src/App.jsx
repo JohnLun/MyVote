@@ -42,7 +42,7 @@ function App() {
                                 </div>
                             </>
                         } />
-                        <Route path="/poll/:id" element={<PollDetails />} />
+                        <Route path="/poll/:pollId" element={<PollDetails />} />
                     </Routes>
                 </div>
             </div>

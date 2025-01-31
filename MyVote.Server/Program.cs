@@ -54,9 +54,11 @@ namespace MyVote.Server
 
             app.UseHttpsRedirection();
 
+            app.UseCors("AllowSpecificOrigin");
+
             app.UseAuthorization();
 
-            app.UseCors("AllowSpecificOrigin");
+            
 
             app.MapControllers();
 
