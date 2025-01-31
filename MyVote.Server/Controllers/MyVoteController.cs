@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MyVote.Server.Dtos;
 using MyVote.Server.Models;
 using System.Linq;
+using System.Xml.Serialization;
 
 namespace MyVote.Server.Controllers
 {
@@ -99,19 +100,20 @@ namespace MyVote.Server.Controllers
 
         // PATCH: /choice/{choiceid} (Update choice)
         [HttpPatch("choice/{choiceid}")]
-        public async Task<IActionResult> UpdateChoice(int choiceid, [FromBody] ChoiceDto updatedChoice)
+        public async Task<IActionResult> UpdateChoice(int choiceid, int userid)
         {
-            var choice = await _db.Choices.FindAsync(choiceid);
-            if (choice == null)
-                return NotFound();
+            var choice = await _db.Choices
+                .Include(c => c.Users)
+                .FirstOrDefaultAsync(c => c.ChoiceId == choiceid);
 
-            choice.Name = updatedChoice.Name ?? choice.Name;
-            choice.NumVotes = updatedChoice.NumVotes;
+            var user = await _db.Users
+                .FirstOrDefaultAsync(u => u.UserId == userid);
 
-            _db.Choices.Update(choice);
-            await _db.SaveChangesAsync();
+            choice.Users.Add(user);
+            choice.NumVotes++;
+            _db.SaveChangesAsync();
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: /poll (Create new poll)
