@@ -181,23 +181,38 @@ namespace MyVote.Server.Controllers
             return Ok(userDto);
         }
 
-        // DELETE: /poll/{pollid} (Delete poll and cascade choices)
         [HttpDelete("poll/{pollid}")]
         public async Task<IActionResult> DeletePoll(int pollid)
         {
             var poll = await _db.Polls
                 .Include(p => p.Choices)
+                    .ThenInclude(c => c.Users) // Ensure Users list is loaded
                 .FirstOrDefaultAsync(p => p.PollId == pollid);
 
             if (poll == null)
                 return NotFound();
 
-            // Remove related choices first due to FK constraints
+            // Unassign Users from Choices before deleting Choices
+            foreach (var choice in poll.Choices)
+            {
+                foreach (var user in choice.Users)
+                {
+                    user.ChoiceId = null; // Remove FK reference
+                }
+            }
+
+            // Save changes before deleting Choices
+            await _db.SaveChangesAsync();
+
+            // Remove related Choices
             _db.Choices.RemoveRange(poll.Choices);
+
+            // Remove the Poll
             _db.Polls.Remove(poll);
 
             await _db.SaveChangesAsync();
             return NoContent();
         }
+
     }
 }
