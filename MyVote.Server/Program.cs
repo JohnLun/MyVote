@@ -29,12 +29,12 @@ namespace MyVote.Server
             builder.Services.AddSwaggerGen();
 
             var environment = builder.Environment.IsProduction() ? "Production" : "Local";
-            var connectionString = builder.Configuration.GetConnectionString("Local");
+            var connectionString = builder.Configuration.GetConnectionString("Production");
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
-                //options.UseSqlServer(connectionString);
-                options.UseNpgsql(connectionString);
+                options.UseSqlServer(connectionString);
+                //options.UseNpgsql(connectionString);
             });
 
             //builder.Services.AddDbContext<AppDbContext>(options =>
