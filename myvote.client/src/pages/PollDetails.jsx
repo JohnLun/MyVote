@@ -63,14 +63,15 @@ const PollDetails = () => {
     return(
         <div className="poll-details-container">
             <div className="poll-details-card">
-                <h1>{poll.title}</h1>
-                <p>{poll.description}</p>
-                <p>Time Limit: {poll.timeLimit} hours</p>
+                <h1 className="poll-title">{poll.title}</h1>
+                <p className="poll-desc">{poll.description}</p>
+                <p className="poll-limit">Time Remaining: {poll.timeLimit} hours</p>
 
                 {poll.choices.length > 0 ? (
                     poll.choices.map((choice) => (
-                        <button key={choice.choiceId} onClick={() => handleVote(choice.choiceId)}>
-                            {choice.name} ({choice.numVotes} votes)
+                        <button className="poll-choice" key={choice.choiceId} onClick={() => handleVote(choice.choiceId)}>
+                            {choice.name} 
+                            {/* ({choice.numVotes} votes) */}
                         </button>
                     ))
                 ) : (
