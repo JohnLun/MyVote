@@ -4,7 +4,7 @@ import './CreatePoll.css';
 const CreatePoll = () => {
     const API_BASE_URL =
         window.location.hostname === 'localhost'
-            //? 'https://localhost:7054/api'
+            ? 'https://localhost:7054/api'
     : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
 
     const [title, setTitle] = useState('');
