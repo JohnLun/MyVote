@@ -53,12 +53,12 @@ const CreatePoll = () => {
         const isActive = pollEndTime > currentTime;
 
         const newPollDto = {
-            UserId: 2, // Assuming a UserId is required and setting it to 2 for now
-            Title: title,
-            Description: description,
-            TimeLimit: parseFloat(timeLimit),
-            IsActive: isActive.toString(), // Convert boolean to string
-            Choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
+            userId: 2, // Assuming a UserId is required and setting it to 2 for now
+            title: title,
+            description: description,
+            timeLimit: parseFloat(timeLimit),
+            isActive: isActive ? "t" : "f", // Convert boolean to string
+            choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
 
         try {
