@@ -5,7 +5,7 @@ const CreatePoll = () => {
     const API_BASE_URL =
         window.location.hostname === 'localhost'
             ? 'https://localhost:7054/api'
-            : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
+    : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -48,11 +48,17 @@ const CreatePoll = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        /*const poll = {
-            title,
-            description,
-            timeLimit: parseFloat(timeLimit),
-            choices: choices.map(choice => ({ name: choice }))
+        const currentTime = new Date();
+        const pollEndTime = new Date(currentTime.getTime() + parseFloat(timeLimit) * 60 * 60 * 1000);
+        const isActive = pollEndTime > currentTime;
+
+        const newPollDto = {
+            UserId: 2, // Assuming a UserId is required and setting it to 2 for now
+            Title: title,
+            Description: description,
+            TimeLimit: parseFloat(timeLimit),
+            IsActive: isActive.toString(), // Convert boolean to string
+            Choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
 
         try {
@@ -61,7 +67,7 @@ const CreatePoll = () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify(poll)
+                body: JSON.stringify(newPollDto)
             });
 
             if (!response.ok) {
@@ -72,8 +78,9 @@ const CreatePoll = () => {
             console.log('Poll created:', data);
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error.message);
-        }*/
+        }
     };
+
 
     return (
         <div className="create-poll-container">
