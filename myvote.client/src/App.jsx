@@ -5,6 +5,7 @@ import PollCard from './components/PollCard';
 import CreatePollButton from './components/CreatePollButton';
 import Header from './components/Header';
 import CreatePoll from './pages/CreatePoll';
+import PollDetails from './pages/PollDetails';
 
 function App() {
     const API_BASE_URL =
@@ -41,6 +42,7 @@ function App() {
                                 </div>
                             </>
                         } />
+                        <Route path="/poll/:pollId" element={<PollDetails />} />
                     </Routes>
                 </div>
             </div>
