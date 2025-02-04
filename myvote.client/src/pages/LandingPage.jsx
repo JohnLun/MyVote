@@ -6,7 +6,6 @@ import Header from '../components/Header';
 import CreatePoll from './CreatePoll';
 import PollDetails from './PollDetails';
 import { useEffect } from 'react';
-import { useEffect } from 'react';
 
 function LandingPage() {
     const API_BASE_URL = window.location.hostname === "localhost"
