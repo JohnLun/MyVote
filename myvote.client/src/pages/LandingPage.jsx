@@ -28,20 +28,6 @@ function LandingPage() {
         .catch(error => console.error("Error tracking user:", error));
     }, []);
 
-    useEffect(() => {
-        console.log("Checking cookies:", document.cookie);
-
-        fetch(`${API_BASE_URL}/track`, {
-            method: "GET",
-            credentials: "include",
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log("User ID:", data.userId);
-        })
-        .catch(error => console.error("Error tracking user:", error));
-    }, []);
-
     return (
         <Router>
             <div className="main-container">
