@@ -21,6 +21,10 @@ th, td {
     
 }
 
+#root{
+    width: 100%;
+}
+
 .header-search {
     flex: 1;
     display: flex;
