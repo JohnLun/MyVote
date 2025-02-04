@@ -62,34 +62,60 @@ namespace MyVote.Server.Controllers
             return Ok(new { message = "New user tracked", userId = newUser.UserId });
         }
 
+        [HttpGet("polls/{userId}")]
+        public async Task<ActionResult<IEnumerable<Poll>>> GetPollsByUser(int userId)
+        {
+            // Polls where the user has voted (through Choices)
+            var votedPolls = await _db.Choices
+                .Where(c => c.Users.Any(u => u.UserId == userId))
+                .Select(c => c.Poll)
+                .Distinct()
+                .ToListAsync();
+
+            // Polls created by the user
+            var createdPolls = await _db.Polls
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            // Combine and remove duplicates
+            var allPolls = votedPolls.Concat(createdPolls).Distinct().ToList();
+
+            if (allPolls.Count == 0)
+            {
+                return NotFound(new { message = "No polls found for this user." });
+            }
+
+            return Ok(allPolls);
+        }
+
 
 
         // GET: /polls (Get all active polls)
-        [HttpGet("polls")]
-        public async Task<ActionResult<IEnumerable<Poll>>> GetActivePolls()
-        {
-            var polls = await _db.Polls
-                .Where(p => p.IsActive=="t")
-                .Include(p => p.Choices)
-                .ToListAsync();
+        //[HttpGet("polls")]
+        //public async Task<ActionResult<IEnumerable<Poll>>> GetActivePolls()
+        //{
+        //    var polls = await _db.Polls
+        //        .Where(p => p.IsActive=="t")
+        //        .Include(p => p.Choices)
+        //        .ToListAsync();
 
-            var pollDtos = polls.Select(p => new PollDto
-            {
-                PollId = p.PollId,
-                Title = p.Title,
-                Description = p.Description,
-                TimeLimit = p.TimeLimit,
-                IsActive = p.IsActive,
-                Choices = p.Choices.Select(c => new ChoiceDto
-                {
-                    ChoiceId = c.ChoiceId,
-                    Name = c.Name,
-                    NumVotes = c.NumVotes
-                }).ToList()
-            }).ToList();
+        //    var pollDtos = polls.Select(p => new PollDto
+        //    {
+        //        PollId = p.PollId,
+        //        Title = p.Title,
+        //        Description = p.Description,
+        //        TimeLimit = p.TimeLimit,
+        //        IsActive = p.IsActive,
+        //        Choices = p.Choices.Select(c => new ChoiceDto
+        //        {
+        //            ChoiceId = c.ChoiceId,
+        //            Name = c.Name,
+        //            NumVotes = c.NumVotes
+        //        }).ToList()
+        //    }).ToList();
 
-            return Ok(pollDtos);
-        }
+        //    return Ok(pollDtos);
+        //}
 
         // GET: /poll/{pollid} (Get poll details)
         [HttpGet("poll/{pollid}")]
@@ -140,23 +166,46 @@ namespace MyVote.Server.Controllers
             return Ok(choiceDtos);
         }
 
-        // PATCH: /choice/{choiceid} (Update choice)
-        [HttpPatch("choice/{choiceid}")]
-        public async Task<IActionResult> UpdateChoice(int choiceid, int userid)
+        [HttpPatch("vote")]
+        public async Task<IActionResult> UpdateChoice([FromBody] VoteDto voteDto)
         {
             var choice = await _db.Choices
+                .Include(c => c.Poll) // Include the Poll reference
                 .Include(c => c.Users)
-                .FirstOrDefaultAsync(c => c.ChoiceId == choiceid);
+                .FirstOrDefaultAsync(c => c.ChoiceId == voteDto.ChoiceId);
+
+            if (choice == null)
+            {
+                return NotFound("Choice not found.");
+            }
 
             var user = await _db.Users
-                .FirstOrDefaultAsync(u => u.UserId == userid);
+                .FirstOrDefaultAsync(u => u.UserId == voteDto.UserId);
 
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            // Check if the user has already voted on any choice in this poll
+            bool hasVoted = await _db.Choices
+                .Where(c => c.PollId == choice.PollId) // Get all choices in the same poll
+                .AnyAsync(c => c.Users.Any(u => u.UserId == voteDto.UserId)); // Check if user exists in any choice
+
+            if (hasVoted)
+            {
+                return BadRequest("User has already voted in this poll.");
+            }
+
+            // Add the user to the selected choice's Users list and increase vote count
             choice.Users.Add(user);
             choice.NumVotes++;
-            _db.SaveChangesAsync();
 
-            return Ok();
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Vote submitted successfully!" });
         }
+
 
         // POST: /poll (Create new poll)
         [HttpPost("poll")]
