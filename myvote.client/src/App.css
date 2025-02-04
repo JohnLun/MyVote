@@ -7,29 +7,4 @@
     flex-direction: column;
 }
 
-.main-container {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-
-}
-
-th, td {
-    padding-left: 1rem;
-    padding-right: 1rem;
-}
-
-.main-content {
-    flex: 1; /* Allow this section to take up remaining space */
-    display: flex;
-    flex-direction: column
-    
-}
-
-.polls-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    margin-top: auto;
-}
 
