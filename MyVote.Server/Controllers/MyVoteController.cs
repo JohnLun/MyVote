@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Cors;
+﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyVote.Server.Dtos;
@@ -21,6 +21,48 @@ namespace MyVote.Server.Controllers
             _logger = logger;
             _db = dbContext;
         }
+
+        [HttpGet("track")]
+        public IActionResult TrackUser()
+        {
+            var existingCookie = Request.Cookies["user_id"];
+
+            if (!string.IsNullOrEmpty(existingCookie))
+            {
+                var existingUser = _db.Users.FirstOrDefault(u => u.LastName == existingCookie);
+
+                if (existingUser != null)
+                {
+                    return Ok(new { message = "Existing user found", userId = existingUser.UserId });
+                }
+            }
+
+            string newUserCookie = Guid.NewGuid().ToString();
+
+            var newUser = new User
+            {
+                FirstName = "Guest", 
+                LastName = newUserCookie,
+            };
+
+            _db.Users.Add(newUser);
+            _db.SaveChanges();
+
+      
+            var cookieOptions = new CookieOptions
+            {
+                HttpOnly = true,
+                Secure = true,
+                SameSite = SameSiteMode.Lax,
+                Expires = DateTime.UtcNow.AddYears(1)
+            };
+
+            Response.Cookies.Append("user_id", newUserCookie, cookieOptions);
+
+            return Ok(new { message = "New user tracked", userId = newUser.UserId });
+        }
+
+
 
         // GET: /polls (Get all active polls)
         [HttpGet("polls")]
