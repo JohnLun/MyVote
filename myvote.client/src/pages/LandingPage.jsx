@@ -4,6 +4,7 @@ import CreatePollButton from '../components/CreatePollButton';
 import Header from '../components/Header';
 import CreatePoll from './CreatePoll';
 import PollDetails from './PollDetails';
+import UserProfile from './UserProfile';
 
 function LandingPage() {
 
@@ -25,6 +26,7 @@ function LandingPage() {
                             </>
                         } />
                         <Route path="/poll/:pollId" element={<PollDetails />} />
+                        <Route path="/user/:userId" element={<UserProfile />} />
                     </Routes>
                 </div>
             </div>

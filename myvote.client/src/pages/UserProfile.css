@@ -1,0 +1,12 @@
+.user-profile {
+    padding: 16px;
+}
+
+.poll-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.headingtext {
+    padding: 20px;
+}

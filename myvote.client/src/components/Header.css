@@ -13,6 +13,7 @@
 
 .header-icon {
     color: white;
+    cursor: pointer;
 }
 
 .header-search {
