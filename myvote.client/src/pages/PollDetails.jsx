@@ -8,7 +8,6 @@ const PollDetails = () => {
     const [poll, setPoll] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [hasVoted, setHasVoted] = useState(false);  // Track whether the user has voted
     const { userId } = useUser();
 
     const API_BASE_URL = window.location.hostname === "localhost"
@@ -22,16 +21,8 @@ const PollDetails = () => {
                 if (!response.ok) {
                     throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
                 }
-                
                 const data = await response.json();
                 setPoll(data);
-
-                // Check if the user has already voted on this poll
-                const hasUserVoted = data.choices.some(choice => 
-                    choice.users && choice.users.some(user => user.userId === userId)
-                );
-                setHasVoted(hasUserVoted);
-
                 setLoading(false);
             } catch (err) {
                 setError(err.message);
@@ -40,7 +31,7 @@ const PollDetails = () => {
         };
 
         fetchPoll();
-    }, [pollId, userId]);  // Fetch poll data when pollId or userId changes
+    }, [pollId]);
 
     const handleVote = async (choiceId) => {
         try {
@@ -57,13 +48,13 @@ const PollDetails = () => {
             });
 
             if (!response.ok) {
-                throw new Error(`Vote submission failed. Status: ${response.status}`);
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Vote submission failed.");
             }
 
             alert("Vote submitted successfully!");
-            setHasVoted(true); // Mark that the user has voted
         } catch (error) {
-            alert("There was an error submitting your vote.");
+            alert(error.message);  // Show the error from the API (e.g., "You have already voted.")
         }
     };
 
@@ -77,22 +68,18 @@ const PollDetails = () => {
                 <p className="poll-desc">{poll.description}</p>
                 <p className="poll-limit">Time Remaining: {poll.timeLimit} hours</p>
 
-                {hasVoted ? (
-                    <p>You have already voted on this poll.</p>
+                {poll.choices.length > 0 ? (
+                    poll.choices.map((choice) => (
+                        <button 
+                            className="poll-choice" 
+                            key={choice.choiceId} 
+                            onClick={() => handleVote(choice.choiceId)}
+                        >
+                            {choice.name}
+                        </button>
+                    ))
                 ) : (
-                    poll.choices.length > 0 ? (
-                        poll.choices.map((choice) => (
-                            <button 
-                                className="poll-choice" 
-                                key={choice.choiceId} 
-                                onClick={() => handleVote(choice.choiceId)}
-                            >
-                                {choice.name}
-                            </button>
-                        ))
-                    ) : (
-                        <p>No choices available.</p>
-                    )
+                    <p>No choices available.</p>
                 )}
             </div>
         </div>
