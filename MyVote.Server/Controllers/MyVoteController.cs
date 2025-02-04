@@ -169,9 +169,10 @@ namespace MyVote.Server.Controllers
         [HttpPatch("vote")]
         public async Task<IActionResult> UpdateChoice([FromBody] VoteDto voteDto)
         {
+            // Ensure the choice exists in the database
             var choice = await _db.Choices
                 .Include(c => c.Poll) // Include the Poll reference
-                .Include(c => c.Users)
+                .Include(c => c.Users) // Include users who voted for the choice
                 .FirstOrDefaultAsync(c => c.ChoiceId == voteDto.ChoiceId);
 
             if (choice == null)
@@ -179,6 +180,7 @@ namespace MyVote.Server.Controllers
                 return NotFound("Choice not found.");
             }
 
+            // Ensure the user exists in the database
             var user = await _db.Users
                 .FirstOrDefaultAsync(u => u.UserId == voteDto.UserId);
 
@@ -187,24 +189,28 @@ namespace MyVote.Server.Controllers
                 return NotFound("User not found.");
             }
 
-            // Check if the user has already voted on any choice in this poll
+            // Check if the user has already voted in this poll
             bool hasVoted = await _db.Choices
                 .Where(c => c.PollId == choice.PollId) // Get all choices in the same poll
                 .AnyAsync(c => c.Users.Any(u => u.UserId == voteDto.UserId)); // Check if user exists in any choice
 
             if (hasVoted)
             {
-                return BadRequest("User has already voted in this poll.");
+                return BadRequest(new { message = "User has already voted in this poll.", hasVoted = true });
             }
 
-            // Add the user to the selected choice's Users list and increase vote count
+            // Add the user to the selected choice's Users list and increase the choice's vote count
             choice.Users.Add(user);
             choice.NumVotes++;
 
+            // Save changes to the database
             await _db.SaveChangesAsync();
 
-            return Ok(new { message = "Vote submitted successfully!" });
+            return Ok(new { message = "Vote submitted successfully!", hasVoted = false });
         }
+
+
+
 
 
         // POST: /poll (Create new poll)

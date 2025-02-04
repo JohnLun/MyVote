@@ -5,10 +5,10 @@ import './PollDetails.css';
 
 const PollDetails = () => {
     const { pollId } = useParams();
-    //console.log("poll id:", pollId);
     const [poll, setPoll] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [hasVoted, setHasVoted] = useState(false);  // Track whether the user has voted
     const { userId } = useUser();
 
     const API_BASE_URL = window.location.hostname === "localhost"
@@ -24,19 +24,23 @@ const PollDetails = () => {
                 }
                 
                 const data = await response.json();
-                
-
                 setPoll(data);
+
+                // Check if the user has already voted on this poll
+                const hasUserVoted = data.choices.some(choice => 
+                    choice.users && choice.users.some(user => user.userId === userId)
+                );
+                setHasVoted(hasUserVoted);
+
                 setLoading(false);
             } catch (err) {
-                
                 setError(err.message);
                 setLoading(false);
             }
         };
 
         fetchPoll();
-    }, [pollId]);
+    }, [pollId, userId]);  // Fetch poll data when pollId or userId changes
 
     const handleVote = async (choiceId) => {
         try {
@@ -57,8 +61,8 @@ const PollDetails = () => {
             }
 
             alert("Vote submitted successfully!");
+            setHasVoted(true); // Mark that the user has voted
         } catch (error) {
-            
             alert("There was an error submitting your vote.");
         }
     };
@@ -73,18 +77,24 @@ const PollDetails = () => {
                 <p className="poll-desc">{poll.description}</p>
                 <p className="poll-limit">Time Remaining: {poll.timeLimit} hours</p>
 
-                {poll.choices.length > 0 ? (
-                    poll.choices.map((choice) => (
-                        <button className="poll-choice" key={choice.choiceId} onClick={() => handleVote(choice.choiceId)}>
-                            {choice.name} 
-                            {/* ({choice.numVotes} votes) */}
-                        </button>
-                    ))
+                {hasVoted ? (
+                    <p>You have already voted on this poll.</p>
                 ) : (
-                    <p>No choices available.</p>
+                    poll.choices.length > 0 ? (
+                        poll.choices.map((choice) => (
+                            <button 
+                                className="poll-choice" 
+                                key={choice.choiceId} 
+                                onClick={() => handleVote(choice.choiceId)}
+                            >
+                                {choice.name}
+                            </button>
+                        ))
+                    ) : (
+                        <p>No choices available.</p>
+                    )
                 )}
             </div>
-            
         </div>
     );
 }
