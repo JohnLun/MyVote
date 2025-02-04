@@ -22,12 +22,12 @@ const PollDetails = () => {
                 }
                 
                 const data = await response.json();
-                console.log("Fetched Poll Data:", data); // Debugging log
+                
 
                 setPoll(data);
                 setLoading(false);
             } catch (err) {
-                console.error("Error fetching poll:", err.message);
+                
                 setError(err.message);
                 setLoading(false);
             }
@@ -52,7 +52,7 @@ const PollDetails = () => {
 
             alert("Vote submitted successfully!");
         } catch (error) {
-            console.error("Voting error:", error.message);
+            
             alert("There was an error submitting your vote.");
         }
     };

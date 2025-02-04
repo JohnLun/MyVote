@@ -15,9 +15,7 @@ function Header() {
             <div className="header-icon" onClick={handleUserIconClick}>
                 <FaUserCircle size={24} />
             </div>
-            <div className="header-search">
-                <input type="text" placeholder="Find poll" />
-            </div>
+            
             
         </header>
     );
