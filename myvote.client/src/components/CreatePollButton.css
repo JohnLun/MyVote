@@ -3,17 +3,16 @@
     color: white;
     border: none;
     width: 100%;
-    max-width: 400px;
+    min-width: 300px;
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-
-
-
+    box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
 
 }
 
     .create-poll-button:hover {
         background-color: #007A88;
+        transform: scale(1.2);
     }
