@@ -82,6 +82,7 @@ function Home() {
                     placeholder="Enter poll ID"
                     value={pollId}
                     onChange={(e) => setPollId(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleGoClick()}
                 />
             </div>
 
