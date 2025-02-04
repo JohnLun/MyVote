@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useUser } from '../contexts/UserContext';
 import './CreatePoll.css';
 
 const CreatePoll = () => {
@@ -11,6 +12,8 @@ const CreatePoll = () => {
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
     const [choices, setChoices] = useState(['', '']);
+
+    const {userId} = useUser();
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -53,13 +56,14 @@ const CreatePoll = () => {
         const isActive = pollEndTime > currentTime;
 
         const newPollDto = {
-            userId: 2, // Assuming a UserId is required and setting it to 2 for now
+            userId: userId, // Assuming a UserId is required and setting it to 2 for now
             title: title,
             description: description,
             timeLimit: parseFloat(timeLimit),
             isActive: isActive ? "t" : "f", // Convert boolean to string
             choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
+        console.log(newPollDto);
 
         try {
             const response = await fetch(`${API_BASE_URL}/poll`, {
