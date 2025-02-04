@@ -8,9 +8,7 @@ function Header() {
             <div className="header-icon">
                 <FaUserCircle size={24} />
             </div>
-            <div className="header-search">
-                <input type="text" placeholder="Find poll" />
-            </div>
+            
             
         </header>
     );

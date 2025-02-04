@@ -15,12 +15,6 @@
     color: white;
 }
 
-.header-search {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
     .header-search input {
         width: 100%;
         max-width: 400px;
