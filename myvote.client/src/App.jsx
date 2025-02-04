@@ -1,9 +1,14 @@
 import LandingPage from "./pages/LandingPage";
+import { UserProvider } from './contexts/UserContext';
 
 
 function App() {
+
     return (
-        <LandingPage></LandingPage>
+        <UserProvider>
+            <LandingPage></LandingPage>
+        </UserProvider>
+        
     );
     
 }
