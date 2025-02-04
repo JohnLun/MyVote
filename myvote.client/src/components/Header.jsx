@@ -7,7 +7,7 @@ function Header() {
     const navigate = useNavigate();
 
     const handleUserIconClick = () => {
-        navigate('/user/2'); // Replace '2' with the actual user ID if needed
+        navigate('/user'); // Replace '2' with the actual user ID if needed
     };
 
     return (

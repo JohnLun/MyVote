@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from "react-router-dom";
+import { useUser } from '../contexts/UserContext';
 import './PollDetails.css';
 
 const PollDetails = () => {
@@ -8,6 +9,7 @@ const PollDetails = () => {
     const [poll, setPoll] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const { userId } = useUser();
 
     const API_BASE_URL = window.location.hostname === "localhost"
         ? "https://localhost:7054/api"
@@ -38,12 +40,16 @@ const PollDetails = () => {
 
     const handleVote = async (choiceId) => {
         try {
+            const responseBody = {
+                choiceId: choiceId,
+                userId: userId
+            };
             const response = await fetch(`${API_BASE_URL}/vote`, {
-                method: "POST",
+                method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ pollId: poll.pollId, choiceId })
+                body: JSON.stringify(responseBody)
             });
 
             if (!response.ok) {

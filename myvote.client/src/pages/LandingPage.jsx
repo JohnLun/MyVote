@@ -19,7 +19,7 @@ function LandingPage() {
                         <Route path="/createpoll" element={<CreatePoll />} />
                         <Route path="/" element={<Home />} />
                         <Route path="/poll/:pollId" element={<PollDetails />} />
-                        <Route path="/user/:userId" element={<UserProfile />} />
+                        <Route path="/user" element={<UserProfile />} />
                     </Routes>
                 </div>
             </div>

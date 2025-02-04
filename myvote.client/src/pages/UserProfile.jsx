@@ -1,64 +1,47 @@
 import React, { useEffect, useState } from 'react';
+import { useUser } from '../contexts/UserContext';
 import PollCard from '../components/PollCard';
 import './UserProfile.css';
 
 const UserProfile = () => {
-    const [polls, setPolls] = useState([]);
+    const { userId } = useUser();
+    const [polls, setPolls] = useState([]); // State to store polls
+
+    const API_BASE_URL = window.location.hostname === "localhost"
+        ? "https://localhost:7054/api"
+        : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api";
 
     useEffect(() => {
-        // Uncomment the following code when the API endpoint is available
-        /*
         const fetchPolls = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/polls/user/2`); // Replace with actual user ID
+                const response = await fetch(`${API_BASE_URL}/polls/${userId}`);
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
                 }
                 const data = await response.json();
-                setPolls(data);
+                console.log("Fetched Polls:", data);
+                setPolls(data); // Store polls in state
             } catch (error) {
-                console.error('There was a problem with the fetch operation:', error.message);
+                console.error('Error fetching polls:', error.message);
             }
         };
 
-        fetchPolls();
-        */
-
-        // Dummy polls for now
-        const dummyPolls = [
-            {
-                id: 1,
-                title: 'Poll 1',
-                description: 'Description for Poll 1',
-                timeLimit: new Date().toISOString(),
-                isActive: true,
-                choices: [
-                    { choiceId: 1, name: 'Choice 1', numVotes: 10 },
-                    { choiceId: 2, name: 'Choice 2', numVotes: 5 }
-                ]
-            },
-            {
-                id: 2,
-                title: 'Poll 2',
-                description: 'Description for Poll 2',
-                timeLimit: new Date().toISOString(),
-                isActive: false,
-                choices: [
-                    { choiceId: 3, name: 'Choice 3', numVotes: 7 },
-                    { choiceId: 4, name: 'Choice 4', numVotes: 3 }
-                ]
-            }
-        ];
-        setPolls(dummyPolls);
-    }, []);
+        if (userId) {
+            fetchPolls();
+        }
+    }, [userId]); // Fetch when userId is available
 
     return (
         <div className="user-profile">
             <h2 className="headingtext">Your Polls</h2>
             <div className="poll-list">
-                {polls.map(poll => (
-                    <PollCard poll={poll} />
-                ))}
+                {polls.length > 0 ? (
+                    polls.map((poll) => (
+                        <PollCard key={poll.pollId} poll={poll} /> // Use poll.id as the key
+                    ))
+                ) : (
+                    <p>No polls found.</p>
+                )}
             </div>
         </div>
     );

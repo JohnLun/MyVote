@@ -50,5 +50,10 @@ namespace MyVote.Server.Dtos
         public int NumVotes { get; set; }
     }
 
+    public class VoteDto
+    {
+        public int ChoiceId { get; set; }
+        public int UserId { get; set; }
+    }
 
 }

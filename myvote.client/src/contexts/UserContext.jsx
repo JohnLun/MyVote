@@ -18,6 +18,7 @@ export const UserProvider = ({ children }) => {
         })
         .then(res => res.json())
         .then(data => {
+            console.log(data.userId);
             setUserId(data.userId);
         })
         .catch(error => console.error("Error tracking user:", error));
