@@ -28,7 +28,7 @@ function App() {
         <Router>
             <div className="main-container">
                 <Header />
-                <div className="spacer"></div>
+                
               
                 <div className="main-content">
                     <Routes>
