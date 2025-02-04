@@ -40,24 +40,29 @@ function Home() {
 
     return (
         <>
-            <h1>MyVote</h1>
-            <h3>Enter a Poll ID</h3>
+            <div className="search-poll">
+                <h1>MyVote</h1>
+                <div className="header-search">
+                    <label className={pollId ? "floating-label active" : "floating-label"}>
+                        Enter Poll ID
+                    </label>
+                    <input
+                        type="text"
+                        
+                        value={pollId}
+                        onChange={(e) => setPollId(e.target.value)}
+                        onKeyDown={(e) => e.key === "Enter" && handleGoClick()}
+                    />
+                </div>
+                
 
-            <div className="header-search">
-                <input
-                    type="text"
-                    placeholder="Enter poll ID"
-                    value={pollId}
-                    onChange={(e) => setPollId(e.target.value)}
-                    onKeyDown={(e) => e.key === "Enter" && handleGoClick()}
-                />
+                <button className="go-btn" type="button" onClick={handleGoClick}>
+                    GO
+                </button>
+                
             </div>
 
-            <button type="button" onClick={handleGoClick}>
-                GO
-            </button>
-
-            <div className="polls-container">
+            <div className="create-poll">
                 <CreatePollButton />
             </div>
         </>
