@@ -1,7 +1,4 @@
-//vc test
-
-
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace MyVote.Server
 {
@@ -20,9 +17,9 @@ namespace MyVote.Server
                 options.AddPolicy("AllowSpecificOrigin",
                     builder => builder.WithOrigins("https://localhost:5173")
                                       .AllowAnyHeader()
-                                      .AllowAnyMethod());
+                                      .AllowAnyMethod()
+                                      .AllowCredentials());
             });
-
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
@@ -36,9 +33,6 @@ namespace MyVote.Server
                 options.UseSqlServer(connectionString);
                 //options.UseNpgsql(connectionString);
             });
-
-            //builder.Services.AddDbContext<AppDbContext>(options =>
-            //    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
@@ -57,8 +51,6 @@ namespace MyVote.Server
             app.UseCors("AllowSpecificOrigin");
 
             app.UseAuthorization();
-
-            
 
             app.MapControllers();
 
