@@ -11,9 +11,7 @@ function Header() {
             <div className="header-search">
                 <input type="text" placeholder="Find poll" />
             </div>
-            <div className="header-icon">
-                <FaFilter size={24} />
-            </div>
+            
         </header>
     );
 }
