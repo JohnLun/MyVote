@@ -29,3 +29,8 @@
         .header-search input::placeholder {
             color: #888;
         }
+
+.home-icon {
+    color: white;
+    cursor: pointer;
+}
