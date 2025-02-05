@@ -3,9 +3,14 @@
     margin-top: 50px;
 }
 
-    .poll-link-page button {
-        margin: 10px;
-        padding: 10px 20px;
-        font-size: 16px;
-        cursor: pointer;
-    }
+.poll-link-page button {
+    margin: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.qr-code {
+    margin-top: 40px;
+    padding: 20px;
+}
