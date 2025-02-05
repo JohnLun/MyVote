@@ -8,6 +8,8 @@ const PollDetails = () => {
     const [poll, setPoll] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [userVoted, setUserVoted] = useState(false);
+    const [selectedChoice, setSelectedChoice] = useState(null);
     const { userId } = useUser();
 
     const API_BASE_URL = window.location.hostname === "localhost"
@@ -29,7 +31,6 @@ const PollDetails = () => {
                 setLoading(false);
             }
         };
-
         fetchPoll();
     }, [pollId]);
 
@@ -52,9 +53,15 @@ const PollDetails = () => {
                 throw new Error(errorData.message || "Vote submission failed.");
             }
 
-            alert("Vote submitted successfully!");
+            setUserVoted(true);
+            setSelectedChoice(choiceId);
+            
+            // Refresh poll data after voting
+            const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
+            setPoll(updatedPoll);
+
         } catch (error) {
-            alert(error.message);  // Show the error from the API (e.g., "You have already voted.")
+            alert(error.message);
         }
     };
 
@@ -71,15 +78,30 @@ const PollDetails = () => {
                 {poll.choices.length > 0 ? (
                     poll.choices.map((choice) => (
                         <button 
-                            className="poll-choice" 
                             key={choice.choiceId} 
+                            className={`poll-choice ${userVoted && choice.choiceId === selectedChoice ? 'selected' : ''}`} 
                             onClick={() => handleVote(choice.choiceId)}
-                        >
+                            disabled={userVoted}>
                             {choice.name}
                         </button>
                     ))
                 ) : (
                     <p>No choices available.</p>
+                )}
+
+                {userVoted && (
+                    <div className="poll-results">
+                        <h3>Results:</h3>
+                        {poll.choices.map(choice => {
+                            const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+                            const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+                            return (
+                                <p key={choice.choiceId} className={choice.choiceId === selectedChoice ? 'selected' : ''}>
+                                    {choice.name}: {choice.numVotes} votes ({percentage}%)
+                                </p>
+                            );
+                        })}
+                    </div>
                 )}
             </div>
         </div>
