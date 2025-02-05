@@ -65,10 +65,10 @@ namespace MyVote.Server.Controllers
         [HttpGet("polls/{userId}")]
         public async Task<ActionResult<IEnumerable<Poll>>> GetPollsByUser(int userId)
         {
-            // Polls where the user has voted (through Choices)
-            var votedPolls = await _db.Choices
-                .Where(c => c.Users.Any(u => u.UserId == userId))
-                .Select(c => c.Poll)
+            // Polls where the user has voted (via UserChoices)
+            var votedPolls = await _db.UserChoices
+                .Where(uc => uc.UserId == userId)
+                .Select(uc => uc.Choice.Poll)
                 .Distinct()
                 .ToListAsync();
 
@@ -80,13 +80,14 @@ namespace MyVote.Server.Controllers
             // Combine and remove duplicates
             var allPolls = votedPolls.Concat(createdPolls).Distinct().ToList();
 
-            if (allPolls.Count == 0)
+            if (!allPolls.Any())
             {
                 return NotFound(new { message = "No polls found for this user." });
             }
 
             return Ok(allPolls);
         }
+
 
 
 
@@ -172,7 +173,6 @@ namespace MyVote.Server.Controllers
             // Ensure the choice exists in the database
             var choice = await _db.Choices
                 .Include(c => c.Poll) // Include the Poll reference
-                .Include(c => c.Users) // Include users who voted for the choice
                 .FirstOrDefaultAsync(c => c.ChoiceId == voteDto.ChoiceId);
 
             if (choice == null)
@@ -189,18 +189,25 @@ namespace MyVote.Server.Controllers
                 return NotFound("User not found.");
             }
 
-            // Check if the user has already voted in any choice in this poll
-            bool hasVoted = await _db.Choices
-                .Where(c => c.PollId == choice.PollId) // Get all choices in the same poll
-                .AnyAsync(c => c.Users.Any(u => u.UserId == voteDto.UserId)); // Check if user exists in any choice's Users list
+            // Check if the user has already voted in any choice within this poll
+            bool hasVoted = await _db.UserChoices
+                .AnyAsync(uc => uc.UserId == voteDto.UserId && uc.Choice.PollId == choice.PollId);
 
             if (hasVoted)
             {
                 return BadRequest(new { message = "User has already voted in this poll." });
             }
 
-            // Add the user to the selected choice's Users list and increase the choice's vote count
-            choice.Users.Add(user);
+            // Create a new UserChoice entry to record the vote
+            var userChoice = new UserChoice
+            {
+                UserId = voteDto.UserId,
+                ChoiceId = voteDto.ChoiceId
+            };
+
+            _db.UserChoices.Add(userChoice);
+
+            // Increase the choice's vote count
             choice.NumVotes++;
 
             // Save changes to the database
@@ -208,6 +215,7 @@ namespace MyVote.Server.Controllers
 
             return Ok(new { message = "Vote submitted successfully!" });
         }
+
 
 
 
@@ -282,23 +290,15 @@ namespace MyVote.Server.Controllers
         {
             var poll = await _db.Polls
                 .Include(p => p.Choices)
-                    .ThenInclude(c => c.Users) // Ensure Users list is loaded
+                    .ThenInclude(c => c.UserChoices) // Include UserChoices instead of Users
                 .FirstOrDefaultAsync(p => p.PollId == pollid);
 
             if (poll == null)
                 return NotFound();
 
-            // Unassign Users from Choices before deleting Choices
-            foreach (var choice in poll.Choices)
-            {
-                foreach (var user in choice.Users)
-                {
-                    user.ChoiceId = null; // Remove FK reference
-                }
-            }
-
-            // Save changes before deleting Choices
-            await _db.SaveChangesAsync();
+            // Remove all UserChoices associated with the poll's choices
+            var userChoicesToRemove = _db.UserChoices.Where(uc => poll.Choices.Select(c => c.ChoiceId).Contains(uc.ChoiceId));
+            _db.UserChoices.RemoveRange(userChoicesToRemove);
 
             // Remove related Choices
             _db.Choices.RemoveRange(poll.Choices);
@@ -309,6 +309,7 @@ namespace MyVote.Server.Controllers
             await _db.SaveChangesAsync();
             return NoContent();
         }
+
 
     }
 }
