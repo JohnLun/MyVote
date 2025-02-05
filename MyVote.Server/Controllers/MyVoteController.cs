@@ -118,12 +118,12 @@ namespace MyVote.Server.Controllers
         //    return Ok(pollDtos);
         //}
 
-        // GET: /poll/{pollid} (Get poll details)
         [HttpGet("poll/{pollid}")]
-        public async Task<ActionResult<Poll>> GetPoll(int pollid)
+        public async Task<ActionResult<PollDto>> GetPoll(int pollid)
         {
             var poll = await _db.Polls
                 .Include(p => p.Choices)
+                    .ThenInclude(c => c.UserChoices) // Include UserChoices to retrieve UserId
                 .FirstOrDefaultAsync(p => p.PollId == pollid);
 
             if (poll == null)
@@ -140,12 +140,14 @@ namespace MyVote.Server.Controllers
                 {
                     ChoiceId = c.ChoiceId,
                     Name = c.Name,
-                    NumVotes = c.NumVotes
+                    NumVotes = c.NumVotes,
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList() // Extract UserIds
                 }).ToList()
             };
 
             return Ok(pollDto);
         }
+
 
         // GET: /choices/{pollid} (Get choices for a poll)
         [HttpGet("choices/{pollid}")]

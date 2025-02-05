@@ -18,7 +18,9 @@ namespace MyVote.Server.Dtos
         public int ChoiceId { get; set; }
         public string Name { get; set; }
         public int NumVotes { get; set; }
+        public List<int> UserIds { get; set; }
     }
+
 
 
     public class UserDto
