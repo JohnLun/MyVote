@@ -8,6 +8,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Poll> Polls { get; set; }
     public DbSet<Choice> Choices { get; set; }
+    public DbSet<UserChoice> UserChoices { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -36,21 +37,21 @@ public class AppDbContext : DbContext
             .HasForeignKey(up => up.PollId)
         .OnDelete(DeleteBehavior.Restrict);
 
-        // Choice <-> User (Many-to-Many)
         modelBuilder.Entity<UserChoice>()
             .HasKey(uc => new { uc.UserId, uc.ChoiceId });
 
+
         modelBuilder.Entity<UserChoice>()
             .HasOne(uc => uc.User)
-            .WithMany()
+            .WithMany(u => u.UserChoices)
             .HasForeignKey(uc => uc.UserId)
         .OnDelete(DeleteBehavior.Restrict);
 
         modelBuilder.Entity<UserChoice>()
             .HasOne(uc => uc.Choice)
-            .WithMany()
+            .WithMany(c => c.UserChoices)
             .HasForeignKey(uc => uc.ChoiceId)
-            .OnDelete(DeleteBehavior.Restrict);
+        .OnDelete(DeleteBehavior.Restrict);
 
     }
 }
