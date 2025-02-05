@@ -7,6 +7,7 @@ import CreatePoll from './CreatePoll';
 import PollDetails from './PollDetails';
 import { useEffect } from 'react';
 import UserProfile from './UserProfile';
+import PollLinkPage from './PollLinkPage';
 
 function LandingPage() {
     return (
@@ -20,6 +21,7 @@ function LandingPage() {
                         <Route path="/" element={<Home />} />
                         <Route path="/poll/:pollId" element={<PollDetails />} />
                         <Route path="/user" element={<UserProfile />} />
+                        <Route path="/poll-link/:pollId" element={<PollLinkPage />} />
                     </Routes>
                 </div>
             </div>
