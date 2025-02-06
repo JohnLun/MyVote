@@ -129,7 +129,7 @@ const CreatePoll = () => {
                     <div className={`form-group ${errors.description ? 'has-error' : ''}`}>
                         <label>Description:</label>
                         <br></br>
-                        <textarea value={description} onChange={handleDescriptionChange} />
+                        <input value={description} onChange={handleDescriptionChange} />
                         {errors.description && <p className="error-message">{errors.description}</p>}
                     </div>
                     <div className={`form-group ${errors.timeLimit ? 'has-error' : ''}`}>
