@@ -13,7 +13,6 @@ const CreatePoll = () => {
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
     const [choices, setChoices] = useState(['', '']);
-    const [errors, setErrors] = useState({});
 
     const { userId } = useUser();
     const navigate = useNavigate();
@@ -51,31 +50,8 @@ const CreatePoll = () => {
         setChoices(newChoices);
     };
 
-    const validateForm = () => {
-        const newErrors = {};
-        if (!title.trim()) {
-            newErrors.title = 'Title is required';
-        }
-        if (!description.trim()) {
-            newErrors.description = 'Description is required';
-        }
-        if (!timeLimit || parseFloat(timeLimit) <= 0) {
-            newErrors.timeLimit = 'Time limit must be a positive number';
-        }
-        const nonEmptyChoices = choices.filter(choice => choice.trim());
-        if (nonEmptyChoices.length < 2) {
-            newErrors.choices = 'At least two non-empty choices are required';
-        }
-        setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
-    };
-
     const handleSubmit = async (e) => {
         e.preventDefault();
-
-        if (!validateForm()) {
-            return;
-        }
 
         const currentTime = new Date();
         const pollEndTime = new Date(currentTime.getTime() + parseFloat(timeLimit) * 60 * 60 * 1000);
@@ -148,19 +124,31 @@ const CreatePoll = () => {
                         {choices.map((choice, index) => (
                             <div key={index} className="choice-container">
                                 <input
-                                    type="text"
+                                    type="text" 
                                     value={choice}
                                     onChange={(e) => handleChoiceChange(index, e)}
                                 />
-                                <button type="button" className="remove-choice-button" onClick={() => removeChoice(index)}>
-                                    <i className="fas fa-trash"></i>
-                                </button>
+                                {index >= 2 ? (
+                                    <FaRegTrashAlt 
+                                        onClick={() => removeChoice(index)}
+                                        className="trash-icon"
+                                    />
+                                ) : (
+                                    <div className="placeholder-icon"></div> // Keeps alignment
+                                )}
                             </div>
                         ))}
+
+                    </div>
+                    <div className="add-container">
+                        <button type="button" className="add-choice-button" onClick={addChoice}>
+                            <FaPlus className="plus-icon"/>
+                            Add Choice
+                        </button>
                         {errors.choices && <p className="error">{errors.choices}</p>}
                     </div>
                     <div className="button-container">
-                        <button type="button" className="add-choice-button" onClick={addChoice}>Add Choice</button>
+                        
                         <button type="submit">Create Poll</button>
                     </div>
                 </form>

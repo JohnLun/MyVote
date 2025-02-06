@@ -72,9 +72,57 @@
     height: 70px;
 }
 
+.choice-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Adds spacing between input and trash icon */
+}
+
+.choice-container input {
+    flex: 1; /* Allows input to take up available space */
+    padding: 6px;
+    font-size: 16px;
+    max-width: 300px;
+}
+
+
+.placeholder-icon {
+    width: 20px; /* Same size as the trash icon */
+    visibility: hidden; /* Keeps the structure intact */
+}
+.remove-choice-button i {
+    pointer-events: none; /* Ensures only the button receives clicks */
+}
 .error {
     color: red;
     font-size: 0.875em;
     margin-top: 5px;
 }
 
+.trash-icon {
+    cursor: pointer;
+    padding: 2px;
+    transition: transform 0.3s ease;
+ 
+}
+
+.trash-icon:hover {
+    transform: scale(1.15);
+ 
+}
+
+.plus-icon {
+    margin-right: 5px;
+}
+
+.add-container {
+    display: flex;
+    justify-content: left;
+}
+
+.add-choice-button {
+    background: none;
+    text-align: left;
+    padding-left: 0px;
+}
