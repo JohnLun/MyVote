@@ -13,6 +13,7 @@ const CreatePoll = () => {
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
     const [choices, setChoices] = useState(['', '']);
+    const [errors, setErrors] = useState({});
 
     const { userId } = useUser();
     const navigate = useNavigate();
@@ -50,19 +51,42 @@ const CreatePoll = () => {
         setChoices(newChoices);
     };
 
+    const validateForm = () => {
+        const newErrors = {};
+        if (!title.trim()) {
+            newErrors.title = 'Title is required';
+        }
+        if (!description.trim()) {
+            newErrors.description = 'Description is required';
+        }
+        if (!timeLimit || parseFloat(timeLimit) <= 0) {
+            newErrors.timeLimit = 'Time limit must be a positive number';
+        }
+        const nonEmptyChoices = choices.filter(choice => choice.trim());
+        if (nonEmptyChoices.length < 2) {
+            newErrors.choices = 'At least two choices are required';
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            return;
+        }
 
         const currentTime = new Date();
         const pollEndTime = new Date(currentTime.getTime() + parseFloat(timeLimit) * 60 * 60 * 1000);
         const isActive = pollEndTime > currentTime;
 
         const newPollDto = {
-            userId: userId, // Assuming a UserId is required and setting it to 2 for now
+            userId: userId,
             title: title,
             description: description,
             timeLimit: parseFloat(timeLimit),
-            isActive: isActive ? "t" : "f", // Convert boolean to string
+            isActive: isActive ? "t" : "f",
             choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
         console.log(newPollDto);
@@ -99,11 +123,13 @@ const CreatePoll = () => {
                         <label>Title:</label>
                         <br></br>
                         <input type="text" value={title} onChange={handleTitleChange} />
+                        {errors.title && <p className="error">{errors.title}</p>}
                     </div>
                     <div>
                         <label>Description:</label>
                         <br></br>
                         <textarea value={description} onChange={handleDescriptionChange} />
+                        {errors.description && <p className="error">{errors.description}</p>}
                     </div>
                     <div>
                         <label>Time Limit (in hours):</label>
@@ -115,6 +141,7 @@ const CreatePoll = () => {
                             onChange={handleTimeLimitChange}
                             onKeyDown={handleTimeLimitKeyDown}
                         />
+                        {errors.timeLimit && <p className="error">{errors.timeLimit}</p>}
                     </div>
                     <div>
                         <label>Choices:</label>
@@ -130,6 +157,7 @@ const CreatePoll = () => {
                                 </button>
                             </div>
                         ))}
+                        {errors.choices && <p className="error">{errors.choices}</p>}
                     </div>
                     <div className="button-container">
                         <button type="button" className="add-choice-button" onClick={addChoice}>Add Choice</button>
