@@ -64,7 +64,7 @@ const CreatePoll = () => {
         }
         const nonEmptyChoices = choices.filter(choice => choice.trim());
         if (nonEmptyChoices.length < 2) {
-            newErrors.choices = 'At least two choices are required';
+            newErrors.choices = 'At least two non-empty choices are required';
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
