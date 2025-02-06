@@ -57,7 +57,7 @@ const UserProfile = () => {
                         className={activeTab === 'owned' ? 'active' : ''} 
                         onClick={() => setActiveTab('owned')}
                     >
-                        Owned Polls
+                        Created Polls
                     </button>
                 </div>
             </div>
