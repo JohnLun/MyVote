@@ -6,7 +6,8 @@ import './UserProfile.css';
 const UserProfile = () => {
     const { userId } = useUser();
     const [activeTab, setActiveTab] = useState('voted');
-    const [polls, setPolls] = useState([]);
+    const [votedPolls, setVotedPolls] = useState([]);
+    const [ownedPolls, setOwnedPolls] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -20,16 +21,25 @@ const UserProfile = () => {
 
             setLoading(true);
             setError(null);
-            
-            const endpoint = activeTab === 'voted' ? 'polls/voted' : 'polls/owned';
 
             try {
-                const response = await fetch(`${API_BASE_URL}/${endpoint}/${userId}`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch polls (${response.status})`);
+                // Fetch both voted and owned polls simultaneously
+                const [votedResponse, ownedResponse] = await Promise.all([
+                    fetch(`${API_BASE_URL}/polls/voted/${userId}`),
+                    fetch(`${API_BASE_URL}/polls/owned/${userId}`)
+                ]);
+
+                if (!votedResponse.ok || !ownedResponse.ok) {
+                    throw new Error('Failed to fetch polls');
                 }
-                const data = await response.json();
-                setPolls(data);
+
+                const [votedData, ownedData] = await Promise.all([
+                    votedResponse.json(),
+                    ownedResponse.json()
+                ]);
+
+                setVotedPolls(votedData);
+                setOwnedPolls(ownedData);
             } catch (error) {
                 setError(error.message);
             } finally {
@@ -38,7 +48,9 @@ const UserProfile = () => {
         };
 
         fetchPolls();
-    }, [userId, activeTab]);
+    }, [userId]);
+
+    const displayedPolls = activeTab === 'voted' ? votedPolls : ownedPolls;
 
     return (
         <div className="user-profile">
@@ -67,8 +79,8 @@ const UserProfile = () => {
                     <p>Loading polls...</p>
                 ) : error ? (
                     <p className="error">Error: {error}</p>
-                ) : polls.length > 0 ? (
-                    polls.map((poll) => <PollCard key={poll.pollId} poll={poll} />)
+                ) : displayedPolls.length > 0 ? (
+                    displayedPolls.map((poll) => <PollCard key={poll.pollId} poll={poll} />)
                 ) : (
                     <p>No polls found.</p>
                 )}
