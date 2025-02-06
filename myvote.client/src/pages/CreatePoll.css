@@ -126,3 +126,7 @@
     text-align: left;
     padding-left: 0px;
 }
+
+.error-message {
+    color: red;
+}
