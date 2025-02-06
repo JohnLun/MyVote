@@ -284,7 +284,22 @@ namespace MyVote.Server.Controllers
             _db.Polls.Add(poll);
             await _db.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetPoll), new { pollid = poll.PollId }, newPollDto);
+            var pollDto = new PollDto
+            {
+                PollId = poll.PollId,
+                Title = poll.Title,
+                Description = poll.Description,
+                TimeLimit = poll.TimeLimit,
+                IsActive = poll.IsActive,
+                Choices = poll.Choices.Select(c => new ChoiceDto
+                {
+                    ChoiceId = c.ChoiceId,
+                    Name = c.Name,
+                    NumVotes = c.NumVotes
+                }).ToList()
+            };
+
+            return CreatedAtAction(nameof(GetPoll), new { pollid = poll.PollId }, pollDto);
         }
 
         // POST: /user (Create new user)

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import './CreatePoll.css';
 
@@ -6,14 +7,15 @@ const CreatePoll = () => {
     const API_BASE_URL =
         window.location.hostname === 'localhost'
             ? 'https://localhost:7054/api'
-    : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
+            : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
 
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
     const [choices, setChoices] = useState(['', '']);
 
-    const {userId} = useUser();
+    const { userId } = useUser();
+    const navigate = useNavigate();
 
     const handleTitleChange = (e) => {
         setTitle(e.target.value);
@@ -80,11 +82,13 @@ const CreatePoll = () => {
 
             const data = await response.json();
             console.log('Poll created:', data);
+
+            // Navigate to PollLinkPage with the new poll ID
+            navigate(`/poll-link/${data.pollId}`);
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error.message);
         }
     };
-
 
     return (
         <div className="create-poll-container">
