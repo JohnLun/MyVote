@@ -27,7 +27,6 @@ const PollDetails = () => {
                 const data = await response.json();
                 console.log(data);
 
-                // Check if the user has already voted
                 let hasVoted = false;
                 let votedChoiceId = null;
 
@@ -74,7 +73,6 @@ const PollDetails = () => {
             setUserVoted(true);
             setSelectedChoice(choiceId);
 
-            // Refresh poll data after voting
             const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
             setPoll(updatedPoll);
 
@@ -95,14 +93,19 @@ const PollDetails = () => {
 
                 {userVoted ? (
                     <div className="poll-results">
-                        <h3>Results:</h3>
                         {poll.choices.map((choice) => {
                             const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
                             const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
                             return (
-                                <p key={choice.choiceId} className={choice.choiceId === selectedChoice ? "selected" : ""}>
-                                    {choice.name}: {choice.numVotes} votes ({percentage}%)
-                                </p>
+                                <div key={choice.choiceId} className="poll-choice result-container">
+                                    <div
+                                        className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
+                                        style={{ width: `${percentage}%` }}
+                                    ></div>
+                                    <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
+                                        {choice.name} - {percentage}% ({choice.numVotes} votes)
+                                    </p>
+                                </div>
                             );
                         })}
                     </div>
