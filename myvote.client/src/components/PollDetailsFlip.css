@@ -1,0 +1,63 @@
+.flip-card {
+    background-color: transparent;
+    width: 100%;
+    max-width: 500px;
+    height: 300px;
+    perspective: 1000px;
+    cursor: pointer;
+    margin: auto;
+}
+
+.flip-card-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+    border: 2px solid #000; /* Add border around the flip card area */
+    border-radius: 10px; /* Optional: Add rounded corners */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visibility */
+}
+
+.flip-card.flipped .flip-card-inner {
+    transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 10px; /* Match the border radius of the inner card */
+    padding: 10px; /* Add padding to ensure content does not touch the border */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+.flip-card-back {
+    transform: rotateY(180deg);
+}
+
+.flip-icon {
+    margin-top: 10px;
+    font-size: 24px;
+    position: absolute;
+    bottom: 10px; /* Position the icon at the bottom with some space */
+    right: 10px; /* Position the icon at the right with some space */
+}
+
+.chart-container {
+    width: 100%;
+    height: calc(100% - 40px); /* Adjust height to account for the icon */
+    position: relative;
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+}
+
+.chart-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}

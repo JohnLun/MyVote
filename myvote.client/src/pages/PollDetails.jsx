@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import PollDetailsFlip from "../components/PollDetailsFlip";
 import "./PollDetails.css";
 
 const PollDetails = () => {
@@ -88,7 +89,7 @@ const PollDetails = () => {
         <div className="poll-details-container">
             <div className="poll-details-card">
                 <h1 className="poll-title">{poll.title}</h1>
-                <p className="poll-desc">{poll.description}</p>
+                {userVoted ? (<PollDetailsFlip poll={poll} />) : (<p>{poll.description}</p>)}
                 <p className="poll-limit">Time Remaining: {poll.timeLimit} hours</p>
 
                 {userVoted ? (
