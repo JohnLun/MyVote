@@ -98,8 +98,11 @@ const PollDetails = () => {
                             const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
                             return (
                                 <div key={choice.choiceId} className="poll-choice result-container">
-                                    <div className="result-bar" style={{ width: `${percentage}%`, height: "100%" }}></div>
-                                    <p className="result-text">
+                                    <div
+                                        className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
+                                        style={{ width: `${percentage}%` }}
+                                    ></div>
+                                    <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
                                         {choice.name} - {percentage}% ({choice.numVotes} votes)
                                     </p>
                                 </div>

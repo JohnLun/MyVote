@@ -75,8 +75,13 @@
     top: 0;
     left: 0;
     height: 100%;
-    background-color: #799AE0; /* Light green transparency */
+    background-color: #92a3c7; /* Default light blue */
     z-index: 1;
+    transition: background-color 0.3s ease-in-out;
+}
+
+.selected-bar {
+    background-color: #5075c4 !important; /* Green color for selected choice */
 }
 
 .result-container p {
