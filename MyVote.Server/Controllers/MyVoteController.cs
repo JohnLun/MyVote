@@ -88,6 +88,40 @@ namespace MyVote.Server.Controllers
             return Ok(allPolls);
         }
 
+        [HttpGet("polls/voted/{userId}")]
+        public async Task<ActionResult<IEnumerable<Poll>>> GetVotedPolls(int userId)
+        {
+            var votedPolls = await _db.UserChoices
+                .Where(uc => uc.UserId == userId)
+                .Select(uc => uc.Choice.Poll)
+                .Distinct()
+                .ToListAsync();
+
+            if (!votedPolls.Any())
+            {
+                return NotFound(new { message = "No polls found that the user voted on." });
+            }
+
+            return Ok(votedPolls);
+        }
+
+        [HttpGet("polls/owned/{userId}")]
+        public async Task<ActionResult<IEnumerable<Poll>>> GetOwnedPolls(int userId)
+        {
+            var createdPolls = await _db.Polls
+                .Where(p => p.UserId == userId)
+                .ToListAsync();
+
+            if (!createdPolls.Any())
+            {
+                return NotFound(new { message = "No polls found that the user owns." });
+            }
+
+            return Ok(createdPolls);
+        }
+
+
+
 
 
 

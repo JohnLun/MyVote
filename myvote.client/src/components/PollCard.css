@@ -7,8 +7,21 @@
     padding: 20px;
     margin: 20px;
     transition: transform 0.2s;
+    cursor: pointer;
 }
   
   .poll-card:hover {
     transform: scale(1.05);
   }
+
+  .poll-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.poll-icon {
+    font-size: 1.2rem;
+    color: white;
+    padding: 5px;
+}

@@ -5,7 +5,10 @@ import './UserProfile.css';
 
 const UserProfile = () => {
     const { userId } = useUser();
-    const [polls, setPolls] = useState([]); // State to store polls
+    const [activeTab, setActiveTab] = useState('voted');
+    const [polls, setPolls] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const API_BASE_URL = window.location.hostname === "localhost"
         ? "https://localhost:7054/api"
@@ -13,32 +16,57 @@ const UserProfile = () => {
 
     useEffect(() => {
         const fetchPolls = async () => {
+            if (!userId) return;
+
+            setLoading(true);
+            setError(null);
+            
+            const endpoint = activeTab === 'voted' ? 'polls/voted' : 'polls/owned';
+
             try {
-                const response = await fetch(`${API_BASE_URL}/polls/${userId}`);
+                const response = await fetch(`${API_BASE_URL}/${endpoint}/${userId}`);
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error(`Failed to fetch polls (${response.status})`);
                 }
                 const data = await response.json();
-                console.log("Fetched Polls:", data);
-                setPolls(data); // Store polls in state
+                setPolls(data);
             } catch (error) {
-                console.error('Error fetching polls:', error.message);
+                setError(error.message);
+            } finally {
+                setLoading(false);
             }
         };
 
-        if (userId) {
-            fetchPolls();
-        }
-    }, [userId]); // Fetch when userId is available
+        fetchPolls();
+    }, [userId, activeTab]);
 
     return (
         <div className="user-profile">
             <h2 className="headingtext">Your Polls</h2>
+
+            {/* Tabs for selecting "Voted" or "Owned" */}
+            <div className="tabs">
+                <button 
+                    className={activeTab === 'voted' ? 'active' : ''} 
+                    onClick={() => setActiveTab('voted')}
+                >
+                    Voted Polls
+                </button>
+                <button 
+                    className={activeTab === 'owned' ? 'active' : ''} 
+                    onClick={() => setActiveTab('owned')}
+                >
+                    Owned Polls
+                </button>
+            </div>
+
             <div className="poll-list">
-                {polls.length > 0 ? (
-                    polls.map((poll) => (
-                        <PollCard key={poll.pollId} poll={poll} /> // Use poll.id as the key
-                    ))
+                {loading ? (
+                    <p>Loading polls...</p>
+                ) : error ? (
+                    <p className="error">Error: {error}</p>
+                ) : polls.length > 0 ? (
+                    polls.map((poll) => <PollCard key={poll.pollId} poll={poll} />)
                 ) : (
                     <p>No polls found.</p>
                 )}
