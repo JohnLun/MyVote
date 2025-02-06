@@ -4,6 +4,7 @@
     align-items: center;
     min-height: 100vh;
     margin: 30px;
+    padding-top:50px;
 }
 
 .create-poll-card {
@@ -31,7 +32,8 @@
     }
 
     .create-poll-card input, textarea {
-        margin-bottom: 15px;
+        margin-bottom: 7px;
+        margin-top: 7px;
         padding: 10px;
         border: none;
         border-radius: 5px;
@@ -72,5 +74,52 @@
     height: 70px;
 }
 
+.choice-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px; /* Adds spacing between input and trash icon */
+}
+
+.choice-container input {
+    flex: 1; /* Allows input to take up available space */
+    padding: 6px;
+    font-size: 16px;
+    max-width: 300px;
+}
 
 
+.placeholder-icon {
+    width: 20px; /* Same size as the trash icon */
+    visibility: hidden; /* Keeps the structure intact */
+}
+.remove-choice-button i {
+    pointer-events: none; /* Ensures only the button receives clicks */
+}
+
+.trash-icon {
+    cursor: pointer;
+    padding: 2px;
+    transition: transform 0.3s ease;
+ 
+}
+
+.trash-icon:hover {
+    transform: scale(1.15);
+ 
+}
+
+.plus-icon {
+    margin-right: 5px;
+}
+
+.add-container {
+    display: flex;
+    justify-content: left;
+}
+
+.add-choice-button {
+    background: none;
+    text-align: left;
+    padding-left: 0px;
+}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
+import { FaRegTrashAlt, FaPlus } from "react-icons/fa";
 import './CreatePoll.css';
 
 const CreatePoll = () => {
@@ -103,7 +104,7 @@ const CreatePoll = () => {
                     <div>
                         <label>Description:</label>
                         <br></br>
-                        <textarea value={description} onChange={handleDescriptionChange} />
+                        <input type="text" value={description} onChange={handleDescriptionChange} />
                     </div>
                     <div>
                         <label>Time Limit (in hours):</label>
@@ -121,18 +122,30 @@ const CreatePoll = () => {
                         {choices.map((choice, index) => (
                             <div key={index} className="choice-container">
                                 <input
-                                    type="text"
+                                    type="text" 
                                     value={choice}
                                     onChange={(e) => handleChoiceChange(index, e)}
                                 />
-                                <button type="button" className="remove-choice-button" onClick={() => removeChoice(index)}>
-                                    <i className="fas fa-trash"></i>
-                                </button>
+                                {index >= 2 ? (
+                                    <FaRegTrashAlt 
+                                        onClick={() => removeChoice(index)}
+                                        className="trash-icon"
+                                    />
+                                ) : (
+                                    <div className="placeholder-icon"></div> // Keeps alignment
+                                )}
                             </div>
                         ))}
+
+                    </div>
+                    <div className="add-container">
+                        <button type="button" className="add-choice-button" onClick={addChoice}>
+                            <FaPlus className="plus-icon"/>
+                            Add Choice
+                        </button>
                     </div>
                     <div className="button-container">
-                        <button type="button" className="add-choice-button" onClick={addChoice}>Add Choice</button>
+                        
                         <button type="submit">Create Poll</button>
                     </div>
                 </form>
