@@ -3,19 +3,22 @@ import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-function PollGraph() {
+function PollGraph({ poll }) {
     const chartRef = useRef(null);
 
     useEffect(() => {
         const ctx = chartRef.current.getContext('2d');
 
+        const labels = poll.choices.map(choice => choice.name);
+        const data = poll.choices.map(choice => choice.numVotes);
+
         new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ['Red', 'Blue', 'Yellow', 'Green', 'Purple', 'Orange'],
+                labels: labels,
                 datasets: [{
                     label: '# of Votes',
-                    data: [12, 19, 3, 5, 2, 3],
+                    data: data,
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -37,15 +40,10 @@ function PollGraph() {
             },
             options: {
                 responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true
-                    }
-                }
+                maintainAspectRatio: false
             }
         });
-    }, []);
+    }, [poll]);
 
     return (
         <div className="chart-container">
