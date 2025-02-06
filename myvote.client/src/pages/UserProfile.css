@@ -10,3 +10,23 @@
 .headingtext {
     padding: 20px;
 }
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.tabs button {
+    padding: 10px 15px;
+    border: none;
+    background-color: #ddd;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.tabs button.active {
+    background-color: #008c96;
+    color: white;
+    font-weight: bold;
+}
