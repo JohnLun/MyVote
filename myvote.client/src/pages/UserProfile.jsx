@@ -42,22 +42,24 @@ const UserProfile = () => {
 
     return (
         <div className="user-profile">
-            <h2 className="headingtext">Your Polls</h2>
+            <div className="title-nav">
+                <h1 className="headingtext">Your Polls</h1>
 
-            {/* Tabs for selecting "Voted" or "Owned" */}
-            <div className="tabs">
-                <button 
-                    className={activeTab === 'voted' ? 'active' : ''} 
-                    onClick={() => setActiveTab('voted')}
-                >
-                    Voted Polls
-                </button>
-                <button 
-                    className={activeTab === 'owned' ? 'active' : ''} 
-                    onClick={() => setActiveTab('owned')}
-                >
-                    Owned Polls
-                </button>
+                {/* Tabs for selecting "Voted" or "Owned" */}
+                <div className="tabs">
+                    <button 
+                        className={activeTab === 'voted' ? 'active' : ''} 
+                        onClick={() => setActiveTab('voted')}
+                    >
+                        Voted Polls
+                    </button>
+                    <button 
+                        className={activeTab === 'owned' ? 'active' : ''} 
+                        onClick={() => setActiveTab('owned')}
+                    >
+                        Created Polls
+                    </button>
+                </div>
             </div>
 
             <div className="poll-list">

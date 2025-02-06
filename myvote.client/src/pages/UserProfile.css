@@ -12,6 +12,7 @@
 }
 
 .tabs {
+    
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
@@ -23,10 +24,23 @@
     background-color: #ddd;
     cursor: pointer;
     transition: 0.3s;
+
 }
 
 .tabs button.active {
     background-color: #008c96;
     color: white;
     font-weight: bold;
+    transform: scale(1.1);
+    transform-origin: center;
+    transition: transform 0.2s ease-in-out;
+}
+
+.title-nav{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100px;
+    
 }
