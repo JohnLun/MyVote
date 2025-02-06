@@ -5,20 +5,24 @@ Chart.register(...registerables);
 
 function PollGraph({ poll }) {
     const chartRef = useRef(null);
+    const chartInstanceRef = useRef(null);
 
     useEffect(() => {
+        if (!chartRef.current) return;
+
         const ctx = chartRef.current.getContext('2d');
 
-        const labels = poll.choices.map(choice => choice.name);
-        const data = poll.choices.map(choice => choice.numVotes);
+        if (chartInstanceRef.current) {
+            chartInstanceRef.current.destroy();
+        }
 
-        new Chart(ctx, {
+        chartInstanceRef.current = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: labels,
+                labels: poll.choices.map(choice => choice.name),
                 datasets: [{
                     label: '# of Votes',
-                    data: data,
+                    data: poll.choices.map(choice => choice.numVotes),
                     backgroundColor: [
                         'rgba(255, 99, 132, 0.2)',
                         'rgba(54, 162, 235, 0.2)',
@@ -43,6 +47,13 @@ function PollGraph({ poll }) {
                 maintainAspectRatio: false
             }
         });
+
+        return () => {
+            if (chartInstanceRef.current) {
+                chartInstanceRef.current.destroy();
+                chartInstanceRef.current = null;
+            }
+        };
     }, [poll]);
 
     return (
