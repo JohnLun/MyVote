@@ -13,7 +13,7 @@ function PollDetailsFlip({ poll }) {
         <div className={`flip-card ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
             <div className="flip-card-inner">
                 <div className="flip-card-front">
-                    <PollGraph />
+                    <PollGraph poll={poll} />
                     <i className="flip-icon fas fa-sync-alt"></i>
                 </div>
                 <div className="flip-card-back">

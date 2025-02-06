@@ -29,7 +29,7 @@ namespace MyVote.Server.Controllers
 
             if (!string.IsNullOrEmpty(existingCookie))
             {
-                var existingUser = _db.Users.FirstOrDefault(u => u.LastName == existingCookie);
+               var existingUser = _db.Users.FirstOrDefault(u => u.LastName == existingCookie);
 
                 if (existingUser != null)
                 {
