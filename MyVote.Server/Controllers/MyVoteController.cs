@@ -99,7 +99,7 @@ namespace MyVote.Server.Controllers
 
             if (!votedPolls.Any())
             {
-                return NotFound(new { message = "No polls found that the user voted on." });
+                return Ok(new List<Poll>());
             }
 
             return Ok(votedPolls);
@@ -114,15 +114,11 @@ namespace MyVote.Server.Controllers
 
             if (!createdPolls.Any())
             {
-                return NotFound(new { message = "No polls found that the user owns." });
+                return Ok(new List<Poll>());
             }
 
             return Ok(createdPolls);
         }
-
-
-
-
 
 
         // GET: /polls (Get all active polls)
