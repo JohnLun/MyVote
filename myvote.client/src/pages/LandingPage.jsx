@@ -2,32 +2,6 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import { useState } from 'react';
 import './LandingPage.css';
 import CreatePollButton from '../components/CreatePollButton';
-import Header from '../components/Header';
-import CreatePoll from './CreatePoll';
-import PollDetails from './PollDetails';
-import { useEffect } from 'react';
-import UserProfile from './UserProfile';
-import PollLinkPage from './PollLinkPage';
-
-function LandingPage() {
-    return (
-        <Router>
-            <div className="main-container">
-                <Header />
-
-                <div className="main-content">
-                    <Routes>
-                        <Route path="/createpoll" element={<CreatePoll />} />
-                        <Route path="/" element={<Home />} />
-                        <Route path="/poll/:pollId" element={<PollDetails />} />
-                        <Route path="/user" element={<UserProfile />} />
-                        <Route path="/poll-link/:pollId" element={<PollLinkPage />} />
-                    </Routes>
-                </div>
-            </div>
-        </Router>
-    );
-}
 
 // Separate component for home to use hooks
 function Home() {
@@ -71,5 +45,5 @@ function Home() {
     );
 }
 
-export default LandingPage;
+export default Home;
 
