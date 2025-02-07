@@ -11,22 +11,19 @@ import Header from './components/Header';
 function App() {
 
     return (
-        <UserProvider>
+        
            <Router>
-                <div className="main-container">
-                    <Header />
-                    <div className="main-content">
-                        <Routes>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/createpoll" element={<CreatePoll />} />
-                            <Route path="/poll/:pollId" element={<PollDetails />} />
-                            <Route path="/user" element={<UserProfile />} />
-                            <Route path="/poll-link/:pollId" element={<PollLinkPage />} />
-                        </Routes>
-                    </div>
-                </div>
+                <UserProvider>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/createpoll" element={<CreatePoll />} />
+                        <Route path="/poll/:pollId" element={<PollDetails />} />
+                        <Route path="/user" element={<UserProfile />} />
+                        <Route path="/poll-link/:pollId" element={<PollLinkPage />} />
+                    </Routes>
+                </UserProvider>
             </Router>
-        </UserProvider>
+        
         
     );
     

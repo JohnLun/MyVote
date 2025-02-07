@@ -16,30 +16,34 @@ function Home() {
 
     return (
         <>
-            <div className="search-poll">
-                <h1>MyVote</h1>
-                <div className="header-search">
-                    <label className={pollId ? "floating-label active" : "floating-label"}>
-                        Enter Poll ID
-                    </label>
-                    <input
-                        type="text"
+            <div className="main-container">
+                <div className="main-content">
+                    <div className="search-poll">
+                        <h1>MyVote</h1>
+                        <div className="header-search">
+                            <label className={pollId ? "floating-label active" : "floating-label"}>
+                                Enter Poll ID
+                            </label>
+                            <input
+                                type="text"
+                                
+                                value={pollId}
+                                onChange={(e) => setPollId(e.target.value)}
+                                onKeyDown={(e) => e.key === "Enter" && handleGoClick()}
+                            />
+                        </div>
                         
-                        value={pollId}
-                        onChange={(e) => setPollId(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleGoClick()}
-                    />
+
+                        <button className="go-btn" type="button" onClick={handleGoClick}>
+                            GO
+                        </button>
+                        
+                    </div>
+
+                    <div className="create-poll">
+                        <CreatePollButton />
+                    </div>
                 </div>
-                
-
-                <button className="go-btn" type="button" onClick={handleGoClick}>
-                    GO
-                </button>
-                
-            </div>
-
-            <div className="create-poll">
-                <CreatePollButton />
             </div>
         </>
     );
