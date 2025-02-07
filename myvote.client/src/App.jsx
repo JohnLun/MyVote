@@ -11,7 +11,6 @@ import Header from './components/Header';
 function App() {
 
     return (
-        
            <Router>
                 <UserProvider>
                     <Routes>
@@ -23,10 +22,7 @@ function App() {
                     </Routes>
                 </UserProvider>
             </Router>
-        
-        
-    );
-    
+    ); 
 }
 
 export default App;
