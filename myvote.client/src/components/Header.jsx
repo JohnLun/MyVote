@@ -16,12 +16,14 @@ function Header() {
 
     return (
         <header className="header">
-            <div className="header-icon" onClick={handleUserIconClick}>
-                <FaUserCircle size={24} />
-            </div>
+
             <div className="home-icon">
                 <FaHome size={24} onClick={handleHomeIconClick}></FaHome>
             </div>
+            <div className="header-icon" onClick={handleUserIconClick}>
+                <FaUserCircle size={24} />
+            </div>
+            
             
             
         </header>

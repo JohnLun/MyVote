@@ -88,9 +88,10 @@ const PollDetails = () => {
     return (
         <div className="poll-details-container">
             <div className="poll-details-card">
-                <h1 className="poll-title">{poll.title}</h1>
-                {userVoted ? (<PollDetailsFlip poll={poll} />) : (<p>{poll.description}</p>)}
+                <h2 className="poll-title">{poll.title}</h2>
                 <p className="poll-limit">Time Remaining: {poll.timeLimit} hours</p>
+                {userVoted ? (<PollDetailsFlip poll={poll} />) : (<p>{poll.description}</p>)}
+                
 
                 {userVoted ? (
                     <div className="poll-results">
