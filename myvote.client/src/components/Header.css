@@ -2,7 +2,7 @@
     position: fixed;
     top: 0;
     width: 98%;
-    background-color: #008C99;
+    background-color: #37383e;
     display: flex;
     justify-content: space-between; /* Ensures left and right alignment */
     align-items: center;
