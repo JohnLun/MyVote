@@ -1,13 +1,13 @@
 import React from 'react';
 import './Header.css';
-import { FaUserCircle, FaHome, FaFilter } from 'react-icons/fa';
+import { FaUserCircle, FaHome } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 
 function Header() {
     const navigate = useNavigate();
 
     const handleUserIconClick = () => {
-        navigate('/user'); // Replace '2' with the actual user ID if needed
+        navigate('/user');
     };
 
     const handleHomeIconClick = () => {
@@ -16,16 +16,20 @@ function Header() {
 
     return (
         <header className="header">
+            {/* Left-aligned title */}
+            <div className="header-left">
+                <h4 className="header-title">MyVote</h4>
+            </div>
 
-            <div className="home-icon">
-                <FaHome size={24} onClick={handleHomeIconClick}></FaHome>
+            {/* Right-aligned icons */}
+            <div className="header-right">
+                <div className="home-icon">
+                    <FaHome size={24} onClick={handleHomeIconClick} />
+                </div>
+                <div className="header-icon" onClick={handleUserIconClick}>
+                    <FaUserCircle size={24} />
+                </div>
             </div>
-            <div className="header-icon" onClick={handleUserIconClick}>
-                <FaUserCircle size={24} />
-            </div>
-            
-            
-            
         </header>
     );
 }
