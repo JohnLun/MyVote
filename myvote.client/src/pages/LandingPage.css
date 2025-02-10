@@ -27,13 +27,13 @@ th, td {
 
 .search-poll{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     justify-content: center;
     align-items: center; 
-    /* background-color: #2F3457; */
-    box-shadow: 0 10px 6px rgba(0, 0, 0, 0.2);
+    background-color: #37383e;
+    
     padding: 20px;
-    border-radius: 10px;
+    border-radius: 30px;
 }
 
 .header-search {
@@ -47,11 +47,11 @@ th, td {
 
 .floating-label {
     position: absolute;
-    left: 12px;
-    top: 50%;
+    left: 15px;
+    top: 55%;
     transform: translateY(-60%);
     font-size: 16px;
-    color: gray;
+    color: #DEE0E3;
     transition: all 0.3s ease;
     pointer-events: none;
 }
@@ -59,15 +59,15 @@ th, td {
 input {
     width: 100%;
     padding: 12px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
+    background-color: #37383e;
+    border-radius: 30px;
     font-size: 16px;
     outline: none;
     transition: border-color 0.3s;
 }
 
 input:focus {
-    border-color: #646cff;
+    /* border-color: #646cff; */
 }
 
 input:focus + .floating-label,
@@ -78,14 +78,14 @@ input:focus + .floating-label,
 }
 
 .go-btn{
-    min-width: 150px;
-    margin-top: 1rem;
-    
+    background-color: white;
+    margin-left: 20px;
+    border-radius: 40px;
     transition: transform 0.3s ease;
 }
 
 .go-btn:hover{
-    background-color: #28231d;
+    background-color: #37383e;
     transform: scale(1.15);
 }
 

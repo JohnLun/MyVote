@@ -19,15 +19,19 @@
 }
 .home-icon{
     padding-right: 10px;
+    cursor: pointer;
 }
 .header-icon{
     padding-right: 20px;
-
+    cursor: pointer;
 }
 
 .header-left {
-    flex-grow: 1; /* Pushes everything else to the right */
+    display: flex;
+    align-items: center; /* Ensures vertical alignment */
+    gap: 8px; /* Adds space between the image and the title */
 }
+
 
 .header-right {
     display: flex;

@@ -2,6 +2,7 @@ import React from 'react';
 import './Header.css';
 import { FaUserCircle, FaHome } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import myImage from '../assets/voteIcon.svg';
 
 function Header() {
     const navigate = useNavigate();
@@ -18,6 +19,7 @@ function Header() {
         <header className="header">
             {/* Left-aligned title */}
             <div className="header-left">
+                <img src={myImage} alt="My Example" width={25} />
                 <h4 className="header-title">MyVote</h4>
             </div>
 
