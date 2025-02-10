@@ -3,11 +3,12 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+    padding-top: 30px;
     margin: 30px;
 }
 
 .create-poll-card {
-    background-color: #2F3457;
+    /* background-color: #2F3457; */
     padding: 30px;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
