@@ -79,15 +79,16 @@ const CreatePoll = () => {
         }
 
         const currentTime = new Date();
-        const pollEndTime = new Date(currentTime.getTime() + parseFloat(timeLimit) * 60 * 60 * 1000);
-        const isActive = pollEndTime > currentTime;
+        const pollEndTime = new Date(currentTime.getTime() + parseFloat(timeLimit) * 60 * 1000);
 
         const newPollDto = {
             userId: userId,
             title: title,
             description: description,
             timeLimit: parseFloat(timeLimit),
-            isActive: isActive ? "t" : "f",
+            dateCreated: currentTime,
+            dateEnded: pollEndTime.toISOString(),
+            isActive: "t",
             choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
         console.log(newPollDto);
