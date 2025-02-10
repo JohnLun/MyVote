@@ -13,20 +13,9 @@ function App() {
     return (
         <Router>
             <UserProvider>
+                <ToastContainer position="top-right" autoClose={3000} /> {/* Ensures it stays mounted */}
                 <div className="main-container">
                     <Header />
-                    <ToastContainer
-                        position="top-right"
-                        autoClose={3000}
-                        hideProgressBar={false}
-                        newestOnTop={false}
-                        closeOnClick
-                        rtl={false}
-                        pauseOnFocusLoss
-                        draggable
-                        pauseOnHover
-                        theme="light"
-                    />
                     <div className="main-content">
                         <Routes>
                             <Route path="/" element={<Home />} />
