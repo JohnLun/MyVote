@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import './CreatePoll.css';
 import { FaRegTrashAlt, FaPlus } from 'react-icons/fa';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const CreatePoll = () => {
@@ -202,7 +202,6 @@ const CreatePoll = () => {
                     
                 </form>
             </div>
-            <ToastContainer />
         </div>
     );
 };
