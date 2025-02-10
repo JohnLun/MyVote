@@ -30,6 +30,7 @@
     display: flex;
     align-items: center; /* Ensures vertical alignment */
     gap: 8px; /* Adds space between the image and the title */
+    cursor: pointer;
 }
 
 
