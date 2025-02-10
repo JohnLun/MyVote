@@ -2,48 +2,38 @@
     position: fixed;
     top: 0;
     width: 98%;
-    background-color: #008C99;
+    background-color: #37383e;
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* Ensures left and right alignment */
     align-items: center;
-    border-radius: 5px;
     padding: 10px 20px;
     box-shadow: 0 10px 4px rgba(0, 0, 0, 0.2);
     z-index: 1000;
 }
 
-.header-icon {
+.header-title {
+    margin: 0;
     color: white;
-    cursor: pointer;
-    transition: transform 0.3s ease;
+    font-size: 20px;
+    font-weight: bold;
 }
-
-.header-icon:hover{
-    transform: scale(1.2);
-    color:azure;
-}
-
-    .header-search input {
-        width: 100%;
-        max-width: 400px;
-        padding: 5px 10px;
-        border: none;
-        border-radius: 5px;
-        font-size: 16px;
-    }
-
-        .header-search input::placeholder {
-            color: #888;
-        }
-
-.home-icon {
-    color: white;
+.home-icon{
+    padding-right: 10px;
     cursor: pointer;
+}
+.header-icon{
     padding-right: 20px;
-    transition: transform 0.3s ease;
+    cursor: pointer;
 }
 
-.home-icon:hover{
-    transform: scale(1.2);
-    color:azure;
+.header-left {
+    display: flex;
+    align-items: center; /* Ensures vertical alignment */
+    gap: 8px; /* Adds space between the image and the title */
+}
+
+
+.header-right {
+    display: flex;
+    align-items: center;
 }
