@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import './CreatePoll.css';
 import { FaRegTrashAlt, FaPlus } from 'react-icons/fa';
-import { toast, ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const CreatePoll = () => {
@@ -56,6 +56,7 @@ const CreatePoll = () => {
 
     const validateForm = () => {
         const newErrors = {};
+
         if (!title.trim()) {
             newErrors.title = 'Title is required';
         }
@@ -69,9 +70,20 @@ const CreatePoll = () => {
         if (nonEmptyChoices.length < 2) {
             newErrors.choices = 'At least two non-empty choices are required';
         }
+
         setErrors(newErrors);
-        return Object.keys(newErrors).length === 0;
+
+        // Show error toast if there are validation errors
+        if (Object.keys(newErrors).length > 0) {
+            toast.error('Please correct the highlighted errors before submitting.', {
+                autoClose: 3000,
+            });
+            return false;
+        }
+
+        return true;
     };
+
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -105,21 +117,28 @@ const CreatePoll = () => {
             });
 
             if (!response.ok) {
+                toast.error('Failed to create poll. Please try again and fix error fields.');
                 throw new Error('Network response was not ok');
             }
-
-            // Show success toast notification
-            toast.success('Poll created successfully!');
 
             const data = await response.json();
             console.log('Poll created:', data);
 
-            // Navigate to PollLinkPage with the new poll ID
-            navigate(`/poll-link/${data.pollId}`);
+            // Show success toast and delay navigation
+            toast.success('Poll created successfully!', {
+                autoClose: 3000,
+            });
+
+            setTimeout(() => {
+                navigate(`/poll-link/${data.pollId}`);
+            }, 1000);
+
         } catch (error) {
             console.error('There was a problem with the fetch operation:', error.message);
+            toast.error('Failed to create poll. Please try again.');
         }
     };
+
 
     return (
         <div className="create-poll-container">
@@ -180,6 +199,7 @@ const CreatePoll = () => {
                     <div className="button-container">
                         <button type="submit">Create Poll</button>
                     </div>
+                    
                 </form>
             </div>
             <ToastContainer />
@@ -188,3 +208,6 @@ const CreatePoll = () => {
 };
 
 export default CreatePoll;
+
+
+
