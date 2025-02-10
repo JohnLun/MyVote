@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useUser } from '../contexts/UserContext';
 import './CreatePoll.css';
 import { FaRegTrashAlt, FaPlus } from 'react-icons/fa';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const CreatePoll = () => {
     const API_BASE_URL =
@@ -105,6 +107,9 @@ const CreatePoll = () => {
                 throw new Error('Network response was not ok');
             }
 
+            // Show success toast notification
+            toast.success('Poll created successfully!');
+
             const data = await response.json();
             console.log('Poll created:', data);
 
@@ -176,6 +181,7 @@ const CreatePoll = () => {
                     </div>
                 </form>
             </div>
+            <ToastContainer />
         </div>
     );
 };
