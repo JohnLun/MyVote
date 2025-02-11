@@ -18,8 +18,8 @@ function Header() {
     return (
         <header className="header">
             {/* Left-aligned title */}
-            <div className="header-left">
-                <img src={myImage} alt="My Example" width={25} />
+            <div className="header-left" onClick={handleHomeIconClick}>
+                <img src={myImage} alt="icon" width={25} />
                 <h4 className="header-title">MyVote</h4>
             </div>
 
