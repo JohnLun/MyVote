@@ -17,6 +17,7 @@ function Home() {
 
     return (
         <>
+            {/* <h1>Search for a poll below</h1> */}
             <div className="search-poll">
                 
                 <div className="header-search">
