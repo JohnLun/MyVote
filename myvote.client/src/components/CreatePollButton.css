@@ -16,5 +16,5 @@
 
     .create-poll-button:hover {
         background-color: #6b80c7;
-        transform: scale(1.2);
+        transform: scale(1.15);
     }
