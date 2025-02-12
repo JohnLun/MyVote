@@ -27,7 +27,8 @@ body {
   width: 100%;
   min-height: 100vh;
   color: rgba(255, 255, 255, 0.87) !important;
-  background-color: #23242C !important;
+  background: linear-gradient(to top, #0f1013, #23242C);
+  /* background-color: #23242C !important; */
 }
 
 h1 {
