@@ -97,6 +97,11 @@ namespace MyVote.Server.Controllers
                 .Distinct()
                 .ToListAsync();
 
+            foreach (Poll poll in votedPolls)
+            {
+                await UpdateStatus(poll);
+            }
+
             if (!votedPolls.Any())
             {
                 return Ok(new List<Poll>());
@@ -111,6 +116,11 @@ namespace MyVote.Server.Controllers
             var createdPolls = await _db.Polls
                 .Where(p => p.UserId == userId)
                 .ToListAsync();
+
+            foreach (Poll poll in createdPolls)
+            {
+                await UpdateStatus(poll);
+            }
 
             if (!createdPolls.Any())
             {
@@ -156,6 +166,8 @@ namespace MyVote.Server.Controllers
                     .ThenInclude(c => c.UserChoices) // Include UserChoices to retrieve UserId
                 .FirstOrDefaultAsync(p => p.PollId == pollid);
 
+            await UpdateStatus(poll);
+
             if (poll == null)
                 return NotFound();
 
@@ -198,6 +210,17 @@ namespace MyVote.Server.Controllers
             }).ToList();
 
             return Ok(choiceDtos);
+        }
+
+        [HttpPatch("status")]
+        public async Task<IActionResult> UpdateStatus([FromBody] Poll poll)
+        {
+            if (DateTime.Now >= poll.DateEnded && poll.IsActive == "t")
+            {
+                poll.IsActive = "f";
+            }
+            _db.SaveChangesAsync();
+            return Ok();
         }
 
         [HttpPatch("vote")]

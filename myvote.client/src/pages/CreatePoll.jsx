@@ -135,7 +135,7 @@ const CreatePoll = () => {
 
                     {/* Time Limit */}
                     <div className="form-group">
-                        <label>Time Limit (in hours) {errors.timeLimit && <span className="error-asterisk">*</span>}</label>
+                        <label>Time Limit (in minutes) {errors.timeLimit && <span className="error-asterisk">*</span>}</label>
                         <br />
                         <input
                             type="number"
