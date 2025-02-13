@@ -164,7 +164,8 @@ namespace MyVote.Server.Controllers
                 PollId = poll.PollId,
                 Title = poll.Title,
                 Description = poll.Description,
-                TimeLimit = poll.TimeLimit,
+                DateCreated = poll.DateCreated,
+                DateEnded = poll.DateEnded,
                 IsActive = poll.IsActive,
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {
@@ -268,7 +269,8 @@ namespace MyVote.Server.Controllers
                 UserId = newPollDto.UserId,
                 Title = newPollDto.Title,
                 Description = newPollDto.Description,
-                TimeLimit = newPollDto.TimeLimit,
+                DateCreated = newPollDto.DateCreated,
+                DateEnded = newPollDto.DateEnded,
                 IsActive = newPollDto.IsActive,
                 Choices = newPollDto.Choices.Select(c => new Choice
                 {
@@ -285,7 +287,8 @@ namespace MyVote.Server.Controllers
                 PollId = poll.PollId,
                 Title = poll.Title,
                 Description = poll.Description,
-                TimeLimit = poll.TimeLimit,
+                DateCreated = poll.DateCreated,
+                DateEnded = poll.DateEnded,
                 IsActive = poll.IsActive,
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {
