@@ -3,15 +3,15 @@
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    padding-top: 30px;
-    margin: 30px;
+    /* padding-top: 30px;
+    margin: 30px; */
 }
 
 .create-poll-card {
-    /* background-color: #2F3457; */
+    /* background-color: #37383e; */
     padding: 30px;
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); */
     width: 100%;
     max-width: 500px;
     color: white;
@@ -55,7 +55,7 @@
         .create-poll-card .button-container button {
             flex: 1;
             padding: 10px;
-            background-color: #008C99;
+            background-color: #365FB7;
             color: white;
             border: none;
             border-radius: 5px;
@@ -66,7 +66,7 @@
         }
 
             .create-poll-card .button-container button:hover {
-                background-color: #007A88;
+                background-color: #6b80c7;
             }
 
 .spacer {

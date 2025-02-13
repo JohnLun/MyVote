@@ -4,17 +4,17 @@
     border: none;
     width: 100%;
     height: 100%;
-    min-height: 100px;
-    min-width: 300px;
+    min-height: 75px;
+    min-width: 200px;
     font-size: 32px;
     cursor: pointer;
     border-radius: 30px;
-    box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 4px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease;
 
 }
 
     .create-poll-button:hover {
         background-color: #6b80c7;
-        transform: scale(1.2);
+        transform: scale(1.15);
     }

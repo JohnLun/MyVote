@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-route
 import { useState } from 'react';
 import './LandingPage.css';
 import CreatePollButton from '../components/CreatePollButton';
-import searchArrow from '../assets/searchArrowNew.svg';
+import searchArrow from '../assets/submitUpArrow.svg';
 
 // Separate component for home to use hooks
 function Home() {
@@ -17,11 +17,12 @@ function Home() {
 
     return (
         <>
+            {/* <h1>Search for a poll or create one below</h1> */}
             <div className="search-poll">
                 
                 <div className="header-search">
                     <label className={pollId ? "floating-label active" : "floating-label"}>
-                        Enter Poll ID
+                        Enter Poll Code
                     </label>
                     <input
                         type="text"
@@ -34,7 +35,7 @@ function Home() {
                 
 
                 <button className="go-btn" type="button" onClick={handleGoClick}>
-                    <img src={searchArrow} alt="Search" width={25} />
+                    <img src={searchArrow} alt="Search" width={30} />
                 </button>
                 
             </div>

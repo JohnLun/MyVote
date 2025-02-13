@@ -8,7 +8,14 @@
     padding: 10px 20px;
     font-size: 16px;
     cursor: pointer;
+    background-color: #365FB7;
 }
+
+.go-poll-btn{
+    padding-right: 10px;
+    background-color: #365FB7;
+}
+
 
 .qr-code {
     margin-top: 40px;
