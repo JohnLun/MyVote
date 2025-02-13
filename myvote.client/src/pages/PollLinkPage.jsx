@@ -29,8 +29,8 @@ const PollLinkPage = () => {
                 <QRCode value={pollUrl} />
             </div>
             <p>Your poll ID is: {pollId}</p>
-            <button onClick={handleGoToPoll}>Go to Poll</button>
-            <button onClick={handleCopyLink}>Copy Poll Link</button>
+            <button className="go-poll-btn" onClick={handleGoToPoll}>Go to Poll</button>
+            <button className="copy-poll-btn" onClick={handleCopyLink}>Copy Poll Link</button>
             
         </div>
     );

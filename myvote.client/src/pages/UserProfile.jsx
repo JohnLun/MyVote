@@ -76,7 +76,7 @@ const UserProfile = () => {
 
             <div className="poll-list">
                 {loading ? (
-                    <p>Loading polls...</p>
+                    <p>Finding your polls...</p>
                 ) : error ? (
                     <p className="error">Error: {error}</p>
                 ) : displayedPolls.length > 0 ? (
