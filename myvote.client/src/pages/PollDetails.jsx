@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { FaPaperPlane } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../contexts/UserContext";
 import PollDetailsFlip from "../components/PollDetailsFlip";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 import "./PollDetails.css";
 
 const PollDetails = () => {
@@ -17,6 +19,7 @@ const PollDetails = () => {
     const [isPollExpired, setIsPollExpired] = useState(false);
     const { userId } = useUser();
     const navigate = useNavigate();
+    const pollResultsRef = useRef();
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -28,7 +31,7 @@ const PollDetails = () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
                 if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
-                
+
                 const data = await response.json();
                 setPoll(data);
 
@@ -65,7 +68,7 @@ const PollDetails = () => {
 
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
- 
+
         try {
             const responseBody = {
                 choiceId: choiceId,
@@ -78,15 +81,15 @@ const PollDetails = () => {
                 },
                 body: JSON.stringify(responseBody)
             });
- 
+
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Vote submission failed.");
             }
- 
+
             setUserVoted(true);
             setSelectedChoice(choiceId);
- 
+
             const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
             setPoll(updatedPoll);
         } catch (error) {
@@ -123,6 +126,15 @@ const PollDetails = () => {
     const handleShareClick = (event) => {
         event.stopPropagation(); // Prevents the poll card click event
         navigate(`/poll-link/${poll.pollId}`);
+    };
+
+    const handleGeneratePDF = async () => {
+        const input = pollResultsRef.current;
+        const canvas = await html2canvas(input);
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF();
+        pdf.addImage(imgData, 'PNG', 10, 10, 180, 160);
+        pdf.save('poll-results.pdf');
     };
 
     const progress = poll
@@ -162,7 +174,7 @@ const PollDetails = () => {
                 )}
 
                 {isPollExpired || userVoted ? (
-                    <div className="poll-results">
+                    <div className="poll-results" ref={pollResultsRef}>
                         {poll.choices.map((choice) => {
                             const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
                             const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
@@ -196,6 +208,12 @@ const PollDetails = () => {
                     )
                 )}
 
+                {isPollExpired && (
+                    <button className="generate-pdf-button" onClick={handleGeneratePDF}>
+                        Generate PDF
+                    </button>
+                )}
+
                 <FaPaperPlane
                     className="poll-icon"
                     onClick={handleShareClick}
@@ -206,3 +224,4 @@ const PollDetails = () => {
 };
 
 export default PollDetails;
+

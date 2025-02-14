@@ -116,3 +116,19 @@
     transition: stroke-dashoffset 1s linear;
 }
 
+.generate-pdf-button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+    .generate-pdf-button:hover {
+        background-color: #0056b3;
+    }
+
+
+
