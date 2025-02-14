@@ -24,8 +24,6 @@
     margin-right: 15px;
     cursor: pointer;
     transition: transform 0.3s ease;
-    background-color: #37383e;
-    border-radius: 10px;
 }
 .home-icon:hover{
     transform: scale(1.15);
@@ -36,8 +34,6 @@
     margin-right: 20px;
     cursor: pointer;
     transition: transform 0.3s ease;
-    background-color: #37383e;
-    border-radius: 10px;
 }
 .header-icon:hover{
     transform: scale(1.15);
