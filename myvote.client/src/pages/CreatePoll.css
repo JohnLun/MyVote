@@ -137,3 +137,19 @@
     font-weight: bold;
     margin-left: 5px;
 }
+
+input[type="text"]:focus,
+textarea:focus,
+select:focus {
+    border-color: rgb(0, 157, 255); /* JMFamily primary blue */
+    outline: none; /* Removes default focus outline */
+    box-shadow: 0 0 5px rgba(0, 157, 255); /* Optional glow effect */
+}
+
+input[type="number"]:focus,
+textarea:focus,
+select:focus {
+    border-color: rgb(0, 157, 255); /* JMFamily primary blue */
+    outline: none; /* Removes default focus outline */
+    box-shadow: 0 0 5px rgba(0, 157, 255); /* Optional glow effect */
+}

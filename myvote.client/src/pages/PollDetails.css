@@ -93,3 +93,26 @@
     padding: 10px;
     font-weight: bold;
 }
+
+.timer-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+}
+
+.timer-background {
+    fill: none;
+    stroke: #444;
+    stroke-width: 6;
+}
+
+.timer-progress {
+    fill: none;
+    stroke: #4CAF50;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1s linear;
+}
+

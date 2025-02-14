@@ -1,6 +1,8 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import QRCode from "react-qr-code";
+import { toast } from 'react-toastify';
+import './PollLinkPage.css';
 
 const PollLinkPage = () => {
     const { pollId } = useParams();
@@ -14,7 +16,7 @@ const PollLinkPage = () => {
     const handleCopyLink = () => {
         navigator.clipboard.writeText(pollUrl)
             .then(() => {
-                alert('Poll link copied to clipboard!');
+                toast.success('Poll link copied to clipboard!', {autoClose: 3000})
             })
             .catch(err => {
                 console.error('Failed to copy: ', err);
