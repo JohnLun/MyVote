@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import './LandingPage.css';
+import { toast } from 'react-toastify';
 import CreatePollButton from '../components/CreatePollButton';
 import searchArrow from '../assets/submitUpArrow.svg';
 
@@ -12,6 +13,8 @@ function Home() {
     const handleGoClick = () => {
         if (pollId.trim()) {
             navigate(`/poll/${pollId}`);
+        } else {
+            toast.error("Please enter Poll #", {autoClose: 3000}); 
         }
     };
 

@@ -73,7 +73,7 @@ const CreatePoll = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
+        // if (!validateForm()) return;
 
         const currentTime = new Date();
         const pollEndTime = new Date(currentTime.getTime() + parseFloat(timeLimit) * 60 * 1000);
@@ -123,14 +123,14 @@ const CreatePoll = () => {
                     <div className="form-group">
                         <label>Title {errors.title && <span className="error-asterisk">*</span>}</label>
                         <br />
-                        <input type="text" value={title} onChange={handleTitleChange} />
+                        <input required type="text" value={title} onChange={handleTitleChange} />
                     </div>
 
                     {/* Description */}
                     <div className="form-group">
                         <label>Description {errors.description && <span className="error-asterisk">*</span>}</label>
                         <br />
-                        <input type="text" value={description} onChange={handleDescriptionChange} />
+                        <input required type="text" value={description} onChange={handleDescriptionChange} />
                     </div>
 
                     {/* Time Limit */}
@@ -143,6 +143,7 @@ const CreatePoll = () => {
                             value={timeLimit}
                             onChange={handleTimeLimitChange}
                             onKeyDown={handleTimeLimitKeyDown}
+                            required
                         />
                     </div>
 
@@ -151,7 +152,7 @@ const CreatePoll = () => {
                         <label>Choices {errors.choices && <span className="error-asterisk">*</span>}</label>
                         {choices.map((choice, index) => (
                             <div key={index} className="choice-container">
-                                <input type="text" value={choice} onChange={(e) => handleChoiceChange(index, e)} />
+                                <input required type="text" value={choice} onChange={(e) => handleChoiceChange(index, e)} />
                                 {index >= 2 ? (
                                     <FaRegTrashAlt onClick={() => removeChoice(index)} className="trash-icon" />
                                 ) : (

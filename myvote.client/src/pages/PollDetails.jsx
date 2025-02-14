@@ -11,7 +11,7 @@ const PollDetails = () => {
     const [error, setError] = useState(null);
     const [userVoted, setUserVoted] = useState(false);
     const [selectedChoice, setSelectedChoice] = useState(null);
-    const [timeRemaining, setTimeRemaining] = useState("");
+    const [timeRemaining, setTimeRemaining] = useState(0);
     const [isPollExpired, setIsPollExpired] = useState(false);
     const { userId } = useUser();
 
@@ -24,15 +24,23 @@ const PollDetails = () => {
         const fetchPoll = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
-                if (!response.ok) {
-                    throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
-                }
+                if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
+                
                 const data = await response.json();
-                console.log(data);
+                setPoll(data);
+
+                const endTime = new Date(data.dateEnded).getTime();
+                const startTime = new Date(data.dateCreated).getTime();
+                setTimeRemaining(Math.max(0, endTime - Date.now()));
+
+                if (endTime <= Date.now()) {
+                    setIsPollExpired(true);
+                } else {
+                    startCountdown(endTime, startTime);
+                }
 
                 let hasVoted = false;
                 let votedChoiceId = null;
-
                 for (const choice of data.choices) {
                     if (choice.userIds.includes(userId)) {
                         hasVoted = true;
@@ -40,14 +48,8 @@ const PollDetails = () => {
                         break;
                     }
                 }
-
                 setUserVoted(hasVoted);
                 setSelectedChoice(votedChoiceId);
-                setPoll(data);
-
-                // Initialize the countdown
-                startCountdown(data.dateEnded);
-
             } catch (err) {
                 setError(err.message);
             } finally {
@@ -58,41 +60,9 @@ const PollDetails = () => {
         fetchPoll();
     }, [pollId, userId]);
 
-    const startCountdown = (pollEndTime) => {
-        if (!pollEndTime) return;
-    
-        let timerInterval; // Define timerInterval before using it
-    
-        const updateTimer = () => {
-            const currentTime = new Date(); 
-            const endTime = new Date(pollEndTime); 
-            const timeDiff = endTime - currentTime; 
-    
-            if (timeDiff <= 0) {
-                setTimeRemaining("00:00");
-                setIsPollExpired(true);
-                clearInterval(timerInterval); // Clear interval properly
-                return;
-            }
-    
-            const minutes = Math.floor((timeDiff / (1000 * 60)) % 60);
-            const seconds = Math.floor((timeDiff / 1000) % 60);
-    
-            setTimeRemaining(
-                `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`
-            );
-        };
-    
-        updateTimer(); // Run immediately
-        timerInterval = setInterval(updateTimer, 1000);
-    
-        return () => clearInterval(timerInterval); // Ensure cleanup on unmount
-    };
-    
-
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
-
+ 
         try {
             const responseBody = {
                 choiceId: choiceId,
@@ -105,23 +75,51 @@ const PollDetails = () => {
                 },
                 body: JSON.stringify(responseBody)
             });
-
+ 
             if (!response.ok) {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Vote submission failed.");
             }
-
+ 
             setUserVoted(true);
             setSelectedChoice(choiceId);
-
+ 
             const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
             setPoll(updatedPoll);
-            startCountdown(updatedPoll.pollEndTime);
-
         } catch (error) {
             alert(error.message);
         }
     };
+
+    const startCountdown = (endTime, startTime) => {
+        const updateTimer = () => {
+            const now = Date.now();
+            const timeLeft = endTime - now;
+
+            if (timeLeft <= 0) {
+                setTimeRemaining(0);
+                setIsPollExpired(true);
+                clearInterval(timer);
+            } else {
+                setTimeRemaining(timeLeft);
+            }
+        };
+
+        updateTimer();
+        const timer = setInterval(updateTimer, 1000);
+        return () => clearInterval(timer);
+    };
+
+    const formatTime = (ms) => {
+        const totalSeconds = Math.floor(ms / 1000);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    };
+
+    const progress = poll
+        ? Math.max(0, (timeRemaining / (new Date(poll.dateEnded) - new Date(poll.dateCreated))) * 100)
+        : 0;
 
     if (loading) return <p>Loading poll...</p>;
     if (error) return <p>Error: {error}</p>;
@@ -130,7 +128,24 @@ const PollDetails = () => {
         <div className="poll-details-container">
             <div className="poll-details-card">
                 <h2 className="poll-title">{poll.title}</h2>
-                <p className="poll-limit">Time Remaining: {timeRemaining}</p>
+
+                {/* Circular Timer */}
+                <div className="timer-container">
+                    <svg width="100" height="100" viewBox="0 0 100 100">
+                        <circle className="timer-background" cx="50" cy="50" r="45" />
+                        <circle
+                            className="timer-progress"
+                            cx="50"
+                            cy="50"
+                            r="45"
+                            strokeDasharray="283"
+                            strokeDashoffset={`${(progress / 100) * 283}`}
+                        />
+                        <text x="50" y="55" textAnchor="middle" fontSize="18px" fill="white">
+                            {formatTime(timeRemaining)}
+                        </text>
+                    </svg>
+                </div>
 
                 {isPollExpired || userVoted ? (
                     <PollDetailsFlip poll={poll} />
@@ -163,7 +178,7 @@ const PollDetails = () => {
                                 key={choice.choiceId}
                                 className="poll-choice"
                                 onClick={() => handleVote(choice.choiceId)}
-                                disabled={isPollExpired} // Disable voting if expired
+                                disabled={isPollExpired}
                             >
                                 {choice.name}
                             </button>
