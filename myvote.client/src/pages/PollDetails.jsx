@@ -132,7 +132,7 @@ const PollDetails = () => {
         const input = pollDetailsRef.current;
 
         // Temporarily hide elements you don't want in the PDF
-        const elementsToHide = input.querySelectorAll('.hide-in-pdf, .poll-results');
+        const elementsToHide = input.querySelectorAll('.hide-in-pdf, .poll-results, .flip-card-back');
         elementsToHide.forEach(el => el.style.display = 'none');
 
         const canvas = await html2canvas(input);
