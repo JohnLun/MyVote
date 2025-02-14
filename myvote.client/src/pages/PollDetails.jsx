@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+import { FaPaperPlane } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 import { useUser } from "../contexts/UserContext";
 import PollDetailsFlip from "../components/PollDetailsFlip";
 import "./PollDetails.css";
@@ -14,6 +16,7 @@ const PollDetails = () => {
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isPollExpired, setIsPollExpired] = useState(false);
     const { userId } = useUser();
+    const navigate = useNavigate();
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -117,6 +120,11 @@ const PollDetails = () => {
         return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
     };
 
+    const handleShareClick = (event) => {
+        event.stopPropagation(); // Prevents the poll card click event
+        navigate(`/poll-link/${poll.pollId}`);
+    };
+
     const progress = poll
         ? Math.max(0, (timeRemaining / (new Date(poll.dateEnded) - new Date(poll.dateCreated))) * 100)
         : 0;
@@ -187,6 +195,11 @@ const PollDetails = () => {
                         <p>No choices available.</p>
                     )
                 )}
+
+                <FaPaperPlane
+                    className="poll-icon"
+                    onClick={handleShareClick}
+                />
             </div>
         </div>
     );
