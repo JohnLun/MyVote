@@ -19,7 +19,7 @@ const PollDetails = () => {
     const [isPollExpired, setIsPollExpired] = useState(false);
     const { userId } = useUser();
     const navigate = useNavigate();
-    const pollResultsRef = useRef();
+    const pollDetailsRef = useRef();
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -129,12 +129,30 @@ const PollDetails = () => {
     };
 
     const handleGeneratePDF = async () => {
-        const input = pollResultsRef.current;
+        const input = pollDetailsRef.current;
+
+        // Temporarily hide elements you don't want in the PDF
+        const elementsToHide = input.querySelectorAll('.hide-in-pdf');
+        elementsToHide.forEach(el => el.style.display = 'none');
+
         const canvas = await html2canvas(input);
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF();
-        pdf.addImage(imgData, 'PNG', 10, 10, 180, 160);
-        pdf.save('poll-results.pdf');
+
+        // Add title, description, date created, and date expired
+        pdf.setFontSize(16);
+        pdf.text(poll.title, 10, 10);
+        pdf.setFontSize(12);
+        pdf.text(`Description: ${poll.description}`, 10, 20);
+        pdf.text(`Date Created: ${new Date(poll.dateCreated).toLocaleString()}`, 10, 30);
+        pdf.text(`Date Expired: ${new Date(poll.dateEnded).toLocaleString()}`, 10, 40);
+
+        // Add poll details including the graph
+        pdf.addImage(imgData, 'PNG', 10, 50, 180, 160);
+        pdf.save(`poll-results-${poll.title}.pdf`);
+
+        // Restore the display of hidden elements
+        elementsToHide.forEach(el => el.style.display = '');
     };
 
     const progress = poll
@@ -145,12 +163,12 @@ const PollDetails = () => {
     if (error) return <p>Error: {error}</p>;
 
     return (
-        <div className="poll-details-container">
+        <div className="poll-details-container" ref={pollDetailsRef}>
             <div className="poll-details-card">
                 <h2 className="poll-title">{poll.title}</h2>
 
                 {/* Circular Timer */}
-                <div className="timer-container">
+                <div className="timer-container hide-in-pdf">
                     <svg width="100" height="100" viewBox="0 0 100 100">
                         <circle className="timer-background" cx="50" cy="50" r="45" />
                         <circle
@@ -174,7 +192,7 @@ const PollDetails = () => {
                 )}
 
                 {isPollExpired || userVoted ? (
-                    <div className="poll-results" ref={pollResultsRef}>
+                    <div className="poll-results">
                         {poll.choices.map((choice) => {
                             const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
                             const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
@@ -209,7 +227,7 @@ const PollDetails = () => {
                 )}
 
                 {isPollExpired && (
-                    <button className="generate-pdf-button" onClick={handleGeneratePDF}>
+                    <button className="generate-pdf-button hide-in-pdf" onClick={handleGeneratePDF}>
                         Generate PDF
                     </button>
                 )}
@@ -224,4 +242,3 @@ const PollDetails = () => {
 };
 
 export default PollDetails;
-
