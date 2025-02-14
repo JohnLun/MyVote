@@ -132,7 +132,7 @@ const PollDetails = () => {
         const input = pollDetailsRef.current;
 
         // Temporarily hide elements you don't want in the PDF
-        const elementsToHide = input.querySelectorAll('.hide-in-pdf');
+        const elementsToHide = input.querySelectorAll('.hide-in-pdf, .poll-results');
         elementsToHide.forEach(el => el.style.display = 'none');
 
         const canvas = await html2canvas(input);
@@ -149,6 +149,23 @@ const PollDetails = () => {
 
         // Add poll details including the graph
         pdf.addImage(imgData, 'PNG', 10, 50, 180, 160);
+
+        // Add poll choices as text
+        let yPosition = 220;
+        const pageHeight = 297; // A4 page height in mm
+        const lineHeight = 10;
+        pdf.setFontSize(12);
+        poll.choices.forEach((choice, index) => {
+            const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+            const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+            if (yPosition + lineHeight > pageHeight) {
+                pdf.addPage();
+                yPosition = 10;
+            }
+            pdf.text(`${index + 1}. ${choice.name} - ${percentage}% (${choice.numVotes} votes)`, 10, yPosition);
+            yPosition += lineHeight;
+        });
+
         pdf.save(`poll-results-${poll.title}.pdf`);
 
         // Restore the display of hidden elements
