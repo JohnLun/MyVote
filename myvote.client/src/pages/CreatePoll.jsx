@@ -75,15 +75,15 @@ const CreatePoll = () => {
 
         // if (!validateForm()) return;
 
-        const currentTime = new Date();
-        const pollEndTime = new Date(currentTime.getTime() + parseFloat(timeLimit) * 60 * 1000);
-
+        const currentTimeUTC = new Date(Date.now());
+        const pollEndTime = new Date(currentTimeUTC.getTime() + parseFloat(timeLimit) * 60 * 1000);
+        
         const newPollDto = {
             userId: userId,
             title: title,
             description: description,
             timeLimit: parseFloat(timeLimit),
-            dateCreated: currentTime,
+            dateCreated: currentTimeUTC,
             dateEnded: pollEndTime.toISOString(),
             isActive: "t",
             choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
