@@ -37,9 +37,10 @@ const PollDetails = () => {
 
                 const endTime = new Date(data.dateEnded).getTime();
                 const startTime = new Date(data.dateCreated).getTime();
-                setTimeRemaining(Math.max(0, endTime - Date.now()));
+                const nowUtc = new Date(Date.now());
+                setTimeRemaining(Math.max(0, endTime - nowUtc));
 
-                if (endTime <= Date.now()) {
+                if (endTime <= nowUtc) {
                     setIsPollExpired(true);
                 } else {
                     startCountdown(endTime, startTime);
@@ -99,7 +100,7 @@ const PollDetails = () => {
 
     const startCountdown = (endTime, startTime) => {
         const updateTimer = () => {
-            const now = Date.now();
+            const now = new Date(Date.now());
             const timeLeft = endTime - now;
 
             if (timeLeft <= 0) {
