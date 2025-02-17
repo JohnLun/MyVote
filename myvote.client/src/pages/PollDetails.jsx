@@ -34,10 +34,14 @@ const PollDetails = () => {
         
                     const data = await response.json();
         
-                    // Ensure the dates are interpreted as UTC
-                    const dateCreatedUtc = new Date(data.dateCreated + "Z");
-                    const dateEndedUtc = new Date(data.dateEnded + "Z");
-        
+                    const dateCreatedUtc = (window.location.hostname === "localhost")
+                    ? new Date(data.dateCreated)
+                    : new Date(data.dateCreated + "Z");
+                    
+                    const dateEndedUtc = (window.location.hostname === "localhost")
+                    ? new Date(data.dateEnded)
+                    : new Date(data.dateEnded + "Z");
+
                     setPoll(data);
         
                     const endTime = dateEndedUtc.getTime();
