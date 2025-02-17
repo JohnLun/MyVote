@@ -7,10 +7,16 @@ export default function PollCard({ poll }) {
     const navigate = useNavigate();
 
     const calculateTimeRemaining = () => {
-        const endTime = new Date(poll.dateEnded).getTime(); // This will automatically be in UTC
-        const now = Date.now(); // UTC time
-        return Math.max(0, Math.floor((endTime - now) / 1000)); // Return time in seconds
+        const endTime = new Date(poll.dateEnded).toISOString(); // Ensure it's in ISO 8601 UTC format
+        const endTimeUTC = new Date(endTime).getTime(); // Convert to timestamp
+        const now = Date.now(); // Always UTC
+        console.log("Original:", poll.dateEnded);
+        console.log("Parsed UTC:", new Date(poll.dateEnded).toISOString());
+        console.log("Timestamp UTC:", new Date(poll.dateEnded).getTime());
+        console.log("Current UTC:", Date.now());
+        return Math.max(0, Math.floor((endTimeUTC - now) / 1000)); // Return time in seconds
     };
+    
 
     const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
 

@@ -26,46 +26,52 @@ const PollDetails = () => {
             ? "https://localhost:7054/api"
             : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api";
 
-    useEffect(() => {
-        const fetchPoll = async () => {
-            try {
-                const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
-                if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
-
-                const data = await response.json();
-                setPoll(data);
-
-                const endTime = new Date(data.dateEnded).getTime();
-                const startTime = new Date(data.dateCreated).getTime();
-                const nowUtc = new Date(Date.now()).getTime();
-                setTimeRemaining(Math.max(0, endTime - nowUtc));
-
-                if (endTime <= nowUtc) {
-                    setIsPollExpired(true);
-                } else {
-                    startCountdown(endTime, startTime);
-                }
-
-                let hasVoted = false;
-                let votedChoiceId = null;
-                for (const choice of data.choices) {
-                    if (choice.userIds.includes(userId)) {
-                        hasVoted = true;
-                        votedChoiceId = choice.choiceId;
-                        break;
+        useEffect(() => {
+            const fetchPoll = async () => {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
+                    if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
+        
+                    const data = await response.json();
+        
+                    // Ensure the dates are interpreted as UTC
+                    const dateCreatedUtc = new Date(data.dateCreated + "Z");
+                    const dateEndedUtc = new Date(data.dateEnded + "Z");
+        
+                    setPoll(data);
+        
+                    const endTime = dateEndedUtc.getTime();
+                    const startTime = dateCreatedUtc.getTime();
+                    const nowUtc = new Date().getTime();
+                    setTimeRemaining(Math.max(0, endTime - nowUtc));
+        
+                    if (endTime <= nowUtc) {
+                        setIsPollExpired(true);
+                    } else {
+                        startCountdown(endTime, startTime);
                     }
+        
+                    let hasVoted = false;
+                    let votedChoiceId = null;
+                    for (const choice of data.choices) {
+                        if (choice.userIds.includes(userId)) {
+                            hasVoted = true;
+                            votedChoiceId = choice.choiceId;
+                            break;
+                        }
+                    }
+                    setUserVoted(hasVoted);
+                    setSelectedChoice(votedChoiceId);
+                } catch (err) {
+                    setError(err.message);
+                } finally {
+                    setLoading(false);
                 }
-                setUserVoted(hasVoted);
-                setSelectedChoice(votedChoiceId);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchPoll();
-    }, [pollId, userId]);
+            };
+        
+            fetchPoll();
+        }, [pollId, userId]);
+            
 
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
