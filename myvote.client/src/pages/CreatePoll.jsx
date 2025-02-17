@@ -83,7 +83,7 @@ const CreatePoll = () => {
             title: title,
             description: description,
             timeLimit: parseFloat(timeLimit),
-            dateCreated: currentTime,
+            dateCreated: currentTimeUTC,
             dateEnded: pollEndTime.toISOString(),
             isActive: "t",
             choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
