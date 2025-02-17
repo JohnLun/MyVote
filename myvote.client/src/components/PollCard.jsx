@@ -8,7 +8,7 @@ export default function PollCard({ poll }) {
 
     const calculateTimeRemaining = () => {
         const endTime = new Date(poll.dateEnded).getTime();
-        const now = Date.now();
+        const now = new Date(Date.now());
         return Math.max(0, Math.floor((endTime - now) / 1000)); // Return time in seconds
     };
 
