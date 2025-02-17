@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyVote.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250210205418_Update")]
-    partial class Update
+    [Migration("20250214200848_Update2")]
+    partial class Update2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

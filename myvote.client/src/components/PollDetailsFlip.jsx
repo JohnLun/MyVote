@@ -16,7 +16,7 @@ function PollDetailsFlip({ poll }) {
                     <PollGraph poll={poll} />
                     <i className="flip-icon fas fa-sync-alt"></i>
                 </div>
-                <div className="flip-card-back">
+                <div className="flip-card-back hide-in-pdf">
                     <p>{poll.description}</p>
                     <i className="flip-icon fas fa-sync-alt"></i>
                 </div>
