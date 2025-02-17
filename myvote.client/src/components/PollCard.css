@@ -24,5 +24,9 @@
     font-size: 1.2rem;
     color: white;
     padding: 5px;
+    transition: transform 0.3s ease;
 }
 
+.poll-icon:hover{
+  transform: scale(1.3);
+}
