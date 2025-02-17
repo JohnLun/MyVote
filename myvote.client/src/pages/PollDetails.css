@@ -17,6 +17,7 @@
     box-shadow: 0 10px 8px rgba(0, 0, 0, 0.1);
     width: 100%;
     max-width: 700px;
+    min-width: 300px;
     height: auto;
     color: white;
 }
@@ -114,6 +115,16 @@
     transform: rotate(-90deg);
     transform-origin: center;
     transition: stroke-dashoffset 1s linear;
+}
+
+.poll-icon-vote{
+    margin-top: 5px;
+    margin-left: 5px;
+    font-size: 1.2rem;
+}
+
+.poll-icon-vote:hover{
+    cursor: pointer;
 }
 
 .generate-pdf-button {

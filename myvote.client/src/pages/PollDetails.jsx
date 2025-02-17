@@ -243,16 +243,18 @@ const PollDetails = () => {
                     )
                 )}
 
-                {isPollExpired && (
-                    <button className="generate-pdf-button hide-in-pdf" onClick={handleGeneratePDF}>
-                        Generate PDF
-                    </button>
-                )}
+                <div className="bttm-pdf-share">
+                    {isPollExpired && (
+                        <button className="generate-pdf-button hide-in-pdf" onClick={handleGeneratePDF}>
+                            Generate PDF
+                        </button>
+                    )}
 
-                <FaPaperPlane
-                    className="poll-icon"
-                    onClick={handleShareClick}
-                />
+                    <FaPaperPlane
+                        className="poll-icon-vote"
+                        onClick={handleShareClick}
+                    />
+                </div>
             </div>
         </div>
     );
