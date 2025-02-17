@@ -7,7 +7,9 @@ export default function PollCard({ poll }) {
     const navigate = useNavigate();
 
     const calculateTimeRemaining = () => {
-        const endTime = new Date(poll.dateEnded + "Z").getTime(); // Ensure UTC
+        const endTime = (window.location.hostname === "localhost")
+        ? new Date(poll.dateEnded).getTime()
+        : new Date(poll.dateEnded + "Z").getTime();; // Ensure UTC
         const now = Date.now(); // UTC time
         return Math.max(0, Math.floor((endTime - now) / 1000)); // Return time in seconds
     };
