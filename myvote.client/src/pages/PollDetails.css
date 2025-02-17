@@ -84,7 +84,7 @@
 }
 
 .selected-bar {
-    background-color: #5075c4 !important; /* Green color for selected choice */
+    background-color: #5075c4 !important; 
 }
 
 .result-container p {
@@ -128,7 +128,7 @@
 }
 
 .generate-pdf-button {
-    background-color: #007bff;
+    background-color: #365FB7;
     color: white;
     border: none;
     padding: 10px 20px;

@@ -14,7 +14,7 @@ function Home() {
         if (pollId.trim()) {
             navigate(`/poll/${pollId}`);
         } else {
-            toast.error("Please enter Poll #", {autoClose: 3000}); 
+            toast.error("Please enter Poll Code", {autoClose: 3000}); 
         }
     };
 
