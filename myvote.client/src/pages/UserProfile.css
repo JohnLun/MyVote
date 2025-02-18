@@ -9,6 +9,7 @@
 
 .headingtext {
     padding: 20px;
+    margin-bottom: 0px;
 }
 
 .tabs {
@@ -44,12 +45,19 @@
 }
 
 .poll-status{
-    margin: 0px;
-    padding: 0px;
-    
+    background-color: #6b80c7;
+    border-radius: 8px;
 }
 
 .poll-status-btn{
     background-color: #6b80c7;
-    margin: 1px;
+    margin: 0px;
+    padding: 5px;
+    cursor: pointer;
+    float: left;
+}
+
+.poll-status button.active{
+    background-color: #365FB7;
+    
 }
