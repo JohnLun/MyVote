@@ -20,6 +20,7 @@ const PollDetails = () => {
     const { userId } = useUser();
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
+    const timerRef = useRef(null); 
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -121,17 +122,17 @@ const PollDetails = () => {
                 throw new Error(errorData.message || "Failed to make poll inactive.");
             }
 
-            const updatedPoll = await response.json();
+            // Re-fetch the updated poll after marking it as inactive
+            const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
             setPoll(updatedPoll);
             setIsPollExpired(true);
             setTimeRemaining(0);
 
-            window.location.reload();
+            clearInterval(timerRef.current);
         } catch (error) {
             alert(error.message);
         }
     };
-
 
     const startCountdown = (endTime, startTime) => {
         const updateTimer = () => {
@@ -141,16 +142,16 @@ const PollDetails = () => {
             if (timeLeft <= 0) {
                 setTimeRemaining(0);
                 setIsPollExpired(true);
-                clearInterval(timer);
+                clearInterval(timerRef.current);
             } else {
                 setTimeRemaining(timeLeft);
             }
         };
 
         updateTimer();
-        const timer = setInterval(updateTimer, 1000);
-        return () => clearInterval(timer);
+        timerRef.current = setInterval(updateTimer, 1000);
     };
+
 
     const formatTime = (ms) => {
         const totalSeconds = Math.floor(ms / 1000);
@@ -238,47 +239,50 @@ const PollDetails = () => {
                     </svg>
                 </div>
 
-                {isPollExpired || userVoted ? (
-                    <PollDetailsFlip poll={poll} />
+                {/* Show Results if Poll is Expired or User Voted */}
+                {(isPollExpired || userVoted) ? (
+                    <>
+                        <PollDetailsFlip poll={poll} />
+                        <div className="poll-results">
+                            {poll.choices && poll.choices.length > 0 ? (
+                                poll.choices.map((choice) => {
+                                    const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+                                    const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+                                    return (
+                                        <div key={choice.choiceId} className="poll-choice result-container">
+                                            <div
+                                                className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
+                                                style={{ width: `${percentage}%` }}
+                                            ></div>
+                                            <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
+                                                {choice.name} - {percentage}% ({choice.numVotes} votes)
+                                            </p>
+                                        </div>
+                                    );
+                                })
+                            ) : (
+                                <p>No choices available.</p>
+                            )}
+                        </div>
+                    </>
                 ) : (
                     <p>{poll.description}</p>
                 )}
 
-                {isPollExpired || userVoted ? (
-                    poll && poll.choices && (
-                        <div className="poll-results">
-                            {poll.choices.map((choice) => {
-                                const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
-                                const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
-                                return (
-                                    <div key={choice.choiceId} className="poll-choice result-container">
-                                        <div
-                                            className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
-                                            style={{ width: `${percentage}%` }}
-                                        ></div>
-                                        <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
-                                            {choice.name} - {percentage}% ({choice.numVotes} votes)
-                                        </p>
-                                    </div>
-                                );
-                            })}
-                        </div>
-                    )
+                {/* Render Choices Only If Poll is Active and User Has Not Voted */}
+                {!isPollExpired && !userVoted && poll && poll.choices && poll.choices.length > 0 ? (
+                    poll.choices.map((choice) => (
+                        <button
+                            key={choice.choiceId}
+                            className="poll-choice"
+                            onClick={() => handleVote(choice.choiceId)}
+                            disabled={isPollExpired}
+                        >
+                            {choice.name}
+                        </button>
+                    ))
                 ) : (
-                    poll && poll.choices && poll.choices.length > 0 ? (
-                        poll.choices.map((choice) => (
-                            <button
-                                key={choice.choiceId}
-                                className="poll-choice"
-                                onClick={() => handleVote(choice.choiceId)}
-                                disabled={isPollExpired}
-                            >
-                                {choice.name}
-                            </button>
-                        ))
-                    ) : (
-                        <p>No choices available.</p>
-                    )
+                    <p></p>
                 )}
 
                 <div className="bttm-pdf-share">
@@ -302,6 +306,7 @@ const PollDetails = () => {
             </div>
         </div>
     );
+
 };
 
 export default PollDetails;
