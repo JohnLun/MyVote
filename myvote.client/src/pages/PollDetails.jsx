@@ -6,6 +6,7 @@ import { useUser } from "../contexts/UserContext";
 import PollDetailsFlip from "../components/PollDetailsFlip";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import * as signalR from "@microsoft/signalr";
 import "./PollDetails.css";
 
 const PollDetails = () => {
@@ -21,16 +22,17 @@ const PollDetails = () => {
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
     const timerRef = useRef(null); 
+    const [connection, setConnection] = useState(null);
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
-            ? "https://localhost:7054/api"
-            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api";
+            ? "https://localhost:7054"
+            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
 
     useEffect(() => {
         const fetchPoll = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
+                const response = await fetch(`${API_BASE_URL}/api/poll/${pollId}`);
                 if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
 
                 const data = await response.json();
@@ -77,6 +79,36 @@ const PollDetails = () => {
         fetchPoll();
     }, [pollId, userId]);
 
+        useEffect(() => {
+            const newConnection = new signalR.HubConnectionBuilder()
+                .withUrl(`${API_BASE_URL}/voteHub`, {
+                    transport: signalR.HttpTransportType.WebSockets
+                })
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+    
+            setConnection(newConnection);
+    
+            newConnection.start()
+                .then(() => {
+                    console.log("Connected to SignalR");
+
+                    newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                        setPoll(updatedPoll);
+                    });
+
+                    console.log("Listener added");
+                })
+                .catch(err => console.error("SignalR Connection Error: ", err));
+    
+            return () => {
+                newConnection.stop();
+            };
+        }, [pollId]);
+        
+            
+
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
 
@@ -85,7 +117,7 @@ const PollDetails = () => {
                 choiceId: choiceId,
                 userId: userId
             };
-            const response = await fetch(`${API_BASE_URL}/vote`, {
+            const response = await fetch(`${API_BASE_URL}/api/vote`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -101,8 +133,6 @@ const PollDetails = () => {
             setUserVoted(true);
             setSelectedChoice(choiceId);
 
-            const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
-            setPoll(updatedPoll);
         } catch (error) {
             alert(error.message);
         }
@@ -110,7 +140,7 @@ const PollDetails = () => {
 
     const handleMakeInactive = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/poll/${pollId}/end`, {
+            const response = await fetch(`${API_BASE_URL}/api/poll/${pollId}/end`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -123,8 +153,8 @@ const PollDetails = () => {
             }
 
             // Re-fetch the updated poll after marking it as inactive
-            const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
-            setPoll(updatedPoll);
+            const data = await response.json();
+            setPoll(data);
             setIsPollExpired(true);
             setTimeRemaining(0);
 
@@ -133,6 +163,7 @@ const PollDetails = () => {
             alert(error.message);
         }
     };
+
 
     const startCountdown = (endTime, startTime) => {
         const updateTimer = () => {
