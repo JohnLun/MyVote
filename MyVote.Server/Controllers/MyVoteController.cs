@@ -181,12 +181,13 @@ namespace MyVote.Server.Controllers
                 DateCreated = poll.DateCreated,
                 DateEnded = poll.DateEnded,
                 IsActive = poll.IsActive,
+                UserId = poll.UserId, // Ensure the UserId of the poll creator is included
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {
                     ChoiceId = c.ChoiceId,
                     Name = c.Name,
                     NumVotes = c.NumVotes,
-                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList() // Extract UserIds
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList()
                 }).ToList()
             };
 
@@ -218,6 +219,7 @@ namespace MyVote.Server.Controllers
         public async Task<IActionResult> UpdateStatus([FromBody] Poll poll)
         {
             if (DateTime.UtcNow >= poll.DateEnded && poll.IsActive == "t")
+            if (DateTime.UtcNow >= poll.DateEnded && poll.IsActive == "t")
             {
                 poll.IsActive = "f";
             }
@@ -225,7 +227,44 @@ namespace MyVote.Server.Controllers
             return Ok();
         }
 
+        // make a poll inactive
+        [HttpPatch("poll/{pollId}/end")]
+        public async Task<IActionResult> EndPoll(int pollId)
+        {
+            var poll = await _db.Polls
+                .Include(p => p.Choices)
+                    .ThenInclude(c => c.UserChoices) // Include UserChoices to retrieve UserId
+                .FirstOrDefaultAsync(p => p.PollId == pollId);
 
+            if (poll == null)
+            {
+                return NotFound(new { message = "Poll not found." });
+            }
+
+            poll.DateEnded = DateTime.UtcNow;
+            poll.IsActive = "f";
+            await _db.SaveChangesAsync();
+
+            var pollDto = new PollDto
+            {
+                PollId = poll.PollId,
+                Title = poll.Title,
+                Description = poll.Description,
+                DateCreated = poll.DateCreated,
+                DateEnded = poll.DateEnded,
+                IsActive = poll.IsActive,
+                UserId = poll.UserId, // Ensure the UserId of the poll creator is included
+                Choices = poll.Choices.Select(c => new ChoiceDto
+                {
+                    ChoiceId = c.ChoiceId,
+                    Name = c.Name,
+                    NumVotes = c.NumVotes,
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList()
+                }).ToList()
+            };
+
+            return Ok(pollDto);
+        }
 
         [HttpPatch("vote")]
         public async Task<IActionResult> UpdateChoice([FromBody] VoteDto voteDto)
@@ -262,6 +301,7 @@ namespace MyVote.Server.Controllers
 
             var updatedPollDto = new PollDto
             {
+                UserId = updatedPoll.UserId,
                 PollId = updatedPoll.PollId,
                 Title = updatedPoll.Title,
                 Description = updatedPoll.Description,
