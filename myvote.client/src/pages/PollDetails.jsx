@@ -125,10 +125,13 @@ const PollDetails = () => {
             setPoll(updatedPoll);
             setIsPollExpired(true);
             setTimeRemaining(0);
+
+            window.location.reload();
         } catch (error) {
             alert(error.message);
         }
     };
+
 
     const startCountdown = (endTime, startTime) => {
         const updateTimer = () => {
