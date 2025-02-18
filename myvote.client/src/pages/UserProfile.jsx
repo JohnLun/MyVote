@@ -91,8 +91,10 @@ const UserProfile = () => {
                     </button>
                 </div>
 
-                {/* Poll filter buttons */}
-                <div className="poll-status">
+                
+            </div>
+            {/* Poll filter buttons */}
+            <div className="poll-status">
                     <button 
                         className={`poll-status-btn ${pollFilter === 'all' ? 'active' : ''}`} 
                         onClick={() => setPollFilter('all')}
@@ -114,7 +116,6 @@ const UserProfile = () => {
                         Inactive
                     </button>
                 </div>
-            </div>
 
             <div className="poll-list">
                 {loading ? (
