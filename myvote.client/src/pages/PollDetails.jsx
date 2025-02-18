@@ -25,13 +25,13 @@ const PollDetails = () => {
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
-            ? "https://localhost:7054/api"
-            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api";
+            ? "https://localhost:7054"
+            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
 
         useEffect(() => {
             const fetchPoll = async () => {
                 try {
-                    const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
+                    const response = await fetch(`${API_BASE_URL}/api/poll/${pollId}`);
                     if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
         
                     const data = await response.json();
@@ -80,7 +80,7 @@ const PollDetails = () => {
 
         useEffect(() => {
             const newConnection = new signalR.HubConnectionBuilder()
-                .withUrl(`https://localhost:7054/voteHub`, {
+                .withUrl(`${API_BASE_URL}/voteHub`, {
                     transport: signalR.HttpTransportType.WebSockets
                 })
                 .withAutomaticReconnect()
@@ -94,7 +94,6 @@ const PollDetails = () => {
                     console.log("Connected to SignalR");
 
                     newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
-                        console.log("Received vote update:", updatedPoll);
                         setPoll(updatedPoll);
                     });
 
@@ -117,7 +116,7 @@ const PollDetails = () => {
                 choiceId: choiceId,
                 userId: userId
             };
-            const response = await fetch(`${API_BASE_URL}/vote`, {
+            const response = await fetch(`${API_BASE_URL}/api/vote`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
