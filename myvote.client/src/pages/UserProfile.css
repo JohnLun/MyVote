@@ -46,19 +46,26 @@
 }
 
 .poll-status{
-    background-color: #6b80c7;
-    border-radius: 8px;
-}
-
-.poll-status-btn{
-    background-color: #6b80c7;
-    margin: 0px;
-    padding: 5px;
-    cursor: pointer;
+    background-color: #afb0b2;
+    border-radius: 10px;
+    margin-bottom: 5px;
     float: left;
 }
 
+.poll-status-btn{
+    background-color: #afb0b2;
+    margin: 0px;
+    padding: 4px;
+    cursor: pointer;
+    font-size: small;
+
+}
+
 .poll-status button.active{
-    background-color: #365FB7;
-    
+    background-color: #37383e;
+    border-color: #37383e;
+    padding: 5px;
+    border: none;
+    outline: none;
+    outline-style:none;
 }
