@@ -260,12 +260,29 @@ namespace MyVote.Server.Controllers
                 .Include(p => p.Choices)
                 .FirstOrDefaultAsync(p => p.PollId == choice.PollId);
 
-            // Broadcast the updated poll using SignalR
+            var updatedPollDto = new PollDto
+            {
+                PollId = updatedPoll.PollId,
+                Title = updatedPoll.Title,
+                Description = updatedPoll.Description,
+                DateCreated = updatedPoll.DateCreated,
+                DateEnded = updatedPoll.DateEnded,
+                IsActive = updatedPoll.IsActive,
+                Choices = updatedPoll.Choices.Select(c => new ChoiceDto
+                {
+                    ChoiceId = c.ChoiceId,
+                    Name = c.Name,
+                    NumVotes = c.NumVotes,
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList()
+                }).ToList()
+            };
+
+            // Broadcast the updated updatedPoll using SignalR
             var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<VoteHub>>();
             try
             {
-                await hubContext.Clients.All.SendAsync("ReceiveVoteUpdate", updatedPoll);
-                
+                await hubContext.Clients.All.SendAsync("ReceiveVoteUpdate", updatedPollDto);
+             
             }
             catch (Exception e)
             {

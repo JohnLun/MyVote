@@ -90,22 +90,22 @@ const PollDetails = () => {
             setConnection(newConnection);
     
             newConnection.start()
-                .then(() => console.log("Connected to SignalR"))
-                .catch(err => console.error("SignalR Connection Error: ", err));
-    
+                .then(() => {
+                    console.log("Connected to SignalR");
 
+                    newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                        console.log("Received vote update:", updatedPoll);
+                        setPoll(updatedPoll);
+                    });
+
+                    console.log("Listener added");
+                })
+                .catch(err => console.error("SignalR Connection Error: ", err));
     
             return () => {
                 newConnection.stop();
             };
         }, [pollId]);
-
-        if (connection) {
-            connection.on("ReceiveVoteUpdate", (updatedPoll) => {
-                console.log("received");
-                setPoll(updatedPoll);
-            });
-        }
         
             
 
