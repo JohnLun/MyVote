@@ -223,6 +223,23 @@ namespace MyVote.Server.Controllers
             return Ok();
         }
 
+        // make a poll inactive
+        [HttpPatch("poll/{pollId}/end")]
+        public async Task<IActionResult> EndPoll(int pollId)
+        {
+            var poll = await _db.Polls.FindAsync(pollId);
+            if (poll == null)
+            {
+                return NotFound(new { message = "Poll not found." });
+            }
+
+            poll.DateEnded = DateTime.UtcNow;
+            poll.IsActive = "f";
+            await _db.SaveChangesAsync();
+
+            return Ok(poll);
+        }
+
         [HttpPatch("vote")]
         public async Task<IActionResult> UpdateChoice([FromBody] VoteDto voteDto)
         {

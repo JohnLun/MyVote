@@ -8,7 +8,7 @@ function PollGraph({ poll }) {
     const chartInstanceRef = useRef(null);
 
     useEffect(() => {
-        if (!chartRef.current) return;
+        if (!chartRef.current || !poll || !poll.choices) return;
 
         const ctx = chartRef.current.getContext('2d');
 

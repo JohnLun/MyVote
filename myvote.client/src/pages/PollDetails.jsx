@@ -26,56 +26,55 @@ const PollDetails = () => {
             ? "https://localhost:7054/api"
             : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api";
 
-        useEffect(() => {
-            const fetchPoll = async () => {
-                try {
-                    const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
-                    if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
-        
-                    const data = await response.json();
-        
-                    const dateCreatedUtc = (window.location.hostname === "localhost")
+    useEffect(() => {
+        const fetchPoll = async () => {
+            try {
+                const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
+                if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
+
+                const data = await response.json();
+
+                const dateCreatedUtc = (window.location.hostname === "localhost")
                     ? new Date(data.dateCreated)
                     : new Date(data.dateCreated + "Z");
-                    
-                    const dateEndedUtc = (window.location.hostname === "localhost")
+
+                const dateEndedUtc = (window.location.hostname === "localhost")
                     ? new Date(data.dateEnded)
                     : new Date(data.dateEnded + "Z");
 
-                    setPoll(data);
-        
-                    const endTime = dateEndedUtc.getTime();
-                    const startTime = dateCreatedUtc.getTime();
-                    const nowUtc = new Date().getTime();
-                    setTimeRemaining(Math.max(0, endTime - nowUtc));
-        
-                    if (endTime <= nowUtc) {
-                        setIsPollExpired(true);
-                    } else {
-                        startCountdown(endTime, startTime);
-                    }
-        
-                    let hasVoted = false;
-                    let votedChoiceId = null;
-                    for (const choice of data.choices) {
-                        if (choice.userIds.includes(userId)) {
-                            hasVoted = true;
-                            votedChoiceId = choice.choiceId;
-                            break;
-                        }
-                    }
-                    setUserVoted(hasVoted);
-                    setSelectedChoice(votedChoiceId);
-                } catch (err) {
-                    setError(err.message);
-                } finally {
-                    setLoading(false);
+                setPoll(data);
+
+                const endTime = dateEndedUtc.getTime();
+                const startTime = dateCreatedUtc.getTime();
+                const nowUtc = new Date().getTime();
+                setTimeRemaining(Math.max(0, endTime - nowUtc));
+
+                if (endTime <= nowUtc) {
+                    setIsPollExpired(true);
+                } else {
+                    startCountdown(endTime, startTime);
                 }
-            };
-        
-            fetchPoll();
-        }, [pollId, userId]);
-            
+
+                let hasVoted = false;
+                let votedChoiceId = null;
+                for (const choice of data.choices) {
+                    if (choice.userIds.includes(userId)) {
+                        hasVoted = true;
+                        votedChoiceId = choice.choiceId;
+                        break;
+                    }
+                }
+                setUserVoted(hasVoted);
+                setSelectedChoice(votedChoiceId);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchPoll();
+    }, [pollId, userId]);
 
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
@@ -103,6 +102,29 @@ const PollDetails = () => {
 
             const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
             setPoll(updatedPoll);
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
+    const handleMakeInactive = async () => {
+        try {
+            const response = await fetch(`${API_BASE_URL}/poll/${pollId}/end`, {
+                method: "PATCH",
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Failed to make poll inactive.");
+            }
+
+            const updatedPoll = await response.json();
+            setPoll(updatedPoll);
+            setIsPollExpired(true);
+            setTimeRemaining(0);
         } catch (error) {
             alert(error.message);
         }
@@ -220,25 +242,27 @@ const PollDetails = () => {
                 )}
 
                 {isPollExpired || userVoted ? (
-                    <div className="poll-results">
-                        {poll.choices.map((choice) => {
-                            const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
-                            const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
-                            return (
-                                <div key={choice.choiceId} className="poll-choice result-container">
-                                    <div
-                                        className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
-                                        style={{ width: `${percentage}%` }}
-                                    ></div>
-                                    <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
-                                        {choice.name} - {percentage}% ({choice.numVotes} votes)
-                                    </p>
-                                </div>
-                            );
-                        })}
-                    </div>
+                    poll && poll.choices && (
+                        <div className="poll-results">
+                            {poll.choices.map((choice) => {
+                                const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+                                const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+                                return (
+                                    <div key={choice.choiceId} className="poll-choice result-container">
+                                        <div
+                                            className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
+                                            style={{ width: `${percentage}%` }}
+                                        ></div>
+                                        <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
+                                            {choice.name} - {percentage}% ({choice.numVotes} votes)
+                                        </p>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )
                 ) : (
-                    poll.choices.length > 0 ? (
+                    poll && poll.choices && poll.choices.length > 0 ? (
                         poll.choices.map((choice) => (
                             <button
                                 key={choice.choiceId}
@@ -258,6 +282,12 @@ const PollDetails = () => {
                     {isPollExpired && (
                         <button className="generate-pdf-button hide-in-pdf" onClick={handleGeneratePDF}>
                             Generate PDF
+                        </button>
+                    )}
+
+                    {!isPollExpired && poll && (
+                        <button className="make-inactive-button" onClick={handleMakeInactive}>
+                            Make Poll Inactive
                         </button>
                     )}
 
