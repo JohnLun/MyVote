@@ -14,8 +14,6 @@
 .tabs {
     
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
 }
 
 .tabs button {
@@ -43,4 +41,15 @@
     justify-content: center;
     min-height: 100px;
     
+}
+
+.poll-status{
+    margin: 0px;
+    padding: 0px;
+    
+}
+
+.poll-status-btn{
+    background-color: #6b80c7;
+    margin: 1px;
 }
