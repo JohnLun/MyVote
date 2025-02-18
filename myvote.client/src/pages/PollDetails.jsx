@@ -288,7 +288,7 @@ const PollDetails = () => {
                         </button>
                     )}
 
-                    {!isPollExpired && poll && (
+                    {!isPollExpired && poll && poll.userId === userId && (
                         <button className="make-inactive-button" onClick={handleMakeInactive}>
                             Make Poll Inactive
                         </button>

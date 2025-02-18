@@ -179,12 +179,13 @@ namespace MyVote.Server.Controllers
                 DateCreated = poll.DateCreated,
                 DateEnded = poll.DateEnded,
                 IsActive = poll.IsActive,
+                UserId = poll.UserId, // Ensure the UserId of the poll creator is included
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {
                     ChoiceId = c.ChoiceId,
                     Name = c.Name,
                     NumVotes = c.NumVotes,
-                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList() // Extract UserIds
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList()
                 }).ToList()
             };
 
