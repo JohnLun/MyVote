@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MyVote.Server.Hubs;
 
 namespace MyVote.Server
 {
@@ -9,7 +10,6 @@ namespace MyVote.Server
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
-
             builder.Services.AddControllers();
 
             builder.Services.AddCors(options =>
@@ -18,21 +18,25 @@ namespace MyVote.Server
                     builder => builder.WithOrigins("https://localhost:5173")
                                       .AllowAnyHeader()
                                       .AllowAnyMethod()
-                                      .AllowCredentials());
+                                      .AllowCredentials()
+                                      .SetIsOriginAllowed(_ => true));
             });
 
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+            builder.Services.AddSignalR();
 
             var environment = builder.Environment.IsProduction() ? "Production" : "Local";
             var connectionString = builder.Configuration.GetConnectionString(environment);
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
-                if (environment == "Production") {
+                if (environment == "Production")
+                {
                     options.UseSqlServer(connectionString);
-                } else {
+                }
+                else
+                {
                     options.UseNpgsql(connectionString);
                 }
             });
@@ -42,7 +46,9 @@ namespace MyVote.Server
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            // Configure the HTTP request pipeline.
+            // ✅ Add UseRouting before anything that relies on routing
+            app.UseRouting();
+
             if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
             {
                 app.UseSwagger();
@@ -51,9 +57,16 @@ namespace MyVote.Server
 
             app.UseHttpsRedirection();
 
+            // ✅ Apply CORS before mapping hubs/controllers
             app.UseCors("AllowSpecificOrigin");
 
+            // ✅ Enable WebSockets before SignalR
+            app.UseWebSockets();
+
+            // ✅ Map SignalR hub inside routing
             app.UseAuthorization();
+
+            app.MapHub<VoteHub>("/voteHub");
 
             app.MapControllers();
 

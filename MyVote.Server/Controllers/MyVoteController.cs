@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MyVote.Server.Dtos;
+using MyVote.Server.Hubs;
 using MyVote.Server.Models;
 using System.Linq;
 using System.Xml.Serialization;
@@ -215,7 +217,7 @@ namespace MyVote.Server.Controllers
         [HttpPatch("status")]
         public async Task<IActionResult> UpdateStatus([FromBody] Poll poll)
         {
-            if (DateTime.Now >= poll.DateEnded && poll.IsActive == "t")
+            if (DateTime.UtcNow >= poll.DateEnded && poll.IsActive == "t")
             {
                 poll.IsActive = "f";
             }
@@ -223,38 +225,25 @@ namespace MyVote.Server.Controllers
             return Ok();
         }
 
+
+
         [HttpPatch("vote")]
         public async Task<IActionResult> UpdateChoice([FromBody] VoteDto voteDto)
         {
-            // Ensure the choice exists in the database
             var choice = await _db.Choices
-                .Include(c => c.Poll) // Include the Poll reference
+                .Include(c => c.Poll)
                 .FirstOrDefaultAsync(c => c.ChoiceId == voteDto.ChoiceId);
 
-            if (choice == null)
-            {
-                return NotFound("Choice not found.");
-            }
+            if (choice == null) return NotFound("Choice not found.");
 
-            // Ensure the user exists in the database
-            var user = await _db.Users
-                .FirstOrDefaultAsync(u => u.UserId == voteDto.UserId);
+            var user = await _db.Users.FirstOrDefaultAsync(u => u.UserId == voteDto.UserId);
+            if (user == null) return NotFound("User not found.");
 
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
-
-            // Check if the user has already voted in any choice within this poll
             bool hasVoted = await _db.UserChoices
                 .AnyAsync(uc => uc.UserId == voteDto.UserId && uc.Choice.PollId == choice.PollId);
 
-            if (hasVoted)
-            {
-                return BadRequest(new { message = "User has already voted in this poll." });
-            }
+            if (hasVoted) return BadRequest(new { message = "User has already voted in this poll." });
 
-            // Create a new UserChoice entry to record the vote
             var userChoice = new UserChoice
             {
                 UserId = voteDto.UserId,
@@ -262,15 +251,32 @@ namespace MyVote.Server.Controllers
             };
 
             _db.UserChoices.Add(userChoice);
-
-            // Increase the choice's vote count
             choice.NumVotes++;
 
-            // Save changes to the database
             await _db.SaveChangesAsync();
+
+            // Get updated poll data
+            var updatedPoll = await _db.Polls
+                .Include(p => p.Choices)
+                .FirstOrDefaultAsync(p => p.PollId == choice.PollId);
+
+            // Broadcast the updated poll using SignalR
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<VoteHub>>();
+            try
+            {
+                await hubContext.Clients.All.SendAsync("ReceiveVoteUpdate", updatedPoll);
+                
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+            
 
             return Ok(new { message = "Vote submitted successfully!" });
         }
+
+
 
 
 

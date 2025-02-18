@@ -6,6 +6,7 @@ import { useUser } from "../contexts/UserContext";
 import PollDetailsFlip from "../components/PollDetailsFlip";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import * as signalR from "@microsoft/signalr";
 import "./PollDetails.css";
 
 const PollDetails = () => {
@@ -20,6 +21,7 @@ const PollDetails = () => {
     const { userId } = useUser();
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
+    const [connection, setConnection] = useState(null);
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -75,6 +77,36 @@ const PollDetails = () => {
         
             fetchPoll();
         }, [pollId, userId]);
+
+        useEffect(() => {
+            const newConnection = new signalR.HubConnectionBuilder()
+                .withUrl(`https://localhost:7054/voteHub`, {
+                    transport: signalR.HttpTransportType.WebSockets
+                })
+                .withAutomaticReconnect()
+                .configureLogging(signalR.LogLevel.Information)
+                .build();
+    
+            setConnection(newConnection);
+    
+            newConnection.start()
+                .then(() => console.log("Connected to SignalR"))
+                .catch(err => console.error("SignalR Connection Error: ", err));
+    
+
+    
+            return () => {
+                newConnection.stop();
+            };
+        }, [pollId]);
+
+        if (connection) {
+            connection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                console.log("received");
+                setPoll(updatedPoll);
+            });
+        }
+        
             
 
     const handleVote = async (choiceId) => {
@@ -101,8 +133,8 @@ const PollDetails = () => {
             setUserVoted(true);
             setSelectedChoice(choiceId);
 
-            const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
-            setPoll(updatedPoll);
+            // const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
+            // setPoll(updatedPoll);
         } catch (error) {
             alert(error.message);
         }
