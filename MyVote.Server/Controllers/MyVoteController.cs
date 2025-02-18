@@ -216,7 +216,7 @@ namespace MyVote.Server.Controllers
         [HttpPatch("status")]
         public async Task<IActionResult> UpdateStatus([FromBody] Poll poll)
         {
-            if (DateTime.Now >= poll.DateEnded && poll.IsActive == "t")
+            if (DateTime.UtcNow >= poll.DateEnded && poll.IsActive == "t")
             {
                 poll.IsActive = "f";
             }

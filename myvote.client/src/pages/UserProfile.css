@@ -5,17 +5,17 @@
 .poll-list {
     display: flex;
     flex-direction: column;
+    align-items: center;
 }
 
 .headingtext {
     padding: 20px;
+    margin-bottom: 0px;
 }
 
 .tabs {
     
     display: flex;
-    gap: 10px;
-    margin-bottom: 15px;
 }
 
 .tabs button {
@@ -42,5 +42,23 @@
     align-items: center;
     justify-content: center;
     min-height: 100px;
+    
+}
+
+.poll-status{
+    background-color: #6b80c7;
+    border-radius: 8px;
+}
+
+.poll-status-btn{
+    background-color: #6b80c7;
+    margin: 0px;
+    padding: 5px;
+    cursor: pointer;
+    float: left;
+}
+
+.poll-status button.active{
+    background-color: #365FB7;
     
 }
