@@ -8,6 +8,7 @@ import UserProfile from './pages/UserProfile';
 import PollLinkPage from './pages/PollLinkPage';
 import Header from './components/Header';
 import 'react-toastify/dist/ReactToastify.css';
+import NotifsPage from './pages/NotifsPage';
 
 function App() {
     return (
@@ -23,6 +24,7 @@ function App() {
                             <Route path="/poll/:pollId" element={<PollDetails />} />
                             <Route path="/user" element={<UserProfile />} />
                             <Route path="/poll-link/:pollId" element={<PollLinkPage />} />
+                            <Route path="/notifications" element={<NotifsPage/>} />
                         </Routes>
                     </div>
                 </div>

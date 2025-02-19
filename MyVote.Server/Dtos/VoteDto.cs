@@ -62,4 +62,11 @@ namespace MyVote.Server.Dtos
         public int UserId { get; set; }
     }
 
+    public class OptionDto
+    {
+        public int UserId { get; set; }
+        public string Option { get; set; }
+        public int PollId { get; set; }
+    }
+
 }

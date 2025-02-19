@@ -215,6 +215,17 @@ namespace MyVote.Server.Controllers
             return Ok(choiceDtos);
         }
 
+        [HttpGet("suggestions/{userId}")]
+        public async Task<IActionResult> GetSuggestions(int userId)
+        {
+            var suggestions = await _db.Suggestions
+                .Where(s => s.UserId == userId)
+                .ToListAsync();
+
+            return Ok(suggestions);
+           
+        }
+
         [HttpPatch("status")]
         public async Task<IActionResult> UpdateStatus([FromBody] Poll poll)
         {
@@ -333,11 +344,32 @@ namespace MyVote.Server.Controllers
             return Ok(new { message = "Vote submitted successfully!" });
         }
 
+        [HttpPost("suggestion")]
+        public async Task<IActionResult> SendOption([FromBody] OptionDto optionDto)
+        {
+            var suggestion = new Suggestion
+            {
+                SuggestionName = optionDto.Option,
+                PollId = optionDto.PollId,
+                UserId = optionDto.UserId,
+            };
 
+            _db.Suggestions.Add(suggestion);
 
+            await _db.SaveChangesAsync();
 
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
+            try
+            {
+                await hubContext.Clients.All.SendAsync("ReceiveWriteInOption", optionDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
-
+            return Ok(new { message = $"Option submitted to {optionDto.UserId}" });
+        }
 
         // POST: /poll (Create new poll)
         [HttpPost("poll")]

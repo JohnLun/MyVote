@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { FaPaperPlane } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../contexts/UserContext";
 import PollDetailsFlip from "../components/PollDetailsFlip";
@@ -18,6 +19,8 @@ const PollDetails = () => {
     const [selectedChoice, setSelectedChoice] = useState(null);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isPollExpired, setIsPollExpired] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [suggestion, setSuggestion] = useState("");
     const { userId } = useUser();
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
@@ -135,6 +138,39 @@ const PollDetails = () => {
             alert(error.message);
         }
     };
+
+    const handleSuggest = async (uId, pId, suggestion) => {
+        try {
+            const responseBody = {
+                userId: uId,
+                option: suggestion,
+                pollId: pId
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/suggestion`,{
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(responseBody)
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Vote submission failed.");
+            }
+
+
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    const handleSubmit = () => {
+        handleSuggest(poll.userId, poll.pollId, suggestion);
+        setIsModalOpen(false); // Close modal after submission
+        setSuggestion("");
+    }
 
     const handleMakeInactive = async () => {
         try {
@@ -324,8 +360,35 @@ const PollDetails = () => {
                             {choice.name}
                         </button>
                     ))
+                    
                 ) : (
                     <p></p>
+                )}
+                {!isPollExpired && 
+                    <>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            Suggest <FaPen className="poll-icon-suggest"/>
+                        </button>
+                    </>
+                }
+                {isModalOpen && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <h3>Suggest an Edit</h3>
+                            <input
+                                type="text"
+                                value={suggestion}
+                                onChange={(e) => setSuggestion(e.target.value)}
+                                placeholder="Enter your suggestion"
+                            />
+                            <div className="modal-buttons">
+                                <button onClick={handleSubmit}>Submit</button>
+                                <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 <div className="bttm-pdf-share">
