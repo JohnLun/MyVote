@@ -1,4 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
+import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
 
 const API_BASE_URL = window.location.hostname === "localhost"
@@ -8,6 +10,7 @@ const API_BASE_URL = window.location.hostname === "localhost"
 const UserContext = createContext(null);
 
 export const UserProvider = ({ children }) => {
+    const navigate = useNavigate();
     const [userId, setUserId] = useState(null);
     const [connection, setConnection] = useState(null);
     const [suggestions, setSuggestions] = useState([]);
@@ -61,6 +64,12 @@ export const UserProvider = ({ children }) => {
                 console.log("Ready to receive suggestions");
 
                 newConnection.on("ReceiveWriteInOption", (optionDto) => {
+                    toast.success(`Received suggestion for Poll #${optionDto.pollId}!`, 
+                        {
+                            autoClose: 3000,
+                            onClick: () => navigate('/navigate'),
+                            style: { cursor: "pointer" }
+                        });
                     setSuggestions(prevSuggestions => [
                         ...prevSuggestions,
                         optionDto

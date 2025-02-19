@@ -139,12 +139,13 @@ const PollDetails = () => {
         }
     };
 
-    const handleSuggest = async (uId, pId, suggestion) => {
+    const handleSuggest = async (uId, pId, suggestion, pName) => {
         try {
             const responseBody = {
                 userId: uId,
-                option: suggestion,
-                pollId: pId
+                suggestionName: suggestion,
+                pollId: pId,
+                pollName: pName
             };
 
             const response = await fetch(`${API_BASE_URL}/api/suggestion`,{
@@ -167,7 +168,7 @@ const PollDetails = () => {
     }
 
     const handleSubmit = () => {
-        handleSuggest(poll.userId, poll.pollId, suggestion);
+        handleSuggest(poll.userId, poll.pollId, suggestion, poll.title);
         setIsModalOpen(false); // Close modal after submission
         setSuggestion("");
     }

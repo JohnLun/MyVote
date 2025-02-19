@@ -349,19 +349,29 @@ namespace MyVote.Server.Controllers
         {
             var suggestion = new Suggestion
             {
-                SuggestionName = optionDto.Option,
+                SuggestionName = optionDto.SuggestionName,
                 PollId = optionDto.PollId,
                 UserId = optionDto.UserId,
+                PollName = optionDto.PollName,
             };
 
             _db.Suggestions.Add(suggestion);
 
             await _db.SaveChangesAsync();
 
+            var updatedOptionDto = new OptionDto
+            {
+                SuggestionId = suggestion.SuggestionId, // Newly created ID
+                SuggestionName = suggestion.SuggestionName,
+                PollId = suggestion.PollId,
+                UserId = suggestion.UserId,
+                PollName = suggestion.PollName
+            };
+
             var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
             try
             {
-                await hubContext.Clients.All.SendAsync("ReceiveWriteInOption", optionDto);
+                await hubContext.Clients.All.SendAsync("ReceiveWriteInOption", updatedOptionDto);
             }
             catch (Exception e)
             {
@@ -478,6 +488,20 @@ namespace MyVote.Server.Controllers
             return NoContent();
         }
 
+        [HttpDelete("/suggestion/{suggestionId}")]
+        public async Task<IActionResult> DeleteSuggestion(int suggestionId)
+        {
+            var suggestion = await _db.Suggestions.FirstOrDefaultAsync(s => s.SuggestionId == suggestionId);
 
+            if (suggestion == null)
+            {
+                return NotFound(new { message = "Suggestion not found" });
+            }
+
+            _db.Suggestions.Remove(suggestion);
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Suggestion deleted successfully" });
+        }
     }
 }
