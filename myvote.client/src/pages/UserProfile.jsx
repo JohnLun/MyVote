@@ -1,18 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import PollCard from '../components/PollCard';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import './UserProfile.css';
-import filterIcon from '../assets/filter.svg'; // Renamed for clarity
 
 const UserProfile = () => {
     const { userId } = useUser();
     const [activeTab, setActiveTab] = useState('voted');
-    const [pollFilter, setPollFilter] = useState('all'); 
+    const [pollFilter, setPollFilter] = useState('all');
     const [votedPolls, setVotedPolls] = useState([]);
     const [ownedPolls, setOwnedPolls] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [showFilter, setShowFilter] = useState(false); // State to control dropdown visibility
 
     const API_BASE_URL = window.location.hostname === "localhost"
         ? "https://localhost:7054/api"
@@ -55,71 +59,57 @@ const UserProfile = () => {
     // Function to filter polls based on status
     const getFilteredPolls = () => {
         const polls = activeTab === 'voted' ? votedPolls : ownedPolls;
-
         return polls.filter(poll => {
             if (pollFilter === 'active') return poll.isActive === "t";
             if (pollFilter === 'inactive') return poll.isActive === "f";
-            return true; 
+            return true;
         });
     };
 
     return (
         <div className="user-profile">
+            
             <div className="title-nav">
-                <h1 className="headingtext">Your Polls</h1>
+                <div className="heading-div">
+                    <h1 className="headingtext">Your Polls</h1>
 
-                {/* <div className="nav-tabs-status"> */}
-                    <div className="tabs">
-                        <button 
-                            className={activeTab === 'voted' ? 'active' : ''} 
-                            onClick={() => setActiveTab('voted')}
+                </div>
+                
+                <div className="button-div">
+                    
+                    {/* Material UI Toggle Buttons for tabs */}
+                    <ToggleButtonGroup
+                        color="primary"
+                        value={activeTab}
+                        exclusive
+                        onChange={(event, newTab) => {
+                            if (newTab !== null) setActiveTab(newTab);
+                        }}
+                        aria-label="Poll tabs"
+                    >
+                        <ToggleButton value="voted">Voted Polls</ToggleButton>
+                        <ToggleButton value="owned">Created Polls</ToggleButton>
+                    </ToggleButtonGroup>
+
+                    {/* Material UI Select for filtering */}
+                    <FormControl sx={{ minWidth: 150 }}>
+                        <InputLabel id="poll-filter-label">Filter</InputLabel>
+                        <Select
+                            labelId="poll-filter-label"
+                            id="poll-filter"
+                            value={pollFilter}
+                            onChange={(event) => setPollFilter(event.target.value)}
+                            label="Filter"
                         >
-                            Voted Polls
-                        </button>
-                        <button 
-                            className={activeTab === 'owned' ? 'active' : ''} 
-                            onClick={() => setActiveTab('owned')}
-                        >
-                            Created Polls
-                        </button>
-                    </div>
-
-                    {/* Filter icon */}
-                    <div className="filter-icon" onClick={() => setShowFilter(!showFilter)}>
-                        <img src={filterIcon} alt="Filter" />
-                    </div>
-
-                    {/* Conditionally render the dropdown */}
-                    {showFilter && (
-                        <div className="poll-status">
-                            <button 
-                                className={`poll-status-btn ${pollFilter === 'all' ? 'active' : ''}`} 
-                                onClick={() => setPollFilter('all')}
-                            >
-                                All Polls
-                            </button>
-
-                            <button 
-                                className={`poll-status-btn ${pollFilter === 'active' ? 'active' : ''}`} 
-                                onClick={() => setPollFilter('active')}
-                            >
-                                Active
-                            </button>
-
-                            <button 
-                                className={`poll-status-btn ${pollFilter === 'inactive' ? 'active' : ''}`} 
-                                onClick={() => setPollFilter('inactive')}
-                            >
-                                Inactive
-                            </button>
-                        </div>
-                    )}
-                {/* </div> */}
+                            <MenuItem value="all">All Polls</MenuItem>
+                            <MenuItem value="active">Active</MenuItem>
+                            <MenuItem value="inactive">Inactive</MenuItem>
+                        </Select>
+                    </FormControl>
+                </div>
             </div>
 
             <div className="poll-list">
-                
-
                 {loading ? (
                     <p>Finding your polls...</p>
                 ) : error ? (
