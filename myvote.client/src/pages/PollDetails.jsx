@@ -289,6 +289,8 @@ const PollDetails = () => {
         ? Math.max(0, (timeRemaining / (new Date(poll.dateEnded) - new Date(poll.dateCreated))) * 100)
         : 0;
 
+    const isFlashing = progress <= 5 && timeRemaining > 0;
+
     if (loading) return <p>Loading poll...</p>;
     if (error) return <p>Error: {error}</p>;
 
@@ -298,7 +300,7 @@ const PollDetails = () => {
                 <h2 className="poll-title">{poll.title}</h2>
 
                 {/* Circular Timer */}
-                <div className="timer-container hide-in-pdf">
+                <div className={`timer-container hide-in-pdf ${isFlashing ? "timer-flash" : ""}`}>
                     <svg width="100" height="100" viewBox="0 0 100 100">
                         <circle className="timer-background" cx="50" cy="50" r="45" />
                         <circle
