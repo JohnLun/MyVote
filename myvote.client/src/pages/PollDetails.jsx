@@ -216,22 +216,50 @@ const PollDetails = () => {
         const imgData = canvas.toDataURL('image/png');
         const pdf = new jsPDF();
 
+        const pageWidth = pdf.internal.pageSize.getWidth();
+        const pageHeight = pdf.internal.pageSize.getHeight();
+
         // Add title, description, date created, and date expired
         pdf.setFontSize(16);
-        pdf.text(poll.title, 10, 10);
+        pdf.setTextColor("#000000");
+        pdf.setFillColor("#f0f0f0");
+        pdf.rect(5, 5, pageWidth - 10, 20, "F");
+        pdf.text(poll.title, pageWidth / 2, 15, { align: "center" });
+
         pdf.setFontSize(12);
-        pdf.text(`Description: ${poll.description}`, 10, 20);
-        pdf.text(`Date Created: ${new Date(poll.dateCreated).toLocaleString()}`, 10, 30);
-        pdf.text(`Date Expired: ${new Date(poll.dateEnded).toLocaleString()}`, 10, 40);
+        pdf.setFillColor("#f0f0f0");
+        pdf.rect(5, 30, pageWidth - 10, 20, "F");
+        pdf.text(`Description: ${poll.description}`, pageWidth / 2, 40, { align: "center" });
+
+        pdf.setFillColor("#f0f0f0");
+        pdf.rect(5, 55, pageWidth - 10, 20, "F");
+        pdf.text(`Date Created: ${new Date(poll.dateCreated).toLocaleString()}`, pageWidth / 2, 65, { align: "center" });
+        pdf.text(`Date Expired: ${new Date(poll.dateEnded).toLocaleString()}`, pageWidth / 2, 75, { align: "center" });
 
         // Add poll details including the graph
-        pdf.addImage(imgData, 'PNG', 10, 50, 180, 160);
+        const maxWidth = 180;
+        const maxHeight = 160;
+        let imgWidth = canvas.width;
+        let imgHeight = canvas.height;
+
+        if (imgWidth > maxWidth || imgHeight > maxHeight) {
+            const widthRatio = maxWidth / imgWidth;
+            const heightRatio = maxHeight / imgHeight;
+            const ratio = Math.min(widthRatio, heightRatio);
+            imgWidth *= ratio;
+            imgHeight *= ratio;
+        }
+
+        pdf.setFillColor("#f0f0f0");
+        pdf.rect(5, 80, pageWidth - 10, imgHeight + 10, "F");
+        pdf.addImage(imgData, 'PNG', (pageWidth - imgWidth) / 2, 85, imgWidth, imgHeight);
 
         // Add poll choices as text
-        let yPosition = 220;
-        const pageHeight = 297; // A4 page height in mm
+        let yPosition = 95 + imgHeight;
         const lineHeight = 10;
         pdf.setFontSize(12);
+        pdf.setFillColor("#f0f0f0");
+        pdf.rect(5, yPosition, pageWidth - 10, 20, "F");
         poll.choices.forEach((choice, index) => {
             const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
             const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
@@ -239,7 +267,7 @@ const PollDetails = () => {
                 pdf.addPage();
                 yPosition = 10;
             }
-            pdf.text(`${index + 1}. ${choice.name} - ${percentage}% (${choice.numVotes} votes)`, 10, yPosition);
+            pdf.text(`${index + 1}. ${choice.name} - ${percentage}% (${choice.numVotes} votes)`, pageWidth / 2, yPosition + 10, { align: "center" });
             yPosition += lineHeight;
         });
 
@@ -349,7 +377,6 @@ const PollDetails = () => {
             </div>
         </div>
     );
-
 };
 
 export default PollDetails;
