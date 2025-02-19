@@ -1,5 +1,8 @@
 import { useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
+import { FaCheck } from "react-icons/fa";
+import { FaTimes } from "react-icons/fa";
+import './NotifsPage.css';
 
 function NotifsPage () {
     const { suggestions } = useUser(); 
@@ -25,11 +28,11 @@ function NotifsPage () {
                                         </p>
                                     </div>
                                     <div>
-                                        <button className="btn btn-danger me-2">
-                                            ❌
+                                        <button className="deny-icon">
+                                            <FaTimes/>
                                         </button>
-                                        <button className="btn btn-success">
-                                            ✅
+                                        <button className="accept-icon">
+                                            <FaCheck/>
                                         </button>
                                     </div>
                                 </div>
