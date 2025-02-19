@@ -10,6 +10,7 @@ namespace MyVote.Server.Dtos
         public DateTime DateCreated { get; set; }
         public DateTime DateEnded { get; set; }
         public string IsActive { get; set; }
+        public int UserId { get; set; } // Add this field to track poll creator
         public List<ChoiceDto> Choices { get; set; }
     }
 

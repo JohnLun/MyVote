@@ -179,12 +179,13 @@ namespace MyVote.Server.Controllers
                 DateCreated = poll.DateCreated,
                 DateEnded = poll.DateEnded,
                 IsActive = poll.IsActive,
+                UserId = poll.UserId, // Ensure the UserId of the poll creator is included
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {
                     ChoiceId = c.ChoiceId,
                     Name = c.Name,
                     NumVotes = c.NumVotes,
-                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList() // Extract UserIds
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList()
                 }).ToList()
             };
 
@@ -221,6 +222,23 @@ namespace MyVote.Server.Controllers
             }
             _db.SaveChangesAsync();
             return Ok();
+        }
+
+        // make a poll inactive
+        [HttpPatch("poll/{pollId}/end")]
+        public async Task<IActionResult> EndPoll(int pollId)
+        {
+            var poll = await _db.Polls.FindAsync(pollId);
+            if (poll == null)
+            {
+                return NotFound(new { message = "Poll not found." });
+            }
+
+            poll.DateEnded = DateTime.UtcNow;
+            poll.IsActive = "f";
+            await _db.SaveChangesAsync();
+
+            return Ok(poll);
         }
 
         [HttpPatch("vote")]
