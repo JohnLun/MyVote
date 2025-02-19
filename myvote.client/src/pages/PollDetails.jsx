@@ -143,7 +143,7 @@ const PollDetails = () => {
         try {
             const responseBody = {
                 userId: uId,
-                option: suggestion,
+                suggestionName: suggestion,
                 pollId: pId
             };
 
