@@ -50,7 +50,7 @@ export const UserProvider = ({ children }) => {
                 if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
     
                 const data = await response.json();
-                console.log(data);
+                setSuggestions(data);
             }
         };
 
