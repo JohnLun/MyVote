@@ -1,17 +1,24 @@
 .user-profile {
     padding: 16px;
+    /* display: flex;
+    flex-direction: column; */
+    
 }
 
 .poll-list {
     display: flex;
     flex-direction: column;
     align-items: center;
-    
+    /* height: 100svh; */
 }
 
 .headingtext {
-    padding: 20px;
     margin-bottom: 0px;
+}
+
+.nav-tabs-status{
+    display: flex;
+    justify-content: space-between;
 }
 
 .tabs {

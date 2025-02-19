@@ -2,15 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import PollCard from '../components/PollCard';
 import './UserProfile.css';
+import filterIcon from '../assets/filter.svg'; // Renamed for clarity
 
 const UserProfile = () => {
     const { userId } = useUser();
     const [activeTab, setActiveTab] = useState('voted');
-    const [pollFilter, setPollFilter] = useState('all'); // Tracks selected filter
+    const [pollFilter, setPollFilter] = useState('all'); 
     const [votedPolls, setVotedPolls] = useState([]);
     const [ownedPolls, setOwnedPolls] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [showFilter, setShowFilter] = useState(false); // State to control dropdown visibility
 
     const API_BASE_URL = window.location.hostname === "localhost"
         ? "https://localhost:7054/api"
@@ -55,69 +57,69 @@ const UserProfile = () => {
         const polls = activeTab === 'voted' ? votedPolls : ownedPolls;
 
         return polls.filter(poll => {
-            
-            
-            if (pollFilter === 'active') {
-                return poll.isActive === "t"; // Adjusted to check for "t"
-            } 
-            if (pollFilter === 'inactive') {
-                return poll.isActive === "f"; // Adjusted to check for "f"
-            }
-            return true; // Default to show all polls
-            
+            if (pollFilter === 'active') return poll.isActive === "t";
+            if (pollFilter === 'inactive') return poll.isActive === "f";
+            return true; 
         });
     };
-
-
 
     return (
         <div className="user-profile">
             <div className="title-nav">
                 <h1 className="headingtext">Your Polls</h1>
 
-                {/* Tabs for selecting "Voted" or "Created" polls */}
-                <div className="tabs">
-                    <button 
-                        className={activeTab === 'voted' ? 'active' : ''} 
-                        onClick={() => setActiveTab('voted')}
-                    >
-                        Voted Polls
-                    </button>
-                    <button 
-                        className={activeTab === 'owned' ? 'active' : ''} 
-                        onClick={() => setActiveTab('owned')}
-                    >
-                        Created Polls
-                    </button>
-                </div>
+                {/* <div className="nav-tabs-status"> */}
+                    <div className="tabs">
+                        <button 
+                            className={activeTab === 'voted' ? 'active' : ''} 
+                            onClick={() => setActiveTab('voted')}
+                        >
+                            Voted Polls
+                        </button>
+                        <button 
+                            className={activeTab === 'owned' ? 'active' : ''} 
+                            onClick={() => setActiveTab('owned')}
+                        >
+                            Created Polls
+                        </button>
+                    </div>
 
-                
+                    {/* Filter icon */}
+                    <div className="filter-icon" onClick={() => setShowFilter(!showFilter)}>
+                        <img src={filterIcon} alt="Filter" />
+                    </div>
+
+                    {/* Conditionally render the dropdown */}
+                    {showFilter && (
+                        <div className="poll-status">
+                            <button 
+                                className={`poll-status-btn ${pollFilter === 'all' ? 'active' : ''}`} 
+                                onClick={() => setPollFilter('all')}
+                            >
+                                All Polls
+                            </button>
+
+                            <button 
+                                className={`poll-status-btn ${pollFilter === 'active' ? 'active' : ''}`} 
+                                onClick={() => setPollFilter('active')}
+                            >
+                                Active
+                            </button>
+
+                            <button 
+                                className={`poll-status-btn ${pollFilter === 'inactive' ? 'active' : ''}`} 
+                                onClick={() => setPollFilter('inactive')}
+                            >
+                                Inactive
+                            </button>
+                        </div>
+                    )}
+                {/* </div> */}
             </div>
-            {/* Poll filter buttons */}
-            <div className="poll-status">
-                    <button 
-                        className={`poll-status-btn ${pollFilter === 'all' ? 'active' : ''}`} 
-                        onClick={() => setPollFilter('all')}
-                    >
-                        All Polls
-                    </button>
-
-                    <button 
-                        className={`poll-status-btn ${pollFilter === 'active' ? 'active' : ''}`} 
-                        onClick={() => setPollFilter('active')}
-                    >
-                        Active
-                    </button>
-
-                    <button 
-                        className={`poll-status-btn ${pollFilter === 'inactive' ? 'active' : ''}`} 
-                        onClick={() => setPollFilter('inactive')}
-                    >
-                        Inactive
-                    </button>
-                </div>
 
             <div className="poll-list">
+                
+
                 {loading ? (
                     <p>Finding your polls...</p>
                 ) : error ? (
