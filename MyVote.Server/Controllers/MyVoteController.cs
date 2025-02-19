@@ -352,6 +352,7 @@ namespace MyVote.Server.Controllers
                 SuggestionName = optionDto.SuggestionName,
                 PollId = optionDto.PollId,
                 UserId = optionDto.UserId,
+                PollName = optionDto.PollName,
             };
 
             _db.Suggestions.Add(suggestion);
@@ -363,7 +364,8 @@ namespace MyVote.Server.Controllers
                 SuggestionId = suggestion.SuggestionId, // Newly created ID
                 SuggestionName = suggestion.SuggestionName,
                 PollId = suggestion.PollId,
-                UserId = suggestion.UserId
+                UserId = suggestion.UserId,
+                PollName = suggestion.PollName
             };
 
             var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
