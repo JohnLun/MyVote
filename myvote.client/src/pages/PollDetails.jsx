@@ -21,7 +21,7 @@ const PollDetails = () => {
     const { userId } = useUser();
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
-    const timerRef = useRef(null); 
+    const timerRef = useRef(null);
     const [connection, setConnection] = useState(null);
 
     const API_BASE_URL =
@@ -79,35 +79,33 @@ const PollDetails = () => {
         fetchPoll();
     }, [pollId, userId]);
 
-        useEffect(() => {
-            const newConnection = new signalR.HubConnectionBuilder()
-                .withUrl(`${API_BASE_URL}/voteHub`, {
-                    transport: signalR.HttpTransportType.WebSockets
-                })
-                .withAutomaticReconnect()
-                .configureLogging(signalR.LogLevel.Information)
-                .build();
-    
-            setConnection(newConnection);
-    
-            newConnection.start()
-                .then(() => {
-                    console.log("Connected to SignalR");
+    useEffect(() => {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl(`${API_BASE_URL}/voteHub`, {
+                transport: signalR.HttpTransportType.WebSockets
+            })
+            .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
 
-                    newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
-                        setPoll(updatedPoll);
-                    });
+        setConnection(newConnection);
 
-                    console.log("Listener added");
-                })
-                .catch(err => console.error("SignalR Connection Error: ", err));
-    
-            return () => {
-                newConnection.stop();
-            };
-        }, [pollId]);
-        
-            
+        newConnection.start()
+            .then(() => {
+                console.log("Connected to SignalR");
+
+                newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                });
+
+                console.log("Listener added");
+            })
+            .catch(err => console.error("SignalR Connection Error: ", err));
+
+        return () => {
+            newConnection.stop();
+        };
+    }, [pollId]);
 
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
@@ -164,7 +162,6 @@ const PollDetails = () => {
         }
     };
 
-
     const startCountdown = (endTime, startTime) => {
         const updateTimer = () => {
             const now = Date.now();
@@ -183,12 +180,24 @@ const PollDetails = () => {
         timerRef.current = setInterval(updateTimer, 1000);
     };
 
-
     const formatTime = (ms) => {
         const totalSeconds = Math.floor(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
         return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    };
+
+    const getTimerColor = () => {
+        const totalDuration = new Date(poll.dateEnded) - new Date(poll.dateCreated);
+        const percentageRemaining = (timeRemaining / totalDuration) * 100;
+
+        if (percentageRemaining > 60) {
+            return "#4CAF50"; // Green
+        } else if (percentageRemaining > 20) {
+            return "#FFEB3B"; // Yellow
+        } else {
+            return "#F44336"; // Red
+        }
     };
 
     const handleShareClick = (event) => {
@@ -263,6 +272,7 @@ const PollDetails = () => {
                             r="45"
                             strokeDasharray="283"
                             strokeDashoffset={`${(progress / 100) * 283}`}
+                            style={{ stroke: getTimerColor() }}
                         />
                         <text x="50" y="55" textAnchor="middle" fontSize="18px" fill="white">
                             {formatTime(timeRemaining)}
