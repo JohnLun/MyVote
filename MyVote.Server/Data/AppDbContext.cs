@@ -8,6 +8,7 @@ public class AppDbContext : DbContext
     public DbSet<User> Users { get; set; }
     public DbSet<Poll> Polls { get; set; }
     public DbSet<Choice> Choices { get; set; }
+    public DbSet<Suggestion> Suggestions { get; set; }
     public DbSet<UserChoice> UserChoices { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
