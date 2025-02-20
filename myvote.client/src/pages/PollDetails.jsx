@@ -7,6 +7,7 @@ import { useUser } from "../contexts/UserContext";
 import PollDetailsFlip from "../components/PollDetailsFlip";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import { toast } from 'react-toastify';
 import * as signalR from "@microsoft/signalr";
 import "./PollDetails.css";
 import { PDFDownloadLink } from '@react-pdf/renderer';
@@ -40,7 +41,14 @@ const PollDetails = () => {
         const fetchPoll = async () => {
             try {
                 const response = await fetch(`${API_BASE_URL}/api/poll/${pollId}`);
-                if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
+                if (!response.ok) {
+                    toast.error("Poll Not Found", {
+                        autoClose: 3000,
+                        onClick: () => toast.dismiss(),
+                        style: {cursor: 'pointer'}
+                    })
+                    navigate('/');
+                }
 
                 const data = await response.json();
 

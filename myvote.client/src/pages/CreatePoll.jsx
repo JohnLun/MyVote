@@ -102,11 +102,15 @@ const CreatePoll = () => {
             }
 
             const data = await response.json();
-            toast.success('Poll created successfully!', { autoClose: 3000 });
+            toast.success('Poll created successfully!', { 
+                autoClose: 3000,
+                onClick: () => toast.dismiss(),
+                style: { cursor: "pointer" }
+            });
 
             setTimeout(() => {
                 navigate(`/poll-link/${data.pollId}`);
-            }, 1000);
+            }, 500);
 
         } catch (error) {
             console.error('Fetch error:', error.message);
@@ -117,7 +121,7 @@ const CreatePoll = () => {
     return (
         <div className="create-poll-container">
             <div className="create-poll-card">
-                <h1>Create a Poll</h1>
+                <h2 className="create-poll-header">Create a Poll</h2>
                 <form onSubmit={handleSubmit}>
                     {/* Title */}
                     <div className="form-group">
