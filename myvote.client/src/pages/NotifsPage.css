@@ -11,15 +11,23 @@
 }
 
 .deny-icon {
-    background: red;
+    background: #b22222;
     border-radius: 20%;
     padding: 5px;
+    transition: transform 0.3s ease;
+}
+
+.deny-icon:hover{
+    transform: scale(1.15);
 }
 
 .accept-icon {
-    background: rgb(0, 255, 0);
+    background: #228b22;
     border-radius: 20%;
     padding: 5px;
-    
+    transition: transform 0.3s ease;
 }
 
+.accept-icon:hover{
+    transform: scale(1.15);
+}

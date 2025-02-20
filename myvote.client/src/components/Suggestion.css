@@ -24,7 +24,12 @@
     
 }
 
-
+.suggestion-card-buttons{
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    margin-top: 10px;
+}
 
 .deny-icon,
 .accept-icon {
@@ -32,8 +37,19 @@
     border: none;
     cursor: pointer;
     margin: 3px;
-
-    
+    display: flex;
+    justify-content: center;
+    align-items: center;
 } 
 
 /* add media query */
+
+
+@media(max-width: 350px){
+    .suggestion-card-buttons{
+        display: flex;
+        flex-direction: column;
+        
+    }
+    
+}
