@@ -60,7 +60,11 @@
     box-sizing: border-box; /* Include padding in the element's total width and height */
 }
 
-.chart-container canvas {
-    width: 100% !important;
-    height: 100% !important;
+    .chart-container canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+.flip-card-back .chart-container {
+    display: none; /* Hide the chart container on the back side */
 }

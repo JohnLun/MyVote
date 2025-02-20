@@ -121,7 +121,7 @@ const CreatePoll = () => {
     return (
         <div className="create-poll-container">
             <div className="create-poll-card">
-                <h1>Create a Poll</h1>
+                <h2 className="create-poll-header">Create a Poll</h2>
                 <form onSubmit={handleSubmit}>
                     {/* Title */}
                     <div className="form-group">
