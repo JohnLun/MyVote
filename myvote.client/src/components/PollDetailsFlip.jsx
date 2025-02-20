@@ -24,7 +24,9 @@ const PollDetailsFlip = forwardRef(({ poll }, ref) => {
         <div className={`flip-card ${isFlipped ? 'flipped' : ''}`} onClick={handleFlip}>
             <div className="flip-card-inner">
                 <div className="flip-card-front">
-                    <PollGraph ref={graphRef} poll={poll} />
+                    <div className="chart-container">
+                        <PollGraph ref={graphRef} poll={poll} />
+                    </div>
                     <i className="flip-icon fas fa-sync-alt"></i>
                 </div>
                 <div className="flip-card-back hide-in-pdf">

@@ -18,6 +18,7 @@
     border: 2px solid #000; /* Add border around the flip card area */
     border-radius: 10px; /* Optional: Add rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visibility */
+    -webkit-transform-style: preserve-3d; /* Fix for Safari */
 }
 
 .flip-card.flipped .flip-card-inner {
@@ -65,6 +66,22 @@
         height: 100% !important;
     }
 
-.flip-card-back .chart-container {
-    display: none; /* Hide the chart container on the back side */
+.flip-card.flipped .flip-card-front .chart-container {
+    display: none; /* Hide the chart container on the front side when flipped */
 }
+
+.flip-card:not(.flipped) .flip-card-back .chart-container {
+    display: none; /* Hide the chart container on the back side when not flipped */
+}
+
+.flip-card-back .chart-container {
+    display: none !important; /* Ensure it's hidden */
+}
+
+.flip-card-front {
+    transform: rotateY(0deg);
+    -webkit-transform: rotateY(0deg);
+}
+
+
+
