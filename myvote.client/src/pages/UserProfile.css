@@ -11,19 +11,8 @@
     justify-content: space-between;
 }
 
-.tabs {
-    
-    display: flex;
-}
-
-.tabs button {
-    padding: 10px 15px;
-    border: none;
-    background-color: #afb0b2;
-    cursor: pointer;
-    transition: 0.3s;
-    margin:5px;
-    margin-bottom: 15px;
+.headingtext{
+    margin-bottom: 1rem;
 }
 
 .css-1qb8o-MuiToggleButtonGroup-root{
@@ -44,6 +33,7 @@
     background-color: #365FB7!important;
     color: white !important; 
     font-size: 10px;
+    
 }
 
 .css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input.css-w76bbz-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input{
