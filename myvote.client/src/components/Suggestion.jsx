@@ -1,6 +1,7 @@
 import { FaCheck } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext"; 
+import './Suggestion.css';
 
 function Suggestion({ suggestion }) {
     const { suggestions, setSuggestions } = useUser(); // Get setSuggestions from context
@@ -58,25 +59,25 @@ function Suggestion({ suggestion }) {
     };
 
     return (
-        <div className="card mb-3">
-            <div className="card-body d-flex justify-content-between align-items-center">
-                <div>
-                    <h5 className="card-title">
-                        Suggestion for {suggestion.pollName}
-                    </h5>
-                    <p className="card-text">
-                        Suggestion: {suggestion.suggestionName}
-                    </p>
-                </div>
-                <div>
-                    <button className="deny-icon" onClick={handleDeny}>
-                        <FaTimes />
-                    </button>
-                    <button className="accept-icon" onClick={handleAccept}>
-                        <FaCheck />
-                    </button>
-                </div>
+        <div className="suggestion-card">
+            
+            <div>
+                <h4 className="suggestion-card-title card-title">
+                    Poll Title: <b>{suggestion.pollName}</b>
+                </h4>
+                <p className="suggestion-card-text card-text">
+                    Suggestion: <u>{suggestion.suggestionName}</u>
+                </p>
             </div>
+            <div className="suggestion-card-buttons">
+                <button className="deny-icon" onClick={handleDeny}>
+                    <FaTimes />
+                </button>
+                <button className="accept-icon" onClick={handleAccept}>
+                    <FaCheck />
+                </button>
+            </div>
+            
         </div>
     );
 }

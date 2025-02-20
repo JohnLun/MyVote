@@ -10,20 +10,21 @@ function NotifsPage () {
     },[suggestions]);
     
     return (
-        <div className="container mt-4">
+        <>
             <h2>Notifications</h2>
-            <div className="row">
-                {suggestions.length > 0 ? (
-                    suggestions.map((suggestion) => (
-                        <div key={suggestion.suggestionId} className="col-md-6">
-                            <Suggestion suggestion={suggestion}></Suggestion>
-                        </div>
-                    ))
-                ) : (
-                    <p>No suggestions yet.</p>
-                )}
+            <div className="noti-container"> 
+                    {suggestions.length > 0 ? (
+                        suggestions.map((suggestion) => (
+                            <div key={suggestion.suggestionId} className="noti-column">
+                                <Suggestion suggestion={suggestion} />
+                            </div>
+                        ))
+                    ) : (
+                        <p className="noti-empty-message">No suggestions yet.</p>
+                    )}
             </div>
-        </div>
+        </>
+        
     );
 }
 

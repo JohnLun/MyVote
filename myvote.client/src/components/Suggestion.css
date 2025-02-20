@@ -1,0 +1,41 @@
+.suggestion-card {
+    
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+/* .suggestion-card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+   
+} */
+
+.suggestion-card-title {
+    font-size: 1.25rem;
+    font-weight: bold;
+}
+
+.suggestion-card-text {
+    font-size: 1.2rem;
+    
+}
+
+/* .suggestion-card-buttons {
+    display: flex;
+    
+    gap: 0.5rem;
+} */
+
+/* .deny-icon,
+.accept-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    
+} */
+
