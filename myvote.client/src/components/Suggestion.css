@@ -24,18 +24,15 @@
     
 }
 
-/* .suggestion-card-buttons {
-    display: flex;
-    
-    gap: 0.5rem;
-} */
 
-/* .deny-icon,
+
+.deny-icon,
 .accept-icon {
     background: none;
     border: none;
     cursor: pointer;
-    font-size: 1.5rem;
+    margin: 3px;
+
     
-} */
+} 
 

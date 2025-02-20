@@ -4,7 +4,7 @@
     display: flex;
     justify-content: space-between; /* Ensures left and right alignment */
     align-items: center;
-    padding: 1rem 4rem;
+    padding: 1rem 2rem;
     /* z-index: 1000; */
     /* margin-bottom: 2rem; */
 }

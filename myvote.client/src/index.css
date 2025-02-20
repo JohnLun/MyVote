@@ -4,7 +4,7 @@
     font-weight: 400;
     color-scheme: dark;
     color: rgba(255, 255, 255, 0.87);
-    background-color: #23242C;
+    background: linear-gradient(to top, #0f1013, #23242C);
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
