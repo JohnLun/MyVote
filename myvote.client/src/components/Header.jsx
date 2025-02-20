@@ -1,12 +1,15 @@
 import React from 'react';
 import './Header.css';
-import { FaUserCircle, FaHome } from 'react-icons/fa';
+import { FaUserCircle, FaHome, FaBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { FaBell } from "react-icons/fa";
 import myImage from '../assets/voteIcon.svg';
+import Box from '@mui/material/Box';
+import Badge from '@mui/material/Badge';
+import { useUser } from '../contexts/UserContext'; // Import context
 
 function Header() {
     const navigate = useNavigate();
+    const { suggestions } = useUser(); // Access suggestions from context
 
     const handleUserIconClick = () => {
         navigate('/user');
@@ -18,8 +21,8 @@ function Header() {
 
     const handleBellClick = () => {
         navigate('/notifications');
-    }
-    
+    };
+
     return (
         <header className="header">
             {/* Left-aligned title */}
@@ -33,8 +36,14 @@ function Header() {
                 <div className="home-icon">
                     <FaHome size={24} onClick={handleHomeIconClick} />
                 </div>
-                <div className="bell-icon">
-                    <FaBell size={24} onClick={handleBellClick}/>
+                <div className="bell-icon" onClick={handleBellClick}>
+                    <Badge 
+                        badgeContent={suggestions.length} 
+                        color="secondary" 
+                        invisible={suggestions.length === 0}
+                    >
+                        <FaBell size={24} />
+                    </Badge>
                 </div>
                 <div className="header-icon" onClick={handleUserIconClick}>
                     <FaUserCircle size={24} />
