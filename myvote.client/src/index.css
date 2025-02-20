@@ -100,3 +100,11 @@ button:focus-visible {
     color: white;
   }
 }
+
+@media (max-width: 600px) {
+  button {
+    margin: 10px;
+    background-color: #365FB7;
+    color: white;
+  }
+}
