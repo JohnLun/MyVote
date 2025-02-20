@@ -2,8 +2,11 @@ import { FaCheck } from "react-icons/fa";
 import { FaTimes } from "react-icons/fa";
 import { useUser } from "../contexts/UserContext"; 
 import './Suggestion.css';
+import { toast } from 'react-toastify';
+import { useNavigate } from "react-router-dom";
 
 function Suggestion({ suggestion }) {
+    const navigate = useNavigate();
     const { suggestions, setSuggestions } = useUser(); // Get setSuggestions from context
 
     const API_BASE_URL =
@@ -20,7 +23,6 @@ function Suggestion({ suggestion }) {
         });
 
         if (response.ok) {
-            // Update state by filtering out the deleted suggestion
             setSuggestions(prevSuggestions =>
                 prevSuggestions.filter(s => s.suggestionId !== suggestion.suggestionId)
             );
@@ -52,6 +54,16 @@ function Suggestion({ suggestion }) {
     
             // Update local state to remove the accepted suggestion
             setSuggestions((prev) => prev.filter((s) => s.suggestionId !== suggestion.suggestionId));
+            
+            toast.success("Choice added! Click to see changes", {
+                autoClose: 3000,
+                onClick: () => {
+                    toast.dismiss();
+                    navigate(`/poll/${suggestion.pollId}`);
+                },
+                style: { cursor: "pointer" }
+            })
+            
     
         } catch (error) {
             console.error("Error accepting suggestion:", error);

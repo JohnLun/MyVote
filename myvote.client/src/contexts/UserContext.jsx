@@ -68,7 +68,10 @@ export const UserProvider = ({ children }) => {
                         toast.success(`Received suggestion for Poll #${optionDto.pollId}!`, 
                             {
                                 autoClose: 3000,
-                                onClick: () => navigate('/notifications'),
+                                onClick: () => {
+                                    toast.dismiss();
+                                    navigate('/notifications');
+                                },
                                 style: { cursor: "pointer" }
                             });
                         setSuggestions(prevSuggestions => [
