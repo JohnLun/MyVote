@@ -40,44 +40,72 @@ const styles = StyleSheet.create({
     },
     image: {
         marginTop: 10,
-        width: '100%',
-        height: 150,
         borderRadius: 5,
     },
 });
 
 // PDF Component
-const PollPDF = ({ poll, graphImage }) => (
-    <Document>
-        <Page size="A4" style={styles.page}>
-            <View style={styles.section}>
-                <Text style={styles.title}>{poll.title}</Text>
-                <Text style={styles.text}>Description: {poll.description}</Text>
-                <Text style={styles.text}>Created: {new Date(poll.dateCreated).toLocaleString()}</Text>
-                <Text style={styles.text}>Expired: {new Date(poll.dateEnded).toLocaleString()}</Text>
-            </View>
+const PollPDF = ({ poll, graphImage }) => {
+    const maxHeight = 200;
 
-            <View style={styles.section}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Poll Results</Text>
-                {graphImage && <Image src={graphImage} style={styles.image} />}
-            </View>
+    let computedWidth = "auto";
+    let computedHeight = "auto";
 
-            <View style={styles.section}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Choices</Text>
-                {poll.choices.map((choice, index) => {
-                    const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
-                    const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
-                    return (
-                        <View key={index} style={styles.choiceContainer}>
-                            <Text style={styles.choiceText}>
-                                {index + 1}. {choice.name} - {percentage}% ({choice.numVotes} votes)
-                            </Text>
-                        </View>
-                    );
-                })}
-            </View>
-        </Page>
-    </Document>
-);
+    if (graphImage && graphImage.width && graphImage.height) {
+        const aspectRatio = graphImage.width / graphImage.height;
+
+        if (graphImage.height > maxHeight) {
+            computedHeight = maxHeight;
+            computedWidth = maxHeight * aspectRatio;
+        } else {
+            computedWidth = graphImage.width;
+            computedHeight = graphImage.height;
+        }
+    }
+
+    return (
+        <Document>
+            <Page size="A4" style={styles.page}>
+                <View style={styles.section}>
+                    <Text style={styles.title}>{poll.title}</Text>
+                    <Text style={styles.text}>Description: {poll.description}</Text>
+                    <Text style={styles.text}>Created: {new Date(poll.dateCreated).toLocaleString()}</Text>
+                    <Text style={styles.text}>Expired: {new Date(poll.dateEnded).toLocaleString()}</Text>
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Poll Results</Text>
+                    {graphImage && (
+                        <Image
+                            src={graphImage.src}
+                            style={{
+                                height: computedHeight,
+                                width: computedWidth,
+                                borderRadius: 5,
+                                alignSelf: 'center'
+                            }}
+                        />
+                    )}
+                </View>
+
+                <View style={styles.section}>
+                    <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Choices</Text>
+                    {poll.choices.map((choice, index) => {
+                        const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+                        const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+                        return (
+                            <View key={index} style={styles.choiceContainer}>
+                                <Text style={styles.choiceText}>
+                                    {index + 1}. {choice.name} - {percentage}% ({choice.numVotes} votes)
+                                </Text>
+                            </View>
+                        );
+                    })}
+                </View>
+            </Page>
+        </Document>
+    );
+};
+
 
 export default PollPDF;
