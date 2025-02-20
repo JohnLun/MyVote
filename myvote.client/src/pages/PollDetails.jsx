@@ -363,8 +363,8 @@ const PollDetails = () => {
                     </>
                 }
                 {isModalOpen && (
-                    <div className="modal-overlay">
-                        <div className="modal-content">
+                    <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <h3>Suggest an Edit</h3>
                             <input
                                 type="text"
@@ -378,6 +378,7 @@ const PollDetails = () => {
                             </div>
                         </div>
                     </div>
+                
                 )}
 
                 <div className="bttm-pdf-share">
