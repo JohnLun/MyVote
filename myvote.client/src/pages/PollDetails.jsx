@@ -8,6 +8,8 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as signalR from "@microsoft/signalr";
 import "./PollDetails.css";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import PollPDF from "../components/PollPDF";
 
 const PollDetails = () => {
     const { pollId } = useParams();
@@ -23,6 +25,8 @@ const PollDetails = () => {
     const pollDetailsRef = useRef();
     const timerRef = useRef(null);
     const [connection, setConnection] = useState(null);
+    const [graphImage, setGraphImage] = useState(null);
+    const pollDetailsFlipRef = useRef();
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -106,6 +110,10 @@ const PollDetails = () => {
             newConnection.stop();
         };
     }, [pollId]);
+
+    useEffect(() => {
+        captureGraphImage();
+    }, [poll]);
 
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
@@ -197,6 +205,13 @@ const PollDetails = () => {
             return "#FFEB3B"; // Yellow
         } else {
             return "#F44336"; // Red
+        }
+    };
+
+    const captureGraphImage = async () => {
+        if (pollDetailsFlipRef.current && pollDetailsFlipRef.current.captureGraph) {
+            const graphImage = await pollDetailsFlipRef.current.captureGraph();
+            setGraphImage(graphImage);
         }
     };
 
@@ -313,7 +328,7 @@ const PollDetails = () => {
                 {/* Show Results if Poll is Expired or User Voted */}
                 {(isPollExpired || userVoted) ? (
                     <>
-                        <PollDetailsFlip poll={poll} />
+                        <PollDetailsFlip ref={pollDetailsFlipRef} poll={poll} />
                         <div className="poll-results">
                             {poll.choices && poll.choices.length > 0 ? (
                                 poll.choices.map((choice) => {
@@ -358,10 +373,18 @@ const PollDetails = () => {
 
                 <div className="bttm-pdf-share">
                     {isPollExpired && (
-                        <button className="generate-pdf-button hide-in-pdf" onClick={handleGeneratePDF}>
-                            Generate PDF
-                        </button>
+                        <PDFDownloadLink
+                            document={<PollPDF poll={poll} graphImage={graphImage} />}
+                            fileName={`poll-results-${poll.title}.pdf`}
+                        >
+                            {({ loading }) => (
+                                <button className="generate-pdf-button">
+                                    {loading ? "Loading PDF..." : "Download PDF"}
+                                </button>
+                            )}
+                        </PDFDownloadLink>
                     )}
+
 
                     {!isPollExpired && poll && poll.userId === userId && (
                         <button className="make-inactive-button" onClick={handleMakeInactive}>
