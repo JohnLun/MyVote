@@ -22,11 +22,13 @@
 .css-1qb8o-MuiToggleButtonGroup-root .MuiToggleButtonGroup-firstButton{
     color: white !important;
     font-size: 10px;
+    background-color: #37383e;
 }
 
 .css-1qb8o-MuiToggleButtonGroup-root .MuiToggleButtonGroup-lastButton{
     color: white !important;
     font-size: 10px;
+    background-color: #37383e;
 }
 
 .css-w4gp61-MuiButtonBase-root-MuiToggleButton-root.Mui-selected {
@@ -95,6 +97,9 @@
 }
 
 @media (max-width: 600px) {
+    h1{
+        font-size: 1.8rem;
+    }
     .title-nav {
         display: flex;
         flex-direction: column;
@@ -104,5 +109,8 @@
         display: flex;
         flex-direction: column;
         justify-content: center;
+    }
+    .css-1qb8o-MuiToggleButtonGroup-root {
+        margin-bottom: 20px;
     }
   }

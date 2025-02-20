@@ -1,7 +1,7 @@
 .poll-link-page {
     justify-content: center;
     text-align: center;
-    margin-top: 50px;
+
 }
 
 .poll-link-page button {
@@ -19,6 +19,12 @@
 
 
 .qr-code {
-    margin-top: 40px;
+
     padding: 20px;
+}
+
+@media(max-width: 600px){
+    h2{
+        font-size: large;
+    }
 }
