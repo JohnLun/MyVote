@@ -18,6 +18,7 @@
     box-shadow: 0 10px 4px rgba(0, 0, 0, 0.2);
     padding: 20px;
     border-radius: 30px;
+    
 }
 
 .header-search {
@@ -78,4 +79,10 @@ input:focus + .floating-label,
     display: flex;
     justify-content: center;
 
+}
+
+@media (max-width: 600px){
+    .search-poll{
+        width: 80vw;
+    }
 }
