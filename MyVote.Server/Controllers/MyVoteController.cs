@@ -215,6 +215,17 @@ namespace MyVote.Server.Controllers
             return Ok(choiceDtos);
         }
 
+        [HttpGet("suggestions/{userId}")]
+        public async Task<IActionResult> GetSuggestions(int userId)
+        {
+            var suggestions = await _db.Suggestions
+                .Where(s => s.UserId == userId)
+                .ToListAsync();
+
+            return Ok(suggestions);
+           
+        }
+
         [HttpPatch("status")]
         public async Task<IActionResult> UpdateStatus([FromBody] Poll poll)
         {
@@ -264,6 +275,36 @@ namespace MyVote.Server.Controllers
             };
 
             return Ok(pollDto);
+        }
+
+        [HttpPatch("poll/suggestion")]
+        public async Task<IActionResult> UpdatePoll([FromBody] OptionDto optionDto)
+        {
+            // Find the poll with choices and user choices
+            var poll = await _db.Polls
+                .Include(p => p.Choices)
+                .FirstOrDefaultAsync(p => p.PollId == optionDto.PollId);
+
+            if (poll == null)
+            {
+                return NotFound(new { message = "Poll not found" });
+            }
+
+            // Create a new choice using the suggestion
+            var newChoice = new Choice
+            {
+                Name = optionDto.SuggestionName,
+                PollId = optionDto.PollId,
+                NumVotes = 0
+            };
+
+            // Add to poll
+            poll.Choices.Add(newChoice);
+
+            // Save to database
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Choice added successfully", choiceId = newChoice.ChoiceId });
         }
 
         [HttpPatch("vote")]
@@ -333,11 +374,42 @@ namespace MyVote.Server.Controllers
             return Ok(new { message = "Vote submitted successfully!" });
         }
 
+        [HttpPost("suggestion")]
+        public async Task<IActionResult> SendOption([FromBody] OptionDto optionDto)
+        {
+            var suggestion = new Suggestion
+            {
+                SuggestionName = optionDto.SuggestionName,
+                PollId = optionDto.PollId,
+                UserId = optionDto.UserId,
+                PollName = optionDto.PollName,
+            };
 
+            _db.Suggestions.Add(suggestion);
 
+            await _db.SaveChangesAsync();
 
+            var updatedOptionDto = new OptionDto
+            {
+                SuggestionId = suggestion.SuggestionId, // Newly created ID
+                SuggestionName = suggestion.SuggestionName,
+                PollId = suggestion.PollId,
+                UserId = suggestion.UserId,
+                PollName = suggestion.PollName
+            };
 
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
+            try
+            {
+                await hubContext.Clients.All.SendAsync("ReceiveWriteInOption", updatedOptionDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
 
+            return Ok(new { message = $"Option submitted to {optionDto.UserId}" });
+        }
 
         // POST: /poll (Create new poll)
         [HttpPost("poll")]
@@ -446,6 +518,20 @@ namespace MyVote.Server.Controllers
             return NoContent();
         }
 
+        [HttpDelete("suggestion/{suggestionId}")]
+        public async Task<IActionResult> DeleteSuggestion(int suggestionId)
+        {
+            var suggestion = await _db.Suggestions.FirstOrDefaultAsync(s => s.SuggestionId == suggestionId);
 
+            if (suggestion == null)
+            {
+                return NotFound(new { message = "Suggestion not found" });
+            }
+
+            _db.Suggestions.Remove(suggestion);
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Suggestion deleted successfully" });
+        }
     }
 }

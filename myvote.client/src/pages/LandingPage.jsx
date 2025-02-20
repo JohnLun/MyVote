@@ -14,12 +14,16 @@ function Home() {
         if (pollId.trim()) {
             navigate(`/poll/${pollId}`);
         } else {
-            toast.error("Please enter Poll Code", {autoClose: 3000}); 
+            toast.error("Please enter Poll Code", {
+                autoClose: 3000,
+                onClick: () => toast.dismiss(),
+                style: { cursor: "pointer" }
+            }); 
         }
     };
 
     return (
-        <>
+        <div className="LandingPage">
             {/* <h1>Search for a poll or create one below</h1> */}
             <div className="search-poll">
                 
@@ -46,7 +50,7 @@ function Home() {
             <div className="create-poll">
                 <CreatePollButton />
             </div>
-        </>
+        </div>
     );
 }
 

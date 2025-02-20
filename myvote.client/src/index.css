@@ -1,15 +1,27 @@
 :root {
     font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
-    /* font-family: 'Merriweather+Sans', system-ui, Avenir, Helvetica, Arial, sans-serif; */
     line-height: 1.5;
     font-weight: 400;
     color-scheme: dark;
     color: rgba(255, 255, 255, 0.87);
-    background-color: #23242C;
+    background: linear-gradient(to top, #0f1013, #23242C);
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+}
+
+#root { width: 100%; }
+
+html {
+  overflow-x: hidden;
+  box-sizing: border-box;
+}
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: inherit;
 }
 
 a {
@@ -23,14 +35,26 @@ a:hover {
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
-  width: 100%;
-  min-height: 100vh;
-  color: rgba(255, 255, 255, 0.87) !important;
-  background: linear-gradient(to top, #0f1013, #23242C);
-  /* background-color: #23242C !important; */
 }
+
+.main-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100svh;
+}
+
+.main-content {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  /* align-items: center; */
+  width: 100%; 
+  /* height: 100%; */
+  padding: 2rem 4rem;
+}
+
+
 
 h1 {
   font-size: 3.2em;
@@ -70,6 +94,14 @@ button:focus-visible {
   a:hover {
     color: #747bff;
   }
+  button {
+    margin: 10px;
+    background-color: #365FB7;
+    color: white;
+  }
+}
+
+@media (max-width: 600px) {
   button {
     margin: 10px;
     background-color: #365FB7;
