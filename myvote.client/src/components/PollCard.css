@@ -31,3 +31,9 @@
 .poll-icon:hover{
   transform: scale(1.3);
 }
+
+@media (max-width: 600px){
+  .poll-card{
+    width: 85vw;
+  }
+}
