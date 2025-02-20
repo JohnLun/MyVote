@@ -50,23 +50,21 @@
     background-color: #365FB7;
 }
 
-.poll-choice:hover {
-    background-color: #6b80c7;
-}
+    .poll-choice:hover {
+        background-color: #6b80c7;
+    }
 
-.poll-choice:first-child {
-    margin-top: 30px;
-}
+    .poll-choice:first-child {
+        margin-top: 30px;
+    }
 
 .poll-results {
-    
     border-radius: 10px;
 }
 
 .result-container {
     position: relative;
     text-align: left;
-    
     background-color: #444;
     color: white;
     border-radius: 5px;
@@ -84,7 +82,7 @@
 }
 
 .selected-bar {
-    background-color: #5075c4 !important; 
+    background-color: #5075c4 !important;
 }
 
 .result-container p {
@@ -109,23 +107,44 @@
 
 .timer-progress {
     fill: none;
-    stroke: #4CAF50;
     stroke-width: 6;
     stroke-linecap: round;
     transform: rotate(-90deg);
     transform-origin: center;
-    transition: stroke-dashoffset 1s linear;
+    transition: stroke-dashoffset 1s linear, stroke 1s linear;
 }
 
-.poll-icon-vote{
+.timer-flash {
+    animation: flash 1s infinite;
+}
+
+@keyframes flash {
+    0% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.5;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.poll-icon-suggest {
+    
+}
+
+.poll-icon-vote {
     margin-top: 5px;
     margin-left: 5px;
     font-size: 1.2rem;
 }
 
-.poll-icon-vote:hover{
-    cursor: pointer;
-}
+    .poll-icon-vote:hover {
+        cursor: pointer;
+    }
 
 .generate-pdf-button {
     background-color: #365FB7;
@@ -140,3 +159,28 @@
     .generate-pdf-button:hover {
         background-color: #0056b3;
     }
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 300px;
+    text-align: center;
+}
+.modal-buttons {
+    margin-top: 10px;
+}
+.modal-buttons button {
+    margin: 5px;
+}

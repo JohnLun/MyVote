@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { FaPaperPlane } from "react-icons/fa";
+import { FaPen } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../contexts/UserContext";
 import PollDetailsFlip from "../components/PollDetailsFlip";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
+import * as signalR from "@microsoft/signalr";
 import "./PollDetails.css";
 
 const PollDetails = () => {
@@ -17,20 +19,23 @@ const PollDetails = () => {
     const [selectedChoice, setSelectedChoice] = useState(null);
     const [timeRemaining, setTimeRemaining] = useState(0);
     const [isPollExpired, setIsPollExpired] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [suggestion, setSuggestion] = useState("");
     const { userId } = useUser();
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
-    const timerRef = useRef(null); 
+    const timerRef = useRef(null);
+    const [connection, setConnection] = useState(null);
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
-            ? "https://localhost:7054/api"
-            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api";
+            ? "https://localhost:7054"
+            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
 
     useEffect(() => {
         const fetchPoll = async () => {
             try {
-                const response = await fetch(`${API_BASE_URL}/poll/${pollId}`);
+                const response = await fetch(`${API_BASE_URL}/api/poll/${pollId}`);
                 if (!response.ok) throw new Error(`Failed to fetch poll data. Status: ${response.status}`);
 
                 const data = await response.json();
@@ -77,6 +82,34 @@ const PollDetails = () => {
         fetchPoll();
     }, [pollId, userId]);
 
+    useEffect(() => {
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl(`${API_BASE_URL}/voteHub`, {
+                transport: signalR.HttpTransportType.WebSockets
+            })
+            .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        setConnection(newConnection);
+
+        newConnection.start()
+            .then(() => {
+                console.log("Connected to SignalR");
+
+                newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                });
+
+                console.log("Listener added");
+            })
+            .catch(err => console.error("SignalR Connection Error: ", err));
+
+        return () => {
+            newConnection.stop();
+        };
+    }, [pollId]);
+
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
 
@@ -85,7 +118,7 @@ const PollDetails = () => {
                 choiceId: choiceId,
                 userId: userId
             };
-            const response = await fetch(`${API_BASE_URL}/vote`, {
+            const response = await fetch(`${API_BASE_URL}/api/vote`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -101,16 +134,48 @@ const PollDetails = () => {
             setUserVoted(true);
             setSelectedChoice(choiceId);
 
-            const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
-            setPoll(updatedPoll);
         } catch (error) {
             alert(error.message);
         }
     };
 
+    const handleSuggest = async (uId, pId, suggestion, pName) => {
+        try {
+            const responseBody = {
+                userId: uId,
+                suggestionName: suggestion,
+                pollId: pId,
+                pollName: pName
+            };
+
+            const response = await fetch(`${API_BASE_URL}/api/suggestion`,{
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(responseBody)
+            })
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Vote submission failed.");
+            }
+
+
+        } catch (error) {
+            console.log(error.message);
+        }
+    }
+
+    const handleSubmit = () => {
+        handleSuggest(poll.userId, poll.pollId, suggestion, poll.title);
+        setIsModalOpen(false); // Close modal after submission
+        setSuggestion("");
+    }
+
     const handleMakeInactive = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/poll/${pollId}/end`, {
+            const response = await fetch(`${API_BASE_URL}/api/poll/${pollId}/end`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -123,8 +188,8 @@ const PollDetails = () => {
             }
 
             // Re-fetch the updated poll after marking it as inactive
-            const updatedPoll = await fetch(`${API_BASE_URL}/poll/${pollId}`).then(res => res.json());
-            setPoll(updatedPoll);
+            const data = await response.json();
+            setPoll(data);
             setIsPollExpired(true);
             setTimeRemaining(0);
 
@@ -152,12 +217,24 @@ const PollDetails = () => {
         timerRef.current = setInterval(updateTimer, 1000);
     };
 
-
     const formatTime = (ms) => {
         const totalSeconds = Math.floor(ms / 1000);
         const minutes = Math.floor(totalSeconds / 60);
         const seconds = totalSeconds % 60;
         return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+    };
+
+    const getTimerColor = () => {
+        const totalDuration = new Date(poll.dateEnded) - new Date(poll.dateCreated);
+        const percentageRemaining = (timeRemaining / totalDuration) * 100;
+
+        if (percentageRemaining > 60) {
+            return "#4CAF50"; // Green
+        } else if (percentageRemaining > 20) {
+            return "#FFEB3B"; // Yellow
+        } else {
+            return "#F44336"; // Red
+        }
     };
 
     const handleShareClick = (event) => {
@@ -213,6 +290,8 @@ const PollDetails = () => {
         ? Math.max(0, (timeRemaining / (new Date(poll.dateEnded) - new Date(poll.dateCreated))) * 100)
         : 0;
 
+    const isFlashing = progress <= 5 && timeRemaining > 0;
+
     if (loading) return <p>Loading poll...</p>;
     if (error) return <p>Error: {error}</p>;
 
@@ -222,7 +301,7 @@ const PollDetails = () => {
                 <h2 className="poll-title">{poll.title}</h2>
 
                 {/* Circular Timer */}
-                <div className="timer-container hide-in-pdf">
+                <div className={`timer-container hide-in-pdf ${isFlashing ? "timer-flash" : ""}`}>
                     <svg width="100" height="100" viewBox="0 0 100 100">
                         <circle className="timer-background" cx="50" cy="50" r="45" />
                         <circle
@@ -232,6 +311,7 @@ const PollDetails = () => {
                             r="45"
                             strokeDasharray="283"
                             strokeDashoffset={`${(progress / 100) * 283}`}
+                            style={{ stroke: getTimerColor() }}
                         />
                         <text x="50" y="55" textAnchor="middle" fontSize="18px" fill="white">
                             {formatTime(timeRemaining)}
@@ -281,8 +361,35 @@ const PollDetails = () => {
                             {choice.name}
                         </button>
                     ))
+                    
                 ) : (
                     <p></p>
+                )}
+                {!isPollExpired && 
+                    <>
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                        >
+                            Suggest <FaPen className="poll-icon-suggest"/>
+                        </button>
+                    </>
+                }
+                {isModalOpen && (
+                    <div className="modal-overlay">
+                        <div className="modal-content">
+                            <h3>Suggest an Edit</h3>
+                            <input
+                                type="text"
+                                value={suggestion}
+                                onChange={(e) => setSuggestion(e.target.value)}
+                                placeholder="Enter your suggestion"
+                            />
+                            <div className="modal-buttons">
+                                <button onClick={handleSubmit}>Submit</button>
+                                <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+                            </div>
+                        </div>
+                    </div>
                 )}
 
                 <div className="bttm-pdf-share">
