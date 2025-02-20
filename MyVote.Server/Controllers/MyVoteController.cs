@@ -277,6 +277,36 @@ namespace MyVote.Server.Controllers
             return Ok(pollDto);
         }
 
+        [HttpPatch("poll/suggestion")]
+        public async Task<IActionResult> UpdatePoll([FromBody] OptionDto optionDto)
+        {
+            // Find the poll with choices and user choices
+            var poll = await _db.Polls
+                .Include(p => p.Choices)
+                .FirstOrDefaultAsync(p => p.PollId == optionDto.PollId);
+
+            if (poll == null)
+            {
+                return NotFound(new { message = "Poll not found" });
+            }
+
+            // Create a new choice using the suggestion
+            var newChoice = new Choice
+            {
+                Name = optionDto.SuggestionName,
+                PollId = optionDto.PollId,
+                NumVotes = 0
+            };
+
+            // Add to poll
+            poll.Choices.Add(newChoice);
+
+            // Save to database
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Choice added successfully", choiceId = newChoice.ChoiceId });
+        }
+
         [HttpPatch("vote")]
         public async Task<IActionResult> UpdateChoice([FromBody] VoteDto voteDto)
         {
@@ -488,7 +518,7 @@ namespace MyVote.Server.Controllers
             return NoContent();
         }
 
-        [HttpDelete("/suggestion/{suggestionId}")]
+        [HttpDelete("suggestion/{suggestionId}")]
         public async Task<IActionResult> DeleteSuggestion(int suggestionId)
         {
             var suggestion = await _db.Suggestions.FirstOrDefaultAsync(s => s.SuggestionId == suggestionId);

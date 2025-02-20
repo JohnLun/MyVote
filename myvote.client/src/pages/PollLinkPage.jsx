@@ -16,7 +16,11 @@ const PollLinkPage = () => {
     const handleCopyLink = () => {
         navigator.clipboard.writeText(pollUrl)
             .then(() => {
-                toast.success('Poll link copied to clipboard!', {autoClose: 3000})
+                toast.success('Poll link copied to clipboard!', {
+                    autoClose: 3000,
+                    onClick: () => toast.dismiss(),
+                    style: { cursor: "pointer" }
+                })
             })
             .catch(err => {
                 console.error('Failed to copy: ', err);

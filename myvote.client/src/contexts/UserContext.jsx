@@ -64,16 +64,21 @@ export const UserProvider = ({ children }) => {
                 console.log("Ready to receive suggestions");
 
                 newConnection.on("ReceiveWriteInOption", (optionDto) => {
-                    toast.success(`Received suggestion for Poll #${optionDto.pollId}!`, 
-                        {
-                            autoClose: 3000,
-                            onClick: () => navigate('/navigate'),
-                            style: { cursor: "pointer" }
-                        });
-                    setSuggestions(prevSuggestions => [
-                        ...prevSuggestions,
-                        optionDto
-                    ])
+                    if (optionDto.userId == userId) {
+                        toast.success(`Received suggestion for Poll #${optionDto.pollId}!`, 
+                            {
+                                autoClose: 3000,
+                                onClick: () => {
+                                    toast.dismiss();
+                                    navigate('/notifications');
+                                },
+                                style: { cursor: "pointer" }
+                            });
+                        setSuggestions(prevSuggestions => [
+                            ...prevSuggestions,
+                            optionDto
+                        ])
+                    }
                 });
 
                 console.log("Listener added");
@@ -86,7 +91,7 @@ export const UserProvider = ({ children }) => {
     }, [userId]);
 
     return (
-        <UserContext.Provider value={{ userId, connection, suggestions }}>
+        <UserContext.Provider value={{ userId, connection, suggestions, setSuggestions }}>
             {children}
         </UserContext.Provider>
     );
