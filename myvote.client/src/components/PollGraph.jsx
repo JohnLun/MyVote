@@ -1,11 +1,25 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, forwardRef, useImperativeHandle } from 'react';
 import { Chart, registerables } from 'chart.js';
 
 Chart.register(...registerables);
 
-function PollGraph({ poll }) {
+const PollGraph = forwardRef(({ poll }, ref) => {
     const chartRef = useRef(null);
     const chartInstanceRef = useRef(null);
+
+    useImperativeHandle(ref, () => ({
+        captureGraph: async () => {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    if (chartRef.current) {
+                        resolve(chartRef.current.toDataURL('image/png'));
+                    } else {
+                        resolve(null);
+                    }
+                }, 1000); // Small delay to ensure the chart is fully rendered
+            });
+        }
+    }));
 
     useEffect(() => {
         if (!chartRef.current || !poll || !poll.choices) return;
@@ -61,6 +75,6 @@ function PollGraph({ poll }) {
             <canvas ref={chartRef}></canvas>
         </div>
     );
-}
+});
 
 export default PollGraph;

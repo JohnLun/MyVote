@@ -9,6 +9,8 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as signalR from "@microsoft/signalr";
 import "./PollDetails.css";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import PollPDF from "../components/PollPDF";
 
 const PollDetails = () => {
     const { pollId } = useParams();
@@ -26,6 +28,8 @@ const PollDetails = () => {
     const pollDetailsRef = useRef();
     const timerRef = useRef(null);
     const [connection, setConnection] = useState(null);
+    const [graphImage, setGraphImage] = useState(null);
+    const pollDetailsFlipRef = useRef();
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -109,6 +113,10 @@ const PollDetails = () => {
             newConnection.stop();
         };
     }, [pollId]);
+
+    useEffect(() => {
+        captureGraphImage();
+    }, [poll]);
 
     const handleVote = async (choiceId) => {
         if (isPollExpired) return; // Prevent voting after expiration
@@ -237,53 +245,25 @@ const PollDetails = () => {
         }
     };
 
+    const captureGraphImage = async () => {
+        if (pollDetailsFlipRef.current && pollDetailsFlipRef.current.captureGraph) {
+            const graphImage = await pollDetailsFlipRef.current.captureGraph();
+
+            const img = new Image();
+            img.src = graphImage;
+            img.onload = () => {
+                const originalWidth = img.width;
+                const originalHeight = img.height;
+
+                setGraphImage({ src: graphImage, width: originalWidth, height: originalHeight });
+            };
+        }
+    };
+
+
     const handleShareClick = (event) => {
         event.stopPropagation(); // Prevents the poll card click event
         navigate(`/poll-link/${poll.pollId}`);
-    };
-
-    const handleGeneratePDF = async () => {
-        const input = pollDetailsRef.current;
-
-        // Temporarily hide elements you don't want in the PDF
-        const elementsToHide = input.querySelectorAll('.hide-in-pdf, .poll-results, .flip-card-back');
-        elementsToHide.forEach(el => el.style.display = 'none');
-
-        const canvas = await html2canvas(input);
-        const imgData = canvas.toDataURL('image/png');
-        const pdf = new jsPDF();
-
-        // Add title, description, date created, and date expired
-        pdf.setFontSize(16);
-        pdf.text(poll.title, 10, 10);
-        pdf.setFontSize(12);
-        pdf.text(`Description: ${poll.description}`, 10, 20);
-        pdf.text(`Date Created: ${new Date(poll.dateCreated).toLocaleString()}`, 10, 30);
-        pdf.text(`Date Expired: ${new Date(poll.dateEnded).toLocaleString()}`, 10, 40);
-
-        // Add poll details including the graph
-        pdf.addImage(imgData, 'PNG', 10, 50, 180, 160);
-
-        // Add poll choices as text
-        let yPosition = 220;
-        const pageHeight = 297; // A4 page height in mm
-        const lineHeight = 10;
-        pdf.setFontSize(12);
-        poll.choices.forEach((choice, index) => {
-            const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
-            const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
-            if (yPosition + lineHeight > pageHeight) {
-                pdf.addPage();
-                yPosition = 10;
-            }
-            pdf.text(`${index + 1}. ${choice.name} - ${percentage}% (${choice.numVotes} votes)`, 10, yPosition);
-            yPosition += lineHeight;
-        });
-
-        pdf.save(`poll-results-${poll.title}.pdf`);
-
-        // Restore the display of hidden elements
-        elementsToHide.forEach(el => el.style.display = '');
     };
 
     const progress = poll
@@ -322,7 +302,7 @@ const PollDetails = () => {
                 {/* Show Results if Poll is Expired or User Voted */}
                 {(isPollExpired || userVoted) ? (
                     <>
-                        <PollDetailsFlip poll={poll} />
+                        <PollDetailsFlip ref={pollDetailsFlipRef} poll={poll} />
                         <div className="poll-results">
                             {poll.choices && poll.choices.length > 0 ? (
                                 poll.choices.map((choice) => {
@@ -394,10 +374,18 @@ const PollDetails = () => {
 
                 <div className="bttm-pdf-share">
                     {isPollExpired && (
-                        <button className="generate-pdf-button hide-in-pdf" onClick={handleGeneratePDF}>
-                            Generate PDF
-                        </button>
+                        <PDFDownloadLink
+                            document={<PollPDF poll={poll} graphImage={graphImage} />}
+                            fileName={`poll-results-${poll.title}.pdf`}
+                        >
+                            {({ loading }) => (
+                                <button className="generate-pdf-button">
+                                    {loading ? "Loading PDF..." : "Download PDF"}
+                                </button>
+                            )}
+                        </PDFDownloadLink>
                     )}
+
 
                     {!isPollExpired && poll && poll.userId === userId && (
                         <button className="make-inactive-button" onClick={handleMakeInactive}>
@@ -413,7 +401,6 @@ const PollDetails = () => {
             </div>
         </div>
     );
-
 };
 
 export default PollDetails;
