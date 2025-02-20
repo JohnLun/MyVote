@@ -2,6 +2,7 @@ import React from 'react';
 import './Header.css';
 import { FaUserCircle, FaHome } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
+import { FaBell } from "react-icons/fa";
 import myImage from '../assets/voteIcon.svg';
 
 function Header() {
@@ -15,6 +16,10 @@ function Header() {
         navigate('/');
     };
 
+    const handleBellClick = () => {
+        navigate('/notifications');
+    }
+    
     return (
         <header className="header">
             {/* Left-aligned title */}
@@ -27,6 +32,9 @@ function Header() {
             <div className="header-right">
                 <div className="home-icon">
                     <FaHome size={24} onClick={handleHomeIconClick} />
+                </div>
+                <div className="bell-icon">
+                    <FaBell size={24} onClick={handleBellClick}/>
                 </div>
                 <div className="header-icon" onClick={handleUserIconClick}>
                     <FaUserCircle size={24} />

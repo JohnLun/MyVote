@@ -1,14 +1,12 @@
 .header {
-    position: fixed;
-    top: 0;
-    width: 98%;
-    
+    /* top: 0; */
+    /* width: 98%; */
     display: flex;
     justify-content: space-between; /* Ensures left and right alignment */
     align-items: center;
-    padding: 10px 20px;
-    
-    z-index: 1000;
+    padding: 1rem 4rem;
+    /* z-index: 1000; */
+    /* margin-bottom: 2rem; */
 }
 
 .header-title {
@@ -18,10 +16,19 @@
     font-weight: bold;
 }
 
+.bell-icon {
+    padding: 5px;
+    
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+.bell-icon:hover {
+    transform: scale(1.15);
+}
 
 .home-icon{
     padding: 5px;
-    margin-right: 15px;
+    /* margin-right: 15px; */
     cursor: pointer;
     transition: transform 0.3s ease;
 }
@@ -31,7 +38,7 @@
 
 .header-icon{
     padding: 5px;
-    margin-right: 20px;
+    /* margin-right: 20px; */
     cursor: pointer;
     transition: transform 0.3s ease;
 }
@@ -55,4 +62,5 @@
 .header-right {
     display: flex;
     align-items: center;
+    gap: 1rem;
 }

@@ -10,6 +10,5 @@ namespace MyVote.Server.Models
         public string LastName {get; set; }
 
         public List<UserChoice> UserChoices { get; set; } = new List<UserChoice>();
-
     }
 }
