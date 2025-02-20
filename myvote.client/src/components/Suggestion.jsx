@@ -51,6 +51,19 @@ function Suggestion({ suggestion }) {
     
             const data = await response.json();
             console.log("Suggestion accepted:", data);
+
+            const deleteResponse = await fetch(`${API_BASE_URL}/api/suggestion/${suggestion.suggestionId}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+    
+            if (!deleteResponse.ok) {
+                throw new Error(`Failed to delete suggestion. Status: ${deleteResponse.status}`);
+            }
+    
+            console.log("Suggestion deleted successfully");
     
             // Update local state to remove the accepted suggestion
             setSuggestions((prev) => prev.filter((s) => s.suggestionId !== suggestion.suggestionId));
