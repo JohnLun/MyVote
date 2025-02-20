@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 import PollCard from '../components/PollCard';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
 import './UserProfile.css';
 
 const UserProfile = () => {
     const { userId } = useUser();
     const [activeTab, setActiveTab] = useState('voted');
-    const [pollFilter, setPollFilter] = useState('all'); // Tracks selected filter
+    const [pollFilter, setPollFilter] = useState('all');
     const [votedPolls, setVotedPolls] = useState([]);
     const [ownedPolls, setOwnedPolls] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -53,69 +59,55 @@ const UserProfile = () => {
     // Function to filter polls based on status
     const getFilteredPolls = () => {
         const polls = activeTab === 'voted' ? votedPolls : ownedPolls;
-
         return polls.filter(poll => {
-            
-            
-            if (pollFilter === 'active') {
-                return poll.isActive === "t"; // Adjusted to check for "t"
-            } 
-            if (pollFilter === 'inactive') {
-                return poll.isActive === "f"; // Adjusted to check for "f"
-            }
-            return true; // Default to show all polls
-            
+            if (pollFilter === 'active') return poll.isActive === "t";
+            if (pollFilter === 'inactive') return poll.isActive === "f";
+            return true;
         });
     };
 
-
-
     return (
         <div className="user-profile">
+            
             <div className="title-nav">
-                <h1 className="headingtext">Your Polls</h1>
+                <div className="heading-div">
+                    <h1 className="headingtext">Your Polls</h1>
 
-                {/* Tabs for selecting "Voted" or "Created" polls */}
-                <div className="tabs">
-                    <button 
-                        className={activeTab === 'voted' ? 'active' : ''} 
-                        onClick={() => setActiveTab('voted')}
-                    >
-                        Voted Polls
-                    </button>
-                    <button 
-                        className={activeTab === 'owned' ? 'active' : ''} 
-                        onClick={() => setActiveTab('owned')}
-                    >
-                        Created Polls
-                    </button>
                 </div>
-
                 
-            </div>
-            {/* Poll filter buttons */}
-            <div className="poll-status">
-                    <button 
-                        className={`poll-status-btn ${pollFilter === 'all' ? 'active' : ''}`} 
-                        onClick={() => setPollFilter('all')}
+                <div className="button-div">
+                    
+                    {/* Material UI Toggle Buttons for tabs */}
+                    <ToggleButtonGroup
+                        color="primary"
+                        value={activeTab}
+                        exclusive
+                        onChange={(event, newTab) => {
+                            if (newTab !== null) setActiveTab(newTab);
+                        }}
+                        aria-label="Poll tabs"
                     >
-                        All Polls
-                    </button>
+                        <ToggleButton value="voted">Voted Polls</ToggleButton>
+                        <ToggleButton value="owned">Created Polls</ToggleButton>
+                    </ToggleButtonGroup>
 
-                    <button 
-                        className={`poll-status-btn ${pollFilter === 'active' ? 'active' : ''}`} 
-                        onClick={() => setPollFilter('active')}
-                    >
-                        Active
-                    </button>
-
-                    <button 
-                        className={`poll-status-btn ${pollFilter === 'inactive' ? 'active' : ''}`} 
-                        onClick={() => setPollFilter('inactive')}
-                    >
-                        Inactive
-                    </button>
+                    {/* Material UI Select for filtering */}
+                    <FormControl sx={{ minWidth: 150 }}>
+                        <InputLabel id="poll-filter-label">Filter</InputLabel>
+                        <Select
+                            labelId="poll-filter-label"
+                            id="poll-filter"
+                            value={pollFilter}
+                            onChange={(event) => setPollFilter(event.target.value)}
+                            label="Filter"
+                        >
+                            <MenuItem value="all">All Polls</MenuItem>
+                            <MenuItem value="active">Active</MenuItem>
+                            <MenuItem value="inactive">Inactive</MenuItem>
+                        </Select>
+                    </FormControl>
                 </div>
+            </div>
 
             <div className="poll-list">
                 {loading ? (
