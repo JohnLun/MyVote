@@ -71,7 +71,7 @@ const UserProfile = () => {
             
             <div className="title-nav">
                 <div className="heading-div">
-                    <h1 className="headingtext">Your Polls</h1>
+                    <h2 className="headingtext">Your Polls</h2>
 
                 </div>
                 
