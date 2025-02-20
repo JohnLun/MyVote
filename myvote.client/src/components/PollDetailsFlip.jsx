@@ -28,7 +28,7 @@ const PollDetailsFlip = forwardRef(({ poll }, ref) => {
                         <PollGraph ref={graphRef} poll={poll} />
                     </div>
                     <i className="flip-icon fas fa-sync-alt"></i>
-                </div> {/* Fixed closing div tag */}
+                </div>
                 <div className="flip-card-back hide-in-pdf">
                     <p>{poll.description}</p>
                     <i className="flip-icon fas fa-sync-alt"></i>
