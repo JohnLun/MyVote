@@ -19,7 +19,7 @@ function Home() {
     };
 
     return (
-        <>
+        <div className="LandingPage">
             {/* <h1>Search for a poll or create one below</h1> */}
             <div className="search-poll">
                 
@@ -46,7 +46,7 @@ function Home() {
             <div className="create-poll">
                 <CreatePollButton />
             </div>
-        </>
+        </div>
     );
 }
 
