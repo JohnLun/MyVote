@@ -168,10 +168,12 @@ namespace MyVote.Server.Controllers
                     .ThenInclude(c => c.UserChoices) // Include UserChoices to retrieve UserId
                 .FirstOrDefaultAsync(p => p.PollId == pollid);
 
-            await UpdateStatus(poll);
-
             if (poll == null)
+            {
                 return NotFound();
+            }
+
+            await UpdateStatus(poll);
 
             var pollDto = new PollDto
             {
