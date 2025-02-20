@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { useUser } from "../contexts/UserContext";
-import { FaCheck } from "react-icons/fa";
-import { FaTimes } from "react-icons/fa";
+import  Suggestion from "../components/Suggestion";
 import './NotifsPage.css';
 
 function NotifsPage () {
@@ -17,26 +16,7 @@ function NotifsPage () {
                 {suggestions.length > 0 ? (
                     suggestions.map((suggestion) => (
                         <div key={suggestion.suggestionId} className="col-md-6">
-                            <div className="card mb-3">
-                                <div className="card-body d-flex justify-content-between align-items-center">
-                                    <div>
-                                        <h5 className="card-title">
-                                            Suggestion for {suggestion.pollName}
-                                        </h5>
-                                        <p className="card-text">
-                                            Suggestion: {suggestion.suggestionName}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <button className="deny-icon">
-                                            <FaTimes/>
-                                        </button>
-                                        <button className="accept-icon">
-                                            <FaCheck/>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <Suggestion suggestion={suggestion}></Suggestion>
                         </div>
                     ))
                 ) : (
