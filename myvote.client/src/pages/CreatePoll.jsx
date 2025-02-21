@@ -12,17 +12,36 @@ const CreatePoll = () => {
             ? 'https://localhost:7054/api'
             : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
 
+    const TITLE_LIMIT = 100;
+    const DESCRIPTION_LIMIT = 500;
+    const CHOICE_LIMIT = 100;
+
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
     const [choices, setChoices] = useState(['', '']);
     const [errors, setErrors] = useState({});
+    const [remainingChars, setRemainingChars] = useState({
+        title: TITLE_LIMIT,
+        description: DESCRIPTION_LIMIT,
+        choices: choices.map(() => CHOICE_LIMIT)
+    });
 
     const { userId } = useUser();
     const navigate = useNavigate();
 
-    const handleTitleChange = (e) => setTitle(e.target.value);
-    const handleDescriptionChange = (e) => setDescription(e.target.value);
+    const handleTitleChange = (e) => {
+        const value = e.target.value;
+        setTitle(value);
+        setRemainingChars((prev) => ({ ...prev, title: TITLE_LIMIT - value.length }));
+    };
+
+    const handleDescriptionChange = (e) => {
+        const value = e.target.value;
+        setDescription(value);
+        setRemainingChars((prev) => ({ ...prev, description: DESCRIPTION_LIMIT - value.length }));
+    };
+
     const handleTimeLimitChange = (e) => setTimeLimit(e.target.value);
     const handleTimeLimitKeyDown = (e) => {
         if (e.key === '-' || e.key === 'e' || e.key === 'E') {
@@ -31,13 +50,28 @@ const CreatePoll = () => {
     };
 
     const handleChoiceChange = (index, e) => {
+        const value = e.target.value;
         const newChoices = [...choices];
-        newChoices[index] = e.target.value;
+        newChoices[index] = value;
         setChoices(newChoices);
+
+        const newRemainingChars = [...remainingChars.choices];
+        newRemainingChars[index] = CHOICE_LIMIT - value.length;
+        setRemainingChars((prev) => ({ ...prev, choices: newRemainingChars }));
     };
 
-    const addChoice = () => setChoices([...choices, '']);
-    const removeChoice = (index) => setChoices(choices.filter((_, i) => i !== index));
+    const addChoice = () => {
+        setChoices([...choices, '']);
+        setRemainingChars((prev) => ({ ...prev, choices: [...prev.choices, CHOICE_LIMIT] }));
+    };
+
+    const removeChoice = (index) => {
+        setChoices(choices.filter((_, i) => i !== index));
+        setRemainingChars((prev) => ({
+            ...prev,
+            choices: prev.choices.filter((_, i) => i !== index)
+        }));
+    };
 
     const validateForm = () => {
         const newErrors = {};
@@ -73,11 +107,11 @@ const CreatePoll = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // if (!validateForm()) return;
+        if (!validateForm()) return;
 
         const currentTimeUTC = new Date(Date.now());
         const pollEndTime = new Date(currentTimeUTC.getTime() + parseFloat(timeLimit) * 60 * 1000);
-        
+
         const newPollDto = {
             userId: userId,
             title: title,
@@ -102,7 +136,7 @@ const CreatePoll = () => {
             }
 
             const data = await response.json();
-            toast.success('Poll created successfully!', { 
+            toast.success('Poll created successfully!', {
                 autoClose: 3000,
                 onClick: () => toast.dismiss(),
                 style: { cursor: "pointer" }
@@ -127,14 +161,28 @@ const CreatePoll = () => {
                     <div className="form-group">
                         <label>Title {errors.title && <span className="error-asterisk">*</span>}</label>
                         <br />
-                        <input required type="text" value={title} onChange={handleTitleChange} />
+                        <input
+                            required
+                            type="text"
+                            value={title}
+                            onChange={handleTitleChange}
+                            maxLength={TITLE_LIMIT}
+                        />
+                        <small>{remainingChars.title} characters remaining</small>
                     </div>
 
                     {/* Description */}
                     <div className="form-group">
                         <label>Description {errors.description && <span className="error-asterisk">*</span>}</label>
                         <br />
-                        <input required type="text" value={description} onChange={handleDescriptionChange} />
+                        <input
+                            required
+                            type="text"
+                            value={description}
+                            onChange={handleDescriptionChange}
+                            maxLength={DESCRIPTION_LIMIT}
+                        />
+                        <small>{remainingChars.description} characters remaining</small>
                     </div>
 
                     {/* Time Limit */}
@@ -156,7 +204,14 @@ const CreatePoll = () => {
                         <label>Choices {errors.choices && <span className="error-asterisk">*</span>}</label>
                         {choices.map((choice, index) => (
                             <div key={index} className="choice-container">
-                                <input required type="text" value={choice} onChange={(e) => handleChoiceChange(index, e)} />
+                                <input
+                                    required
+                                    type="text"
+                                    value={choice}
+                                    onChange={(e) => handleChoiceChange(index, e)}
+                                    maxLength={CHOICE_LIMIT}
+                                />
+                                <small>{remainingChars.choices[index]} characters remaining</small>
                                 {index >= 2 ? (
                                     <FaRegTrashAlt onClick={() => removeChoice(index)} className="trash-icon" />
                                 ) : (
