@@ -40,6 +40,12 @@
         align-items: center;
     }
 
+    .insert-format-choices{
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
     .char-rem{
         font-size: x-small;
     }
@@ -89,7 +95,7 @@
 .choice-container {
     display: flex;
     align-items: center;
-    justify-content: center;
+    /* justify-content: center; */
     gap: 8px; /* Adds spacing between input and trash icon */
 }
 

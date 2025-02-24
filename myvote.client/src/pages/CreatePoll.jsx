@@ -161,7 +161,7 @@ const CreatePoll = () => {
                     <div className="form-group">
                         <div className="insert-format">
                             <label>Title {errors.title && <span className="error-asterisk">*</span>}</label>
-                            <small className="char-rem">{remainingChars.title} characters remaining</small>
+                            <small className="char-rem">{remainingChars.title} characters</small>
                         </div>
                         
                         <input
@@ -178,7 +178,7 @@ const CreatePoll = () => {
                     <div className="form-group">
                         <div className="insert-format">
                             <label>Description {errors.description && <span className="error-asterisk">*</span>}</label>
-                            <small className="char-rem">{remainingChars.description} characters remaining</small>
+                            <small className="char-rem">{remainingChars.description} characters</small>
                         </div>
                         
                         <input
@@ -210,14 +210,19 @@ const CreatePoll = () => {
                         <label>Choices {errors.choices && <span className="error-asterisk">*</span>}</label>
                         {choices.map((choice, index) => (
                             <div key={index} className="choice-container">
-                                <input
+                                <div className="insert-format-choices">
+                                    <small className="char-rem">{remainingChars.choices[index]} characters</small>
+                                    <input
                                     required
                                     type="text"
                                     value={choice}
                                     onChange={(e) => handleChoiceChange(index, e)}
                                     maxLength={CHOICE_LIMIT}
-                                />
-                                <small className="char-rem">{remainingChars.choices[index]} characters remaining</small>
+                                    />
+                                </div>
+                                
+                                
+                                
                                 {index >= 2 ? (
                                     <FaRegTrashAlt onClick={() => removeChoice(index)} className="trash-icon" />
                                 ) : (
