@@ -217,7 +217,7 @@ const CreatePoll = () => {
                                     onChange={(e) => handleChoiceChange(index, e)}
                                     maxLength={CHOICE_LIMIT}
                                 />
-                                <small>{remainingChars.choices[index]} characters remaining</small>
+                                <small className="char-rem">{remainingChars.choices[index]} characters remaining</small>
                                 {index >= 2 ? (
                                     <FaRegTrashAlt onClick={() => removeChoice(index)} className="trash-icon" />
                                 ) : (
