@@ -1,10 +1,14 @@
+.noti-header{
+    margin-bottom: 5px;
+}
+
 .noti-column{
     background-color: #2F3457;
     margin: 5px;
     color: #fff;
     border: 1px solid #fff;
     border-radius: 10px;
-    padding: 20px;
+    padding: 15px;
     margin: 10px;
     
    

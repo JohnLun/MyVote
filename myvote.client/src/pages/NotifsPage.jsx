@@ -11,7 +11,7 @@ function NotifsPage () {
     
     return (
         <>
-            <h2>Notifications</h2>
+            <h2 className="noti-header">Notifications</h2>
             <div className="noti-container"> 
                     {suggestions.length > 0 ? (
                         suggestions.map((suggestion) => (

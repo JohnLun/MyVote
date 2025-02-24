@@ -87,8 +87,8 @@ const UserProfile = () => {
                         }}
                         aria-label="Poll tabs"
                     >
-                        <ToggleButton value="voted">Voted Polls</ToggleButton>
-                        <ToggleButton value="owned">Created Polls</ToggleButton>
+                        <ToggleButton value="voted">Voted</ToggleButton>
+                        <ToggleButton value="owned">Created</ToggleButton>
                     </ToggleButtonGroup>
 
                     {/* Material UI Select for filtering */}

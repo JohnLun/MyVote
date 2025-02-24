@@ -159,8 +159,11 @@ const CreatePoll = () => {
                 <form onSubmit={handleSubmit}>
                     {/* Title */}
                     <div className="form-group">
-                        <label>Title {errors.title && <span className="error-asterisk">*</span>}</label>
-                        <br />
+                        <div className="insert-format">
+                            <label>Title {errors.title && <span className="error-asterisk">*</span>}</label>
+                            <small className="char-rem">{remainingChars.title} characters</small>
+                        </div>
+                        
                         <input
                             required
                             type="text"
@@ -168,13 +171,16 @@ const CreatePoll = () => {
                             onChange={handleTitleChange}
                             maxLength={TITLE_LIMIT}
                         />
-                        <small>{remainingChars.title} characters remaining</small>
+                        
                     </div>
 
                     {/* Description */}
                     <div className="form-group">
-                        <label>Description {errors.description && <span className="error-asterisk">*</span>}</label>
-                        <br />
+                        <div className="insert-format">
+                            <label>Description {errors.description && <span className="error-asterisk">*</span>}</label>
+                            <small className="char-rem">{remainingChars.description} characters</small>
+                        </div>
+                        
                         <input
                             required
                             type="text"
@@ -182,7 +188,7 @@ const CreatePoll = () => {
                             onChange={handleDescriptionChange}
                             maxLength={DESCRIPTION_LIMIT}
                         />
-                        <small>{remainingChars.description} characters remaining</small>
+                        
                     </div>
 
                     {/* Time Limit */}
@@ -204,14 +210,19 @@ const CreatePoll = () => {
                         <label>Choices {errors.choices && <span className="error-asterisk">*</span>}</label>
                         {choices.map((choice, index) => (
                             <div key={index} className="choice-container">
-                                <input
+                                <div className="insert-format-choices">
+                                    <small className="char-rem">{remainingChars.choices[index]} characters</small>
+                                    <input
                                     required
                                     type="text"
                                     value={choice}
                                     onChange={(e) => handleChoiceChange(index, e)}
                                     maxLength={CHOICE_LIMIT}
-                                />
-                                <small>{remainingChars.choices[index]} characters remaining</small>
+                                    />
+                                </div>
+                                
+                                
+                                
                                 {index >= 2 ? (
                                     <FaRegTrashAlt onClick={() => removeChoice(index)} className="trash-icon" />
                                 ) : (
@@ -221,16 +232,18 @@ const CreatePoll = () => {
                         ))}
                     </div>
 
-                    {/* Add Choice Button */}
-                    <div className="add-container">
-                        <button type="button" className="add-choice-button" onClick={addChoice}>
-                            <FaPlus className="plus-icon" /> Add Choice
-                        </button>
-                    </div>
+                    <div className="btm-choices">
+                        {/* Add Choice Button */}
+                        <div className="add-container">
+                            <button type="button" className="add-choice-button" onClick={addChoice}>
+                                <FaPlus className="plus-icon" /> Add Choice
+                            </button>
+                        </div>
 
-                    {/* Submit Button */}
-                    <div className="button-container">
-                        <button type="submit">Create Poll</button>
+                        {/* Submit Button */}
+                        <div className="button-container">
+                            <button type="submit">Create Poll</button>
+                        </div>
                     </div>
                 </form>
             </div>
