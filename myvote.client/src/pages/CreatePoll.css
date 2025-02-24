@@ -103,7 +103,7 @@
     flex: 1; /* Allows input to take up available space */
     padding: 6px;
     font-size: 16px;
-    max-width: 300px;
+    min-width: 30svw;
 }
 
 
