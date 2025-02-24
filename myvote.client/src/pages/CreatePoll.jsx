@@ -232,16 +232,18 @@ const CreatePoll = () => {
                         ))}
                     </div>
 
-                    {/* Add Choice Button */}
-                    <div className="add-container">
-                        <button type="button" className="add-choice-button" onClick={addChoice}>
-                            <FaPlus className="plus-icon" /> Add Choice
-                        </button>
-                    </div>
+                    <div className="btm-choices">
+                        {/* Add Choice Button */}
+                        <div className="add-container">
+                            <button type="button" className="add-choice-button" onClick={addChoice}>
+                                <FaPlus className="plus-icon" /> Add Choice
+                            </button>
+                        </div>
 
-                    {/* Submit Button */}
-                    <div className="button-container">
-                        <button type="submit">Create Poll</button>
+                        {/* Submit Button */}
+                        <div className="button-container">
+                            <button type="submit">Create Poll</button>
+                        </div>
                     </div>
                 </form>
             </div>

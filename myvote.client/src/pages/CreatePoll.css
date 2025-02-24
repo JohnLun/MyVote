@@ -136,6 +136,11 @@
     margin-right: 5px;
 }
 
+.btm-choices{
+    display: flex;
+    justify-content: space-between;
+}
+
 .add-container {
     display: flex;
     justify-content: left;
@@ -171,4 +176,11 @@ select:focus {
     border-color: rgb(0, 157, 255); /* JMFamily primary blue */
     outline: none; /* Removes default focus outline */
     box-shadow: 0 0 5px rgba(0, 157, 255); /* Optional glow effect */
+}
+
+@media (max-width: 600px){
+    .btm-choices{
+        display: flex;
+        flex-direction: column;
+    }
 }
