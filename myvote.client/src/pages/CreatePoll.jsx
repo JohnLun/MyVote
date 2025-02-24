@@ -159,8 +159,11 @@ const CreatePoll = () => {
                 <form onSubmit={handleSubmit}>
                     {/* Title */}
                     <div className="form-group">
-                        <label>Title {errors.title && <span className="error-asterisk">*</span>}</label>
-                        <br />
+                        <div className="insert-format">
+                            <label>Title {errors.title && <span className="error-asterisk">*</span>}</label>
+                            <small className="char-rem">{remainingChars.title} characters remaining</small>
+                        </div>
+                        
                         <input
                             required
                             type="text"
@@ -168,13 +171,16 @@ const CreatePoll = () => {
                             onChange={handleTitleChange}
                             maxLength={TITLE_LIMIT}
                         />
-                        <small>{remainingChars.title} characters remaining</small>
+                        
                     </div>
 
                     {/* Description */}
                     <div className="form-group">
-                        <label>Description {errors.description && <span className="error-asterisk">*</span>}</label>
-                        <br />
+                        <div className="insert-format">
+                            <label>Description {errors.description && <span className="error-asterisk">*</span>}</label>
+                            <small className="char-rem">{remainingChars.description} characters remaining</small>
+                        </div>
+                        
                         <input
                             required
                             type="text"
@@ -182,7 +188,7 @@ const CreatePoll = () => {
                             onChange={handleDescriptionChange}
                             maxLength={DESCRIPTION_LIMIT}
                         />
-                        <small>{remainingChars.description} characters remaining</small>
+                        
                     </div>
 
                     {/* Time Limit */}

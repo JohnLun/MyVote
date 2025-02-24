@@ -33,6 +33,17 @@
         margin-bottom: 5px;
     }
 
+    .insert-format{
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .char-rem{
+        font-size: x-small;
+    }
+
     .create-poll-card input, textarea {
         margin-bottom: 15px;
         padding: 10px;
