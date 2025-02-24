@@ -25,6 +25,7 @@ function Home() {
     return (
         <div className="LandingPage">
             {/* <h1>Search for a poll or create one below</h1> */}
+            {/* <h1>Welcome</h1> */}
             <div className="search-poll">
                 
                 <div className="header-search">
@@ -46,6 +47,8 @@ function Home() {
                 </button>
                 
             </div>
+
+            {/* <p>or</p> */}
 
             <div className="create-poll">
                 <CreatePollButton />
