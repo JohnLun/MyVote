@@ -91,9 +91,9 @@ function Suggestion({ suggestion }) {
     return (
         <div
             className="suggestion-card"
-            onClick={handleNavigate}
+            
         >
-            <div>
+            <div onClick={handleNavigate}>
                 <h4 className="suggestion-card-title card-title">
                     Poll Title: <b>{suggestion.pollName}</b>
                 </h4>
