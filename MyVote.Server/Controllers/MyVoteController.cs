@@ -306,6 +306,33 @@ namespace MyVote.Server.Controllers
             // Save to database
             await _db.SaveChangesAsync();
 
+            var updatedPollDto = new PollDto
+            {
+                UserId = poll.UserId,
+                PollId = poll.PollId,
+                Title = poll.Title,
+                Description = poll.Description,
+                DateCreated = poll.DateCreated,
+                DateEnded = poll.DateEnded,
+                IsActive = poll.IsActive,
+                Choices = poll.Choices.Select(c => new ChoiceDto
+                {
+                    ChoiceId = c.ChoiceId,
+                    Name = c.Name,
+                    NumVotes = c.NumVotes,
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList()
+                }).ToList()
+            };
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
+            try
+            {
+                await hubContext.Clients.All.SendAsync("UpdatedPoll", updatedPollDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
             return Ok(new { message = "Choice added successfully", choiceId = newChoice.ChoiceId });
         }
 

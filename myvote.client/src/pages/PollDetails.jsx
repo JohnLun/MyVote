@@ -15,6 +15,7 @@ import PollPDF from "../components/PollPDF";
 
 const PollDetails = () => {
     const { pollId } = useParams();
+    const { connection } = useUser();
     const [poll, setPoll] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,7 +29,7 @@ const PollDetails = () => {
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
     const timerRef = useRef(null);
-    const [connection, setConnection] = useState(null);
+    const [otherConnection, setConnection] = useState(null);
     const [graphImage, setGraphImage] = useState(null);
     const pollDetailsFlipRef = useRef();
 
@@ -121,6 +122,20 @@ const PollDetails = () => {
             newConnection.stop();
         };
     }, [pollId]);
+
+    useEffect(() => {
+        if (connection) {
+            connection.on("UpdatedPoll", (updatedPoll) => {
+                setPoll(updatedPoll);
+            });
+        }
+
+        return () => {
+            if (connection) {
+                connection.off("UpdatedPoll"); // Clean up the listener
+            }
+        };
+    }, [connection]);
 
     useEffect(() => {
         captureGraphImage();
