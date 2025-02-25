@@ -12,10 +12,11 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@mui/material": "^6.4.5",
     "@microsoft/signalr": "^8.0.7",
+    "@mui/material": "^6.4.5",
     "@react-pdf/renderer": "^4.2.2",
     "chart.js": "^4.4.7",
+    "framer-motion": "^12.4.7",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.2",
     "qrcode.react": "^4.2.0",
