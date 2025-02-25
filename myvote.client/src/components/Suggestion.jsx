@@ -14,6 +14,11 @@ function Suggestion({ suggestion }) {
             ? "https://localhost:7054"
             : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
 
+
+    const handleNavigate = () => {
+        navigate(`/poll/${suggestion.pollId}`);
+    }
+
     const handleDeny = async () => {
         const response = await fetch(`${API_BASE_URL}/api/suggestion/${suggestion.suggestionId}`, {
             method: "DELETE",
@@ -84,8 +89,10 @@ function Suggestion({ suggestion }) {
     };
 
     return (
-        <div className="suggestion-card">
-            
+        <div
+            className="suggestion-card"
+            onClick={handleNavigate}
+        >
             <div>
                 <h4 className="suggestion-card-title card-title">
                     Poll Title: <b>{suggestion.pollName}</b>
