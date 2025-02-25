@@ -4,6 +4,7 @@
     flex-direction: row !important;
     justify-content: space-between;
     gap: 1rem;
+    cursor: pointer;
 }
 
 /* .suggestion-card-body {
