@@ -20,7 +20,8 @@
 
 .qr-code {
 
-    padding: 20px;
+    padding-bottom: 15px;
+    padding-top: 10px;
 }
 
 @media(max-width: 600px){
