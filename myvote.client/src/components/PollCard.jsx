@@ -46,13 +46,13 @@ export default function PollCard({ poll }) {
     return (
         <div className="poll-card" onClick={handleGoClick}>
             <div className="poll-header">
-                <h2>{poll.title}</h2>
+                <div className="poll-card-title">{poll.title}</div>
                 <FaPaperPlane
                     className="poll-icon"
                     onClick={handleShareClick}
                 />
             </div>
-            <p>{poll.description}</p>
+            <div className="poll-card-description">{poll.description}</div>
             <p>
                 {timeRemaining > 0 
                     ? `Time Remaining: ${formatTime(timeRemaining)}` 
