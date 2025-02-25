@@ -168,15 +168,32 @@
     z-index: 3;
 }
 .modal-content {
-    background: white;
+    background: #23242C;
     padding: 20px;
     border-radius: 8px;
     width: 300px;
     text-align: center;
 }
+
+.modal-title{
+    margin-bottom: 5px;
+}
+
 .modal-buttons {
     margin-top: 10px;
 }
 .modal-buttons button {
     margin: 5px;
+}
+
+.make-inactive-button{
+    background: #b22222;
+    width: 15svw;
+}
+
+
+@media (max-width: 600px){
+    .make-inactive-button{
+        width: 30svw;
+    }
 }
