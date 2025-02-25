@@ -51,9 +51,9 @@ input {
     transition: border-color 0.3s;
 }
 
-input:focus {
-    /* border-color: #646cff; */
-}
+/* input:focus {
+    border-color: #646cff;
+} */
 
 input:focus + .floating-label,
 .floating-label.active {
