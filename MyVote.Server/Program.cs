@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MyVote.Server.Hubs;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.Azure.SignalR;
 
 namespace MyVote.Server
 {
@@ -24,7 +26,10 @@ namespace MyVote.Server
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSignalR();
+            builder.Services.AddSignalR().AddAzureSignalR(options =>
+            {
+                options.ConnectionString = builder.Configuration["ConnectionStrings:AzureSignalR"];
+            });
 
             var environment = builder.Environment.IsProduction() ? "Production" : "Local";
             var connectionString = builder.Configuration.GetConnectionString(environment);
