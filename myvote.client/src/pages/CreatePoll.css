@@ -44,6 +44,7 @@
         display: flex;
         flex-direction: column;
         align-items: flex-end;
+        max-width: 400px;
     }
 
     .char-rem{
@@ -97,13 +98,15 @@
     align-items: center;
     /* justify-content: center; */
     gap: 8px; /* Adds spacing between input and trash icon */
+    
 }
 
 .choice-container input {
     flex: 1; /* Allows input to take up available space */
     padding: 6px;
     font-size: 16px;
-    min-width: 30svw;
+    max-width: 450px;
+    min-width: 20svw;
 }
 
 
