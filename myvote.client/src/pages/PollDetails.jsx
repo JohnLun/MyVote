@@ -33,8 +33,7 @@ const PollDetails = () => {
     const [otherConnection, setConnection] = useState(null);
     const [graphImage, setGraphImage] = useState(null);
     const pollDetailsFlipRef = useRef();
-    const [showCheckmark, setShowCheckmark] = useState(false);
-    const [checkmarkXPosition, setCheckmarkXPosition] = useState(50);
+    const [checkmarks, setCheckmarks] = useState([]);
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -115,9 +114,12 @@ const PollDetails = () => {
 
                 newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
                     setPoll(updatedPoll);
-                    setCheckmarkXPosition(10 + Math.random() * 80); // Set random x position within 10% to 90%
-                    setShowCheckmark(true);
-                    setTimeout(() => setShowCheckmark(false), 2000); // Hide checkmark after 2 seconds
+                    const xPosition = 10 + Math.random() * 80; // Set random x position within 10% to 90%
+                    const id = Date.now(); // Use timestamp as unique ID
+                    setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
+                    setTimeout(() => {
+                        setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
+                    }, 2000); // Hide checkmark after 2 seconds
                 });
 
                 console.log("Listener added");
@@ -447,7 +449,9 @@ const PollDetails = () => {
                     />
                 </div>
             </div>
-            {showCheckmark && <CheckmarkAnimation xPosition={checkmarkXPosition} />}
+            {checkmarks.map((checkmark) => (
+                <CheckmarkAnimation key={checkmark.id} xPosition={checkmark.xPosition} />
+            ))}
         </div>
     );
 };
