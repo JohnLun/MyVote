@@ -168,12 +168,17 @@
     z-index: 3;
 }
 .modal-content {
-    background: white;
+    background: #23242C;
     padding: 20px;
     border-radius: 8px;
     width: 300px;
     text-align: center;
 }
+
+.modal-title{
+    margin-bottom: 5px;
+}
+
 .modal-buttons {
     margin-top: 10px;
 }
