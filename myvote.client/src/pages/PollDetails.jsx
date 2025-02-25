@@ -202,8 +202,7 @@ const PollDetails = () => {
             draggable: true,
             
         });
-    
-        // Close the modal and clear input
+
         setIsModalOpen(false);
         setSuggestion("");
     };
