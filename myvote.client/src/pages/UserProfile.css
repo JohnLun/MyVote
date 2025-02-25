@@ -1,7 +1,10 @@
 .poll-list {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-height: calc(100vh - 250px);
+    overflow-y: scroll;
     /* overflow-y: scroll; */
     /* height: 100svh; */
 }
@@ -114,5 +117,10 @@
     }
     .css-1qb8o-MuiToggleButtonGroup-root {
         margin-bottom: 20px;
+    }
+    
+    .poll-list{
+        max-height: calc(100vh - 300px);
+        overflow-x: hidden;
     }
   }
