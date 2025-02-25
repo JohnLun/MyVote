@@ -185,3 +185,15 @@
 .modal-buttons button {
     margin: 5px;
 }
+
+.make-inactive-button{
+    background: #b22222;
+    width: 15svw;
+}
+
+
+@media (max-width: 600px){
+    .make-inactive-button{
+        width: 30svw;
+    }
+}

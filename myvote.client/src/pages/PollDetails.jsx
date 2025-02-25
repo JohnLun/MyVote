@@ -365,7 +365,7 @@ const PollDetails = () => {
                 {isModalOpen && (
                     <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <h3>Suggest an Edit</h3>
+                            <h3 className="modal-title">Suggest an Edit</h3>
                             <input
                                 type="text"
                                 value={suggestion}
@@ -398,7 +398,7 @@ const PollDetails = () => {
 
                     {!isPollExpired && poll && poll.userId === userId && (
                         <button className="make-inactive-button" onClick={handleMakeInactive}>
-                            Make Poll Inactive
+                            End Poll 
                         </button>
                     )}
 
