@@ -1,9 +1,9 @@
 import React from 'react';
 import './CheckmarkAnimation.css';
 
-const CheckmarkAnimation = () => {
+const CheckmarkAnimation = ({ xPosition }) => {
     return (
-        <div className="checkmark-animation">
+        <div className="checkmark-animation" style={{ left: `${xPosition}%` }}>
             &#10003;
         </div>
     );

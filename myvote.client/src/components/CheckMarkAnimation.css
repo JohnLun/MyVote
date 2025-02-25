@@ -1,16 +1,16 @@
 .checkmark-animation {
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+    bottom: 0;
+    transform: translateX(-50%);
     font-size: 50px;
     color: white;
     opacity: 0;
-    animation: fadeInOut 2s ease-in-out;
+    animation: moveUp 2s ease-in-out;
 }
 
-@keyframes fadeInOut {
+@keyframes moveUp {
     0% {
+        bottom: 0;
         opacity: 0;
     }
 
@@ -23,6 +23,7 @@
     }
 
     100% {
+        bottom: 50%;
         opacity: 0;
     }
 }
