@@ -79,6 +79,19 @@ const UserProfile = () => {
                     
                     {/* Material UI Toggle Buttons for tabs */}
                     <ToggleButtonGroup
+                        sx={{
+                            marginBottom: "10px",
+                            "& .MuiToggleButton-root": {
+                            color: "white",
+                            fontSize: "12px",
+                            backgroundColor: "#37383e",
+                            minWidth: "75px",
+                            "&.Mui-selected": {
+                                backgroundColor: "#365FB7",
+                                color: "white",
+                            },
+                            },
+                        }}
                         color="primary"
                         value={activeTab}
                         exclusive
@@ -86,13 +99,37 @@ const UserProfile = () => {
                             if (newTab !== null) setActiveTab(newTab);
                         }}
                         aria-label="Poll tabs"
-                    >
+                        >
                         <ToggleButton value="voted">Voted</ToggleButton>
                         <ToggleButton value="owned">Created</ToggleButton>
                     </ToggleButtonGroup>
 
+
                     {/* Material UI Select for filtering */}
-                    <FormControl sx={{ minWidth: 150 }}>
+                    <FormControl
+                        sx={{
+                            minWidth: 150,
+                            "& .MuiInputLabel-root": {
+                            color: "white", // Label color
+                            },
+                            "& .MuiOutlinedInput-root": {
+                            color: "white", // Text color
+                            fontSize: "15px",
+                            "& fieldset": {
+                                borderColor: "white", // Border color
+                            },
+                            "&:hover fieldset": {
+                                borderColor: "white", // Hover border color
+                            },
+                            "&.Mui-focused fieldset": {
+                                borderColor: "white", // Focus border color
+                            },
+                            "& .MuiSvgIcon-root": {
+                                color: "white", // Dropdown arrow color
+                            },
+                            },
+                        }}
+                        >
                         <InputLabel id="poll-filter-label">Filter</InputLabel>
                         <Select
                             labelId="poll-filter-label"
@@ -106,6 +143,7 @@ const UserProfile = () => {
                             <MenuItem value="inactive">Inactive</MenuItem>
                         </Select>
                     </FormControl>
+
                 </div>
             </div>
 
