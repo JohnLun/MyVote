@@ -184,10 +184,29 @@ const PollDetails = () => {
     }
 
     const handleSubmit = () => {
+        if (suggestion.trim() === "") {
+            toast.error("Please enter a valid suggestion.", { position: "top-right" });
+            return;
+        }
+    
+        // Call the function to handle suggestion submission
         handleSuggest(poll.userId, poll.pollId, suggestion, poll.title);
-        setIsModalOpen(false); // Close modal after submission
+    
+        // Show success toast notification
+        toast.success("Your suggestion has been submitted!", {
+            position: "top-right",
+            autoClose: 3000, // Closes after 3 seconds
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            
+        });
+    
+        // Close the modal and clear input
+        setIsModalOpen(false);
         setSuggestion("");
-    }
+    };
 
     const handleMakeInactive = async () => {
         try {
