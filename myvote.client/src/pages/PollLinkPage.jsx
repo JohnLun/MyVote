@@ -29,12 +29,12 @@ const PollLinkPage = () => {
 
     return (
         <div className="poll-link-page">
-            <h2>Poll Created Successfully!</h2>
+            <h2>Poll Code {pollId}</h2>
             <h4>Share this QR code:</h4>
             <div className="qr-code">
                 <QRCode value={pollUrl} />
             </div>
-            <p>Your poll ID is: {pollId}</p>
+            {/* <p>Your poll ID is: {pollId}</p> */}
             <button className="go-poll-btn" onClick={handleGoToPoll}>Go to Poll</button>
             <button className="copy-poll-btn" onClick={handleCopyLink}>Copy Poll Link</button>
             
