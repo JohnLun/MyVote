@@ -199,10 +199,28 @@ const PollDetails = () => {
     }
 
     const handleSubmit = () => {
+        if (suggestion.trim() === "") {
+            toast.error("Please enter a valid suggestion.", { position: "top-right" });
+            return;
+        }
+    
+        // Call the function to handle suggestion submission
         handleSuggest(poll.userId, poll.pollId, suggestion, poll.title);
-        setIsModalOpen(false); // Close modal after submission
+    
+        // Show success toast notification
+        toast.success("Your suggestion has been submitted!", {
+            position: "top-right",
+            autoClose: 3000, // Closes after 3 seconds
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            
+        });
+
+        setIsModalOpen(false);
         setSuggestion("");
-    }
+    };
 
     const handleMakeInactive = async () => {
         try {
@@ -380,7 +398,7 @@ const PollDetails = () => {
                 {isModalOpen && (
                     <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <h3>Suggest an Edit</h3>
+                            <h3 className="modal-title">Suggest an Edit</h3>
                             <input
                                 type="text"
                                 value={suggestion}
@@ -413,7 +431,7 @@ const PollDetails = () => {
 
                     {!isPollExpired && poll && poll.userId === userId && (
                         <button className="make-inactive-button" onClick={handleMakeInactive}>
-                            Make Poll Inactive
+                            End Poll 
                         </button>
                     )}
 
