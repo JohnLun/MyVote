@@ -6,6 +6,7 @@ import myImage from '../assets/voteIcon.svg';
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import { useUser } from '../contexts/UserContext'; // Import context
+import BellIcon from 'react-bell-icon';
 
 function Header() {
     const navigate = useNavigate();
@@ -42,7 +43,7 @@ function Header() {
                         color="secondary" 
                         invisible={suggestions.length === 0}
                     >
-                        <FaBell size={24} />
+                        <BellIcon width='24' active={true} animate={true} color='white' />
                     </Badge>
                 </div>
                 <div className="header-icon" onClick={handleUserIconClick}>
