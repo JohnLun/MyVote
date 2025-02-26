@@ -62,6 +62,15 @@ function Suggestion({ suggestion, removeSuggestion }) {
                     },
                     style: { cursor: "pointer" },
                 });
+            } else if (patch.status === 410) {
+                toast.error("Poll no longer active", {
+                    autoClose: 3000,
+                    onClick: () => {
+                        toast.dismiss();
+                    },
+                    style: { cursor: "pointer" },
+                })
+            
             } else {
                 toast.error("Poll no longer exists", {
                     autoClose: 3000,
