@@ -3,12 +3,9 @@ import './Header.css';
 import { FaUserCircle, FaHome, FaBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import myImage from '../assets/voteIcon.svg';
-import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import { useUser } from '../contexts/UserContext'; // Import context
-import BellIcon from 'react-bell-icon';
 import { useHover } from "@uidotdev/usehooks";
-import ForwardedBellIcon from './ForwardedBellIcon';
 
 function Header() {
     const navigate = useNavigate();
@@ -40,13 +37,17 @@ function Header() {
                 <div className="home-icon">
                     <FaHome size={24} onClick={handleHomeIconClick} />
                 </div>
-                <div className="bell-icon" onClick={handleBellClick}>
-                    <Badge 
-                        badgeContent={suggestions.length} 
-                        color="secondary" 
+                <div className="bell-icon" onClick={handleBellClick} ref={ref}>
+                    <Badge
+                        badgeContent={suggestions.length}
+                        color="secondary"
                         invisible={suggestions.length === 0}
                     >
-                        <ForwardedBellIcon width='24' height='24' active={suggestions.length > 0} ref={ref} animate={hovering} color='white' />
+                        <FaBell
+                            size={24}
+                            className={hovering ? 'bell-icon-animate' : ''}
+                            color='white'
+                        />
                     </Badge>
                 </div>
                 <div className="header-icon" onClick={handleUserIconClick}>
@@ -58,3 +59,5 @@ function Header() {
 }
 
 export default Header;
+
+

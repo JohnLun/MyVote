@@ -140,12 +140,11 @@
     }
 }
 
-
-
 .poll-icon-vote {
     margin-top: 5px;
     margin-left: 5px;
     font-size: 1.2rem;
+    transition: transform 0.3s ease;
 }
 
     .poll-icon-vote:hover {
