@@ -9,6 +9,10 @@
     /* height: 100svh; */
 }
 
+.poll-list::-webkit-scrollbar {
+    display: none;
+}
+
 .nav-tabs-status{
     display: flex;
     justify-content: space-between;

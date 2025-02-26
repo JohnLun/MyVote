@@ -66,6 +66,15 @@ const UserProfile = () => {
         });
     };
 
+    const handlePollDelete = (pollId) => {
+        if (activeTab === 'voted') {
+            setVotedPolls(prevPolls => prevPolls.filter(poll => poll.pollId !== pollId));
+        } else {
+            setOwnedPolls(prevPolls => prevPolls.filter(poll => poll.pollId !== pollId));
+            setVotedPolls(prevPolls => prevPolls.filter(poll => poll.pollId !== pollId));
+        }
+    };
+
     return (
         <div className="user-profile">
             
@@ -153,7 +162,7 @@ const UserProfile = () => {
                 ) : error ? (
                     <p className="error">Error: {error}</p>
                 ) : getFilteredPolls().length > 0 ? (
-                    getFilteredPolls().map((poll) => <PollCard key={poll.pollId} poll={poll} />)
+                    getFilteredPolls().map((poll) => <PollCard key={poll.pollId} poll={poll} onDelete={handlePollDelete} activeTab={activeTab}/>)
                 ) : (
                     <p>No polls found.</p>
                 )}
