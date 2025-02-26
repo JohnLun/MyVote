@@ -32,7 +32,7 @@ function Suggestion({ suggestion, removeSuggestion }) {
         try {
             removeSuggestion(suggestion.suggestionId, "accept"); // Trigger exit animation
 
-            await fetch(`${API_BASE_URL}/api/poll/suggestion`, {
+            const patch = await fetch(`${API_BASE_URL}/api/poll/suggestion`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
@@ -44,7 +44,7 @@ function Suggestion({ suggestion, removeSuggestion }) {
                 }),
             });
 
-            await fetch(`${API_BASE_URL}/api/suggestion/${suggestion.suggestionId}`, {
+            const del = await fetch(`${API_BASE_URL}/api/suggestion/${suggestion.suggestionId}`, {
                 method: "DELETE",
                 headers: { "Content-Type": "application/json" },
             });
@@ -53,14 +53,25 @@ function Suggestion({ suggestion, removeSuggestion }) {
                 setSuggestions((prev) => prev.filter((s) => s.suggestionId !== suggestion.suggestionId));
             }, 500);
 
-            toast.success("Choice added! Click to see changes", {
-                autoClose: 3000,
-                onClick: () => {
-                    toast.dismiss();
-                    navigate(`/poll/${suggestion.pollId}`);
-                },
-                style: { cursor: "pointer" },
-            });
+            if (patch.ok) {
+                toast.success("Choice added! Click to see changes", {
+                    autoClose: 3000,
+                    onClick: () => {
+                        toast.dismiss();
+                        navigate(`/poll/${suggestion.pollId}`);
+                    },
+                    style: { cursor: "pointer" },
+                });
+            } else {
+                toast.error("Poll no longer exists", {
+                    autoClose: 3000,
+                    onClick: () => {
+                        toast.dismiss();
+                    },
+                    style: { cursor: "pointer" },
+                })
+            }
+            
         } catch (error) {
             console.error("Error accepting suggestion:", error);
         }
