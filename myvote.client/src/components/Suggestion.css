@@ -1,11 +1,21 @@
 .suggestion-card {
+    width: 100%;
+    background: #2C2D37;
+    color: #fff;
+    padding: 15px;
+    border-radius: 10px;
     display: flex;
     justify-content: space-between; /* Push buttons to the right */
     align-items: center; /* Keep items vertically centered */
     gap: 1rem;
     cursor: pointer;
-    padding: 10px;
     flex-wrap: wrap; /* Allow wrapping when needed */
+    transition: transform 0.2s ease;
+    /* width: 85vw; */
+}
+
+.suggestion-card:hover {
+    transform: scale(1.01);
 }
 
 .suggestion-card div:first-child {
@@ -68,11 +78,15 @@
 } 
 
 /* add media query */
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .suggestion-card-buttons {
         width: 100%;
         justify-content: center;
         margin-top: 10px;
+    }
+
+    .suggestion-card {
+        width: 65vw;
     }
 }
 
