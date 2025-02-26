@@ -59,7 +59,6 @@
 
 .delete-icon {
     cursor: pointer;
-    padding: 5px;
     font-size: 2rem;
     color: white;
     transition: transform 0.3s ease;
