@@ -447,8 +447,20 @@ const PollDetails = () => {
                                 </button>
                                 <button
                                     onClick={() => {
-                                        handleSubmit();
-                                        setSuggestionLimit(100);
+                                        console.log(isPollExpired);
+                                        if (isPollExpired) {
+                                            setIsModalOpen(false);
+                                            toast.error("Poll no longer active", {
+                                                autoClose: 3000,
+                                                onClick: () => {
+                                                    toast.dismiss();
+                                                },
+                                                style: { cursor: "pointer" },
+                                            })
+                                        } else {
+                                            handleSubmit();
+                                            setSuggestionLimit(100);
+                                        }
                                     }}
                                 >
                                     Submit
