@@ -10,10 +10,10 @@
     transition: transform 0.2s;
     cursor: pointer;
 }
-  
-  .poll-card:hover {
-    transform: scale(1.05);
-  }
+
+    .poll-card:hover {
+        transform: scale(1.05);
+    }
 
 .poll-card-title {
     font-size: 20px;
@@ -22,6 +22,7 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex-grow: 1; /* Allow title to take available space */
 }
 
 .poll-card-description {
@@ -31,7 +32,7 @@
     text-overflow: ellipsis;
 }
 
-  .poll-header {
+.poll-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -42,26 +43,27 @@
     color: white;
     padding: 5px;
     transition: transform 0.3s ease;
+    flex-shrink: 0; /* Prevent icon from shrinking */
 }
 
-.poll-icon:hover{
-  transform: scale(1.3);
-}
+    .poll-icon:hover {
+        transform: scale(1.3);
+    }
 
 .status-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
 }
 
 .delete-icon {
-  cursor: pointer;
-  padding: 5px;
-  font-size: 2rem;
-  color: white;
-  transition: transform 0.3s ease;
-  z-index: 1;
+    cursor: pointer;
+    padding: 5px;
+    font-size: 2rem;
+    color: white;
+    transition: transform 0.3s ease;
+    z-index: 1;
 }
 
 .delete-icon:hover {
@@ -115,9 +117,8 @@
 }
 
 
-@media (max-width: 600px){
-  .poll-card{
-    width: 65vw;
-  }
+@media (max-width: 600px) {
+    .poll-card {
+        width: 65vw;
+    }
 }
-
