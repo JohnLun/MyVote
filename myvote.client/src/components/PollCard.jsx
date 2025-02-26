@@ -16,6 +16,8 @@ export default function PollCard({ poll, onDelete, activeTab }) {
     const { userId } = useUser();
     const [showModal, setShowModal] = useState(false);
     const [timeRemaining, setTimeRemaining] = useState(calculateTimeRemaining());
+    const [isFadingOut, setIsFadingOut] = useState(false);
+
 
     function calculateTimeRemaining() {
         const endTime =
@@ -51,28 +53,38 @@ export default function PollCard({ poll, onDelete, activeTab }) {
     };
 
     const confirmDelete = async () => {
-        try {
-            const url =
-                activeTab === "voted"
-                    ? `${API_BASE_URL}/api/${poll.pollId}/user/${userId}`
-                    : `${API_BASE_URL}/api/poll/${poll.pollId}`;
-
-            const response = await fetch(url, { method: "DELETE" });
-
-            if (!response.ok) {
-                throw new Error("Failed to delete poll");
+        setShowModal(false); // Close the modal immediately
+    
+        setTimeout(() => {
+            setIsFadingOut(true); // Start fade-out animation after modal closes
+        }, 100); // Small delay ensures modal fully disappears first
+    
+        setTimeout(async () => {
+            try {
+                const url =
+                    activeTab === "voted"
+                        ? `${API_BASE_URL}/api/${poll.pollId}/user/${userId}`
+                        : `${API_BASE_URL}/api/poll/${poll.pollId}`;
+    
+                const response = await fetch(url, { method: "DELETE" });
+    
+                if (!response.ok) {
+                    throw new Error("Failed to delete poll");
+                }
+    
+                onDelete(poll.pollId); // Notify parent component
+                setIsFadingOut(false); // Reset fade-out state for future polls
+            } catch (error) {
+                console.error("Error deleting poll:", error);
             }
-
-            onDelete(poll.pollId); // Notify parent component
-            setShowModal(false); // Close modal
-        } catch (error) {
-            console.error("Error deleting poll:", error);
-        }
+        }, 1100); // Match this delay to the animation duration (1s)
     };
+    
+    
 
     return (
         <>
-            <div className="poll-card" onClick={handleGoClick}>
+            <div className={`poll-card ${isFadingOut ? "fade-out" : ""}`} onClick={handleGoClick}>
                 <div className="poll-header">
                     <div className="poll-card-title">{poll.title}</div>
                     <FaPaperPlane className="poll-icon" onClick={handleShareClick} />
@@ -97,16 +109,17 @@ export default function PollCard({ poll, onDelete, activeTab }) {
 
             {/* Confirmation Modal */}
             {showModal && (
-                <div className="modal-overlay">
-                    <div className="modal">
+                <div className="modal-overlay" onClick={() => setShowModal(false)}>
+                    <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <p>Are you sure you want to delete this poll?</p>
                         <div className="modal-actions">
-                            <button onClick={() => setShowModal(false)}>Cancel</button>
+                            <button onClick={() => setShowModal(false)}>Back</button>
                             <button onClick={confirmDelete}>Delete</button>
                         </div>
                     </div>
                 </div>
             )}
+
         </>
     );
 }

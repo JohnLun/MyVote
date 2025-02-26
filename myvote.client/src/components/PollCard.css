@@ -9,6 +9,19 @@
     margin: 10px;
     transition: transform 0.2s;
     cursor: pointer;
+    
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.fade-out {
+  animation: fadeOut 1s forwards;
 }
 
     .poll-card:hover {

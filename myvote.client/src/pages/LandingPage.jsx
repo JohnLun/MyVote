@@ -4,6 +4,10 @@ import './LandingPage.css';
 import { toast } from 'react-toastify';
 import CreatePollButton from '../components/CreatePollButton';
 import searchArrow from '../assets/submitUpArrow.svg';
+import { FaArrowUpLong } from "react-icons/fa6";
+
+
+
 
 // Separate component for home to use hooks
 function Home() {
@@ -43,7 +47,10 @@ function Home() {
                 
 
                 <button className="go-btn" type="button" onClick={handleGoClick}>
-                    <img src={searchArrow} alt="Search" width={30} />
+                    {/* <img src={searchArrow} alt="Search" width={30} /> */}
+                    
+
+                    <FaArrowUpLong className="searchArrow"/>
                 </button>
                 
             </div>
