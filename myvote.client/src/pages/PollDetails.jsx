@@ -111,19 +111,15 @@ const PollDetails = () => {
 
         newConnection.start()
             .then(() => {
-                console.log("Connected to SignalR");
-
                 newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
                     setPoll(updatedPoll);
-                    const xPosition = 10 + Math.random() * 80; // Set random x position within 10% to 90%
-                    const id = Date.now(); // Use timestamp as unique ID
+                    const xPosition = 10 + Math.random() * 80;
+                    const id = Date.now();
                     setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
                     setTimeout(() => {
                         setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
-                    }, 2000); // Hide checkmark after 2 seconds
+                    }, 2000);
                 });
-
-                console.log("Listener added");
             })
             .catch(err => console.error("SignalR Connection Error: ", err));
 
@@ -447,7 +443,6 @@ const PollDetails = () => {
                                 </button>
                                 <button
                                     onClick={() => {
-                                        console.log(isPollExpired);
                                         if (isPollExpired) {
                                             setIsModalOpen(false);
                                             toast.error("Poll no longer active", {
