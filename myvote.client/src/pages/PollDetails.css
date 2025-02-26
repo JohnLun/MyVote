@@ -2,7 +2,6 @@
     display: flex;
     justify-content: center;
     align-items: center;
-
 }
 
 .poll-details-card {
@@ -21,6 +20,10 @@
 }
 
 .poll-title {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
     margin-top: 0;
     margin-bottom: 0;
     padding-top: 5px;
@@ -58,6 +61,13 @@
 
 .poll-results {
     border-radius: 10px;
+}
+
+.poll-title, .poll-choice, .poll-description {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
 }
 
 .result-container {
