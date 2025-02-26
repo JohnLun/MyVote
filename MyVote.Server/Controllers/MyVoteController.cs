@@ -562,5 +562,23 @@ namespace MyVote.Server.Controllers
 
             return Ok(new { message = "Suggestion deleted successfully" });
         }
+
+        [HttpDelete("{pollId}/user/{userId}")]
+        public async Task<IActionResult> RemoveUserFromPoll(int pollId, int userId)
+        {
+            var userChoices = await _db.UserChoices
+                .Where(uc => uc.Choice.PollId == pollId && uc.UserId == userId)
+                .ToListAsync();
+
+            if (!userChoices.Any())
+            {
+                return NotFound("User has not voted on this poll.");
+            }
+
+            _db.UserChoices.RemoveRange(userChoices);
+            await _db.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }

@@ -48,8 +48,29 @@
   transform: scale(1.3);
 }
 
+.status-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.delete-icon {
+  cursor: pointer;
+  padding: 5px;
+  font-size: 2rem;
+  color: white;
+  transition: transform 0.3s ease;
+  z-index: 1;
+}
+
+.delete-icon:hover {
+  transform: scale(1.3);
+}
+
 @media (max-width: 600px){
   .poll-card{
     width: 65vw;
   }
 }
+
