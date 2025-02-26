@@ -196,6 +196,11 @@
     margin: 5px;
 }
 
+.poll-icon-vote:hover {
+transform: scale(1.15);
+}
+
+
 .make-inactive-button{
     background: #b22222;
     width: 15svw;

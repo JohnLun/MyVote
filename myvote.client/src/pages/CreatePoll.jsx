@@ -5,6 +5,8 @@ import { FaRegTrashAlt, FaPlus } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import './CreatePoll.css';
+import UseAnimations from 'react-useanimations';
+import trash2 from 'react-useanimations/lib/trash2';
 
 const CreatePoll = () => {
     const API_BASE_URL =
@@ -224,7 +226,13 @@ const CreatePoll = () => {
                                 
                                 
                                 {index >= 2 ? (
-                                    <FaRegTrashAlt onClick={() => removeChoice(index)} className="trash-icon" />
+                                    <UseAnimations animation={trash2}
+                                        strokeColor="white"
+                                        size="40"
+                                        className="trash-icon"
+                                        onClick={() => {
+                                            removeChoice(index)
+                                        }}/>
                                 ) : (
                                     <div className="placeholder-icon"></div>
                                 )}
