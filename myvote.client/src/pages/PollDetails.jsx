@@ -137,11 +137,19 @@ const PollDetails = () => {
             connection.on("UpdatedPoll", (updatedPoll) => {
                 setPoll(updatedPoll);
             });
+
+            connection.on("EndedPoll", (updatedPoll) => {
+                setPoll(updatedPoll);
+                setIsPollExpired(true);
+                setTimeRemaining(0);
+                clearInterval(timerRef.current);
+            });
         }
 
         return () => {
             if (connection) {
-                connection.off("UpdatedPoll"); // Clean up the listener
+                connection.off("UpdatedPoll");
+                connection.off("EndedPoll") // Clean up the listener
             }
         };
     }, [connection]);
@@ -249,7 +257,6 @@ const PollDetails = () => {
             setPoll(data);
             setIsPollExpired(true);
             setTimeRemaining(0);
-
             clearInterval(timerRef.current);
         } catch (error) {
             alert(error.message);
