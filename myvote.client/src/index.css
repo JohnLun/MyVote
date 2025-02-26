@@ -1,7 +1,7 @@
 :root {
     font-family: 'Roboto', system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
-    font-weight: 400;
+    font-weight: 300;
     color-scheme: dark;
     color: rgba(255, 255, 255, 0.87);
     background: linear-gradient(to top, #0f1013, #23242C);
