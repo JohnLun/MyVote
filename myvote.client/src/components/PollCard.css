@@ -68,12 +68,6 @@
   transform: scale(1.3);
 }
 
-@media (max-width: 600px){
-  .poll-card{
-    width: 65vw;
-  }
-}
-
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -119,3 +113,11 @@
   background: red;
   color: white;
 }
+
+
+@media (max-width: 600px){
+  .poll-card{
+    width: 65vw;
+  }
+}
+
