@@ -15,7 +15,7 @@
     text-align: center;
     transition: transform 0.6s;
     transform-style: preserve-3d;
-    border: 2px solid #000; /* Add border around the flip card area */
+    border: 1px solid grey; /* Add border around the flip card area */
     border-radius: 10px; /* Optional: Add rounded corners */
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Optional: Add shadow for better visibility */
     -webkit-transform-style: preserve-3d; /* Fix for Safari */

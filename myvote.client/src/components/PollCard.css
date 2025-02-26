@@ -1,7 +1,7 @@
 .poll-card {
-    background-color: #2F3457;
+    background: #2C2D37;
     color: #fff;
-    border: 1px solid #fff;
+    /* border: 1px solid #fff; */
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     width: 70vw;
@@ -17,6 +17,7 @@
 
 .poll-card-title {
     font-size: 20px;
+    font-weight: 300;
     font-weight: bold;
     margin-bottom: 10px;
     white-space: nowrap;
