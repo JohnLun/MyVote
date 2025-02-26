@@ -12,6 +12,7 @@ import * as signalR from "@microsoft/signalr";
 import "./PollDetails.css";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PollPDF from "../components/PollPDF";
+import CheckmarkAnimation from "../components/CheckmarkAnimation";
 
 const PollDetails = () => {
     const { pollId } = useParams();
@@ -32,6 +33,7 @@ const PollDetails = () => {
     const [otherConnection, setConnection] = useState(null);
     const [graphImage, setGraphImage] = useState(null);
     const pollDetailsFlipRef = useRef();
+    const [checkmarks, setCheckmarks] = useState([]);
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -46,7 +48,7 @@ const PollDetails = () => {
                     toast.error("Poll Not Found", {
                         autoClose: 3000,
                         onClick: () => toast.dismiss(),
-                        style: {cursor: 'pointer'}
+                        style: { cursor: 'pointer' }
                     })
                     navigate('/');
                 }
@@ -112,6 +114,12 @@ const PollDetails = () => {
 
                 newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
                     setPoll(updatedPoll);
+                    const xPosition = 10 + Math.random() * 80; // Set random x position within 10% to 90%
+                    const id = Date.now(); // Use timestamp as unique ID
+                    setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
+                    setTimeout(() => {
+                        setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
+                    }, 2000); // Hide checkmark after 2 seconds
                 });
 
                 console.log("Listener added");
@@ -179,7 +187,7 @@ const PollDetails = () => {
                 pollName: pName
             };
 
-            const response = await fetch(`${API_BASE_URL}/api/suggestion`,{
+            const response = await fetch(`${API_BASE_URL}/api/suggestion`, {
                 method: 'POST',
                 headers: {
                     "Content-Type": "application/json"
@@ -203,10 +211,10 @@ const PollDetails = () => {
             toast.error("Please enter a valid suggestion.", { position: "top-right" });
             return;
         }
-    
+
         // Call the function to handle suggestion submission
         handleSuggest(poll.userId, poll.pollId, suggestion, poll.title);
-    
+
         // Show success toast notification
         toast.success("Your suggestion has been submitted!", {
             position: "top-right",
@@ -215,7 +223,7 @@ const PollDetails = () => {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-            
+
         });
 
         setIsModalOpen(false);
@@ -382,16 +390,16 @@ const PollDetails = () => {
                             {choice.name}
                         </button>
                     ))
-                    
+
                 ) : (
                     <p></p>
                 )}
-                {!isPollExpired && 
+                {!isPollExpired &&
                     <>
                         <button
                             onClick={() => setIsModalOpen(true)}
                         >
-                            Suggest <FaPen className="poll-icon-suggest"/>
+                            Suggest <FaPen className="poll-icon-suggest" />
                         </button>
                     </>
                 }
@@ -411,7 +419,7 @@ const PollDetails = () => {
                             </div>
                         </div>
                     </div>
-                
+
                 )}
 
                 <div className="bttm-pdf-share">
@@ -431,7 +439,7 @@ const PollDetails = () => {
 
                     {!isPollExpired && poll && poll.userId === userId && (
                         <button className="make-inactive-button" onClick={handleMakeInactive}>
-                            End Poll 
+                            End Poll
                         </button>
                     )}
 
@@ -441,8 +449,12 @@ const PollDetails = () => {
                     />
                 </div>
             </div>
+            {checkmarks.map((checkmark) => (
+                <CheckmarkAnimation key={checkmark.id} xPosition={checkmark.xPosition} />
+            ))}
         </div>
     );
 };
 
 export default PollDetails;
+

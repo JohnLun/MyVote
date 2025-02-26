@@ -1,0 +1,29 @@
+.checkmark-animation {
+    position: fixed;
+    bottom: 0;
+    transform: translateX(-50%);
+    font-size: 50px;
+    color: white;
+    opacity: 0;
+    animation: moveUp 2s ease-in-out;
+}
+
+@keyframes moveUp {
+    0% {
+        bottom: 0;
+        opacity: 0;
+    }
+
+    20% {
+        opacity: 1;
+    }
+
+    80% {
+        opacity: 1;
+    }
+
+    100% {
+        bottom: 50%;
+        opacity: 0;
+    }
+}

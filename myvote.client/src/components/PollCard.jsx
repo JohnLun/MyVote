@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { FaPaperPlane } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
+import { FaRegTrashAlt } from 'react-icons/fa';
+import { useUser } from '../contexts/UserContext';
 import './PollCard.css';
 
-export default function PollCard({ poll }) {
+export default function PollCard({ poll, onDelete, activeTab }) {
+    const API_BASE_URL =
+        window.location.hostname === "localhost"
+            ? "https://localhost:7054"
+            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
+
     const navigate = useNavigate();
+
+    const { userId } = useUser();
 
     const calculateTimeRemaining = () => {
         const endTime = (window.location.hostname === "localhost")
@@ -43,6 +52,35 @@ export default function PollCard({ poll }) {
         return `${minutes}m ${secs}s`;
     };
 
+    const handleDelete = async (event) => {
+        event.stopPropagation();
+
+        try {
+            if (activeTab=="voted") {
+                const response = await fetch(`${API_BASE_URL}/api/${poll.pollId}/user/${userId}`, {
+                    method: 'DELETE',
+                });
+    
+                if (!response.ok) {
+                    throw new Error('Failed to delete poll');
+                }
+            } else {
+                const response = await fetch(`${API_BASE_URL}/api/poll/${poll.pollId}`, {
+                    method: 'DELETE',
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete poll');
+                }
+            }
+            
+
+            onDelete(poll.pollId); // Update the state in UserProfile
+        } catch (error) {
+            console.error("Error deleting poll:", error);
+        }
+    };
+
     return (
         <div className="poll-card" onClick={handleGoClick}>
             <div className="poll-header">
@@ -53,11 +91,18 @@ export default function PollCard({ poll }) {
                 />
             </div>
             <div className="poll-card-description">{poll.description}</div>
-            <p>
-                {timeRemaining > 0 
-                    ? `Time Remaining: ${formatTime(timeRemaining)}` 
-                    : "Status: Inactive"}
-            </p>
+            <div className="status-container">
+                <p>
+                    {timeRemaining > 0 
+                        ? `Time Remaining: ${formatTime(timeRemaining)}` 
+                        : "Status: Inactive"}
+                </p>
+                <FaRegTrashAlt
+                    className="delete-icon"
+                    onClick={handleDelete}
+                />
+            </div>
+
         </div>
     );
 }
