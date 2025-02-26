@@ -83,8 +83,8 @@ function Suggestion({ suggestion, removeSuggestion }) {
                 <h4 className="suggestion-card-title">
                     Poll Title: <b>{suggestion.pollName}</b>
                 </h4>
-                <p className="suggestion-card-text">
-                    Suggestion: <u>{suggestion.suggestionName}</u>
+                <p>
+                    Suggestion: <u className="suggestion-card-text">{suggestion.suggestionName}</u>
                 </p>
             </div>
             <div className="suggestion-card-buttons">

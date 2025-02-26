@@ -419,7 +419,14 @@ const PollDetails = () => {
                             />
                             <div>{suggestionLimit}</div>
                             <div className="modal-buttons">
-                                <button onClick={handleSubmit}>Submit</button>
+                                <button
+                                    onClick={() => {
+                                        handleSubmit();
+                                        setSuggestionLimit(100);
+                                    }}
+                                >
+                                    Submit
+                                </button>
                                 <button
                                     onClick={() => {
                                         setIsModalOpen(false);
