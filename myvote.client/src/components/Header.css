@@ -46,6 +46,27 @@
     transform: scale(1.15);
 }
 
+    .bell-icon:hover, .home-icon:hover, .header-icon:hover {
+        transform: scale(1.15);
+    }
+
+.bell-icon-animate {
+    animation: rotateBell 0.5s ease-in-out infinite;
+}
+
+@keyframes rotateBell {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+
+    25% {
+        transform: rotate(-15deg);
+    }
+
+    75% {
+        transform: rotate(15deg);
+    }
+}
 
 .header-left {
     display: flex;
@@ -62,6 +83,13 @@
 
 .header-right {
     display: flex;
-    align-items: center;
+    /*align-items: center;*/
     gap: 1rem;
+}
+
+.bell-icon, .home-icon, .header-icon {
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }

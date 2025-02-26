@@ -3,6 +3,8 @@ import { FaPaperPlane, FaRegTrashAlt } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import "./PollCard.css";
+import UseAnimations from 'react-useanimations';
+import trash2 from 'react-useanimations/lib/trash2';
 
 export default function PollCard({ poll, onDelete, activeTab }) {
     const API_BASE_URL =
@@ -94,13 +96,14 @@ export default function PollCard({ poll, onDelete, activeTab }) {
                             ? `Time Remaining: ${formatTime(timeRemaining)}`
                             : "Status: Inactive"}
                     </p>
-                    <FaRegTrashAlt
+                    <UseAnimations animation={trash2}
+                        strokeColor="white"
+                        size="40"
                         className="delete-icon"
                         onClick={(e) => {
                             e.stopPropagation();
                             setShowModal(true);
-                        }}
-                    />
+                        }}/>
                 </div>
             </div>
 

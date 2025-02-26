@@ -276,6 +276,16 @@ namespace MyVote.Server.Controllers
                 }).ToList()
             };
 
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
+            try
+            {
+                await hubContext.Clients.All.SendAsync("EndedPoll", pollDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
             return Ok(pollDto);
         }
 

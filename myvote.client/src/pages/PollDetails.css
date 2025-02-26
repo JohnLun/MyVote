@@ -140,12 +140,11 @@
     }
 }
 
-
-
 .poll-icon-vote {
     margin-top: 5px;
     margin-left: 5px;
     font-size: 1.2rem;
+    transition: transform 0.3s ease;
 }
 
     .poll-icon-vote:hover {
@@ -195,6 +194,11 @@
 .modal-buttons button {
     margin: 5px;
 }
+
+.poll-icon-vote:hover {
+transform: scale(1.15);
+}
+
 
 .make-inactive-button{
     background: #b22222;
