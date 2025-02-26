@@ -26,13 +26,21 @@ namespace MyVote.Server
 
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddSignalR().AddAzureSignalR(options =>
-            {
-                options.ConnectionString = builder.Configuration["ConnectionStrings:AzureSignalR"];
-            });
-
+           
             var environment = builder.Environment.IsProduction() ? "Production" : "Local";
             var connectionString = builder.Configuration.GetConnectionString(environment);
+
+            if (environment == "Production")
+            {
+                builder.Services.AddSignalR().AddAzureSignalR(options =>
+                {
+                    options.ConnectionString = builder.Configuration["ConnectionStrings:AzureSignalR"];
+                });
+            }
+            else
+            {
+                builder.Services.AddSignalR();
+            }
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
@@ -45,6 +53,18 @@ namespace MyVote.Server
                     options.UseNpgsql(connectionString);
                 }
             });
+
+            if (environment == "Production")
+{
+    builder.Services.AddSignalR().AddAzureSignalR(options =>
+    {
+        options.ConnectionString = builder.Configuration["ConnectionStrings:AzureSignalR"];
+    });
+}
+else
+{
+    builder.Services.AddSignalR(); // Use in-app SignalR
+}
 
             var app = builder.Build();
 
