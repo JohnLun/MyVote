@@ -407,6 +407,7 @@ const PollDetails = () => {
                     <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <h3 className="modal-title">Suggest an Edit</h3>
+
                             <input
                                 type="text"
                                 value={suggestion}
@@ -416,10 +417,18 @@ const PollDetails = () => {
                                 }}
                                 placeholder="Enter your suggestion"
                                 maxLength={100}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault(); // Prevents new line if input is a textarea
+                                        handleSubmit();
+                                        setSuggestionLimit(100);
+                                    }
+                                }}
                             />
-                            <div className="suggest-limit">{suggestionLimit}</div>
-                            <div className="modal-buttons">
 
+                            <div className="suggest-limit">{suggestionLimit}</div>
+
+                            <div className="modal-buttons">
                                 <button
                                     onClick={() => {
                                         setIsModalOpen(false);
@@ -437,12 +446,11 @@ const PollDetails = () => {
                                 >
                                     Submit
                                 </button>
-                                
                             </div>
                         </div>
                     </div>
-
                 )}
+
 
                 <div className="bttm-pdf-share">
                     {isPollExpired && (
