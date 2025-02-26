@@ -193,7 +193,15 @@
 
 
 @media (max-width: 600px){
+
+    .bttm-pdf-share{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
     .make-inactive-button{
         width: 30svw;
     }
+
 }
