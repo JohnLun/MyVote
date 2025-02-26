@@ -62,6 +62,13 @@
 
 .header-right {
     display: flex;
-    align-items: center;
+    /*align-items: center;*/
     gap: 1rem;
+}
+
+.bell-icon, .home-icon, .header-icon {
+    align-items: center;
+    padding: 5px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
 }

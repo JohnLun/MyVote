@@ -15,6 +15,7 @@
     "@microsoft/signalr": "^8.0.7",
     "@mui/material": "^6.4.5",
     "@react-pdf/renderer": "^4.2.2",
+    "@uidotdev/usehooks": "^2.4.1",
     "chart.js": "^4.4.7",
     "framer-motion": "^12.4.7",
     "html2canvas": "^1.4.1",

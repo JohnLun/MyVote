@@ -7,10 +7,13 @@ import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import { useUser } from '../contexts/UserContext'; // Import context
 import BellIcon from 'react-bell-icon';
+import { useHover } from "@uidotdev/usehooks";
+import ForwardedBellIcon from './ForwardedBellIcon';
 
 function Header() {
     const navigate = useNavigate();
     const { suggestions } = useUser(); // Access suggestions from context
+    const [ref, hovering] = useHover();
 
     const handleUserIconClick = () => {
         navigate('/user');
@@ -43,7 +46,7 @@ function Header() {
                         color="secondary" 
                         invisible={suggestions.length === 0}
                     >
-                        <BellIcon width='24' active={true} animate={true} color='white' />
+                        <ForwardedBellIcon width='24' height='24' active={suggestions.length > 0} ref={ref} animate={hovering} color='white' />
                     </Badge>
                 </div>
                 <div className="header-icon" onClick={handleUserIconClick}>
