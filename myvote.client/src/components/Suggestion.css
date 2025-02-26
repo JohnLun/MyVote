@@ -1,10 +1,29 @@
 .suggestion-card {
-    
-    display: flex !important;
-    flex-direction: row !important;
-    justify-content: space-between;
+    width: 100%;
+    background: #2C2D37;
+    color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: space-between; /* Push buttons to the right */
+    align-items: center; /* Keep items vertically centered */
     gap: 1rem;
     cursor: pointer;
+    flex-wrap: wrap; /* Allow wrapping when needed */
+    transition: transform 0.2s ease;
+    /* width: 85vw; */
+}
+
+.suggestion-card:hover {
+    transform: scale(1.01);
+}
+
+.suggestion-card div:first-child {
+    flex: 1; /* Allow text to take remaining space */
+    min-width: 0; /* Ensures text does not overflow */
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
 }
 
 /* .suggestion-card-body {
@@ -18,11 +37,26 @@
 .suggestion-card-title {
     font-size: 1.25rem;
     font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+    display: block;
 }
 
 .suggestion-card-text {
     font-size: 1.2rem;
-    
+    max-width: 100%;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+}
+
+.suggestion-name {
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    max-width: 100%;
 }
 
 .suggestion-card-buttons{
@@ -44,7 +78,17 @@
 } 
 
 /* add media query */
+@media (max-width: 600px) {
+    .suggestion-card-buttons {
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
+    }
 
+    .suggestion-card {
+        width: 65vw;
+    }
+}
 
 @media(max-width: 350px){
     .suggestion-card-buttons{
