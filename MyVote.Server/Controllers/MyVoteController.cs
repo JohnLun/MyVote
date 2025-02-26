@@ -292,6 +292,11 @@ namespace MyVote.Server.Controllers
                 return NotFound(new { message = "Poll not found" });
             }
 
+            if (poll.IsActive == "f")
+            {
+                return StatusCode(410, new { message = "Poll is no longer active." });
+            }
+
             // Create a new choice using the suggestion
             var newChoice = new Choice
             {
