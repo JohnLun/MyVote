@@ -417,16 +417,9 @@ const PollDetails = () => {
                                 placeholder="Enter your suggestion"
                                 maxLength={100}
                             />
-                            <div>{suggestionLimit}</div>
+                            <div className="suggest-limit">{suggestionLimit}</div>
                             <div className="modal-buttons">
-                                <button
-                                    onClick={() => {
-                                        handleSubmit();
-                                        setSuggestionLimit(100);
-                                    }}
-                                >
-                                    Submit
-                                </button>
+
                                 <button
                                     onClick={() => {
                                         setIsModalOpen(false);
@@ -436,6 +429,15 @@ const PollDetails = () => {
                                 >
                                     Cancel
                                 </button>
+                                <button
+                                    onClick={() => {
+                                        handleSubmit();
+                                        setSuggestionLimit(100);
+                                    }}
+                                >
+                                    Submit
+                                </button>
+                                
                             </div>
                         </div>
                     </div>

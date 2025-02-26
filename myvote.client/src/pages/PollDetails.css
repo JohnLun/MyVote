@@ -201,6 +201,11 @@
     width: 15svw;
 }
 
+.suggest-limit{
+    display: flex;
+    flex-direction: row-reverse;
+    font-size: small;
+}
 
 @media (max-width: 600px){
 
