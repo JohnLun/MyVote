@@ -34,6 +34,7 @@ const PollDetails = () => {
     const [graphImage, setGraphImage] = useState(null);
     const pollDetailsFlipRef = useRef();
     const [checkmarks, setCheckmarks] = useState([]);
+    const [suggestionLimit, setSuggestionLimit] = useState(100);
 
     const API_BASE_URL =
         window.location.hostname === "localhost"
@@ -223,7 +224,6 @@ const PollDetails = () => {
             closeOnClick: true,
             pauseOnHover: true,
             draggable: true,
-
         });
 
         setIsModalOpen(false);
@@ -375,7 +375,7 @@ const PollDetails = () => {
                         </div>
                     </>
                 ) : (
-                    <p>{poll.description}</p>
+                    <p className="poll-description">{poll.description}</p>
                 )}
 
                 {/* Render Choices Only If Poll is Active and User Has Not Voted */}
@@ -410,12 +410,25 @@ const PollDetails = () => {
                             <input
                                 type="text"
                                 value={suggestion}
-                                onChange={(e) => setSuggestion(e.target.value)}
+                                onChange={(e) => {
+                                    setSuggestion(e.target.value);
+                                    setSuggestionLimit(100 - e.target.value.length);
+                                }}
                                 placeholder="Enter your suggestion"
+                                maxLength={100}
                             />
+                            <div>{suggestionLimit}</div>
                             <div className="modal-buttons">
                                 <button onClick={handleSubmit}>Submit</button>
-                                <button onClick={() => setIsModalOpen(false)}>Cancel</button>
+                                <button
+                                    onClick={() => {
+                                        setIsModalOpen(false);
+                                        setSuggestion("");
+                                        setSuggestionLimit(100);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
                             </div>
                         </div>
                     </div>
