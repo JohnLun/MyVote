@@ -9,8 +9,8 @@
     margin: 10px;
     transition: transform 0.2s;
     cursor: pointer;
-    
 }
+
 @keyframes fadeOut {
   from {
     opacity: 1;
@@ -133,9 +133,17 @@
   color: white;
 }
 
-    .modal-actions button:last-child:hover {
-        background: #750d0d;
-    }
+.modal-btn {
+  margin: 10px;
+}
+
+.modal-btn {
+  margin: 10px;
+}
+
+.modal-actions button:last-child:hover {
+  background: #750d0d;
+}
 
 @media (max-width: 600px) {
     .poll-card {

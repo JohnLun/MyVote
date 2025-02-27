@@ -24,6 +24,8 @@ namespace MyVote.Server.Controllers
             _db = dbContext;
         }
 
+        //Get user if already existing, else create new one
+
         [HttpGet("track")]
         public IActionResult TrackUser()
         {
@@ -64,6 +66,41 @@ namespace MyVote.Server.Controllers
             return Ok(new { message = "New user tracked", userId = newUser.UserId });
         }
 
+        //Get user by id
+        [HttpGet("user/{userid}")]
+        public async Task<ActionResult<UserDto>> GetUser(int userid)
+        {
+            var user = await _db.Users.FindAsync(userid);
+            if (user == null)
+                return NotFound();
+
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                FirstName = user.FirstName,
+                LastName = user.LastName
+            };
+
+            return Ok(userDto);
+        }
+
+        //Create new user
+        [HttpPost("user")]
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUserDto)
+        {
+            var user = new User
+            {
+                FirstName = newUserDto.FirstName,
+                LastName = newUserDto.LastName
+            };
+
+            _db.Users.Add(user);
+            await _db.SaveChangesAsync();
+
+            return CreatedAtAction(nameof(GetUser), new { userid = user.UserId }, newUserDto);
+        }
+
+        //Get all polls belonging to user
         [HttpGet("polls/{userId}")]
         public async Task<ActionResult<IEnumerable<Poll>>> GetPollsByUser(int userId)
         {
@@ -90,6 +127,7 @@ namespace MyVote.Server.Controllers
             return Ok(allPolls);
         }
 
+        //Get poll user voted on
         [HttpGet("polls/voted/{userId}")]
         public async Task<ActionResult<IEnumerable<Poll>>> GetVotedPolls(int userId)
         {
@@ -112,6 +150,7 @@ namespace MyVote.Server.Controllers
             return Ok(votedPolls);
         }
 
+        //Get polls user has created
         [HttpGet("polls/owned/{userId}")]
         public async Task<ActionResult<IEnumerable<Poll>>> GetOwnedPolls(int userId)
         {
@@ -132,34 +171,7 @@ namespace MyVote.Server.Controllers
             return Ok(createdPolls);
         }
 
-
-        // GET: /polls (Get all active polls)
-        //[HttpGet("polls")]
-        //public async Task<ActionResult<IEnumerable<Poll>>> GetActivePolls()
-        //{
-        //    var polls = await _db.Polls
-        //        .Where(p => p.IsActive=="t")
-        //        .Include(p => p.Choices)
-        //        .ToListAsync();
-
-        //    var pollDtos = polls.Select(p => new PollDto
-        //    {
-        //        PollId = p.PollId,
-        //        Title = p.Title,
-        //        Description = p.Description,
-        //        TimeLimit = p.TimeLimit,
-        //        IsActive = p.IsActive,
-        //        Choices = p.Choices.Select(c => new ChoiceDto
-        //        {
-        //            ChoiceId = c.ChoiceId,
-        //            Name = c.Name,
-        //            NumVotes = c.NumVotes
-        //        }).ToList()
-        //    }).ToList();
-
-        //    return Ok(pollDtos);
-        //}
-
+        //Get poll details
         [HttpGet("poll/{pollid}")]
         public async Task<ActionResult<PollDto>> GetPoll(int pollid)
         {
@@ -196,51 +208,20 @@ namespace MyVote.Server.Controllers
             return Ok(pollDto);
         }
 
-
-        // GET: /choices/{pollid} (Get choices for a poll)
-        [HttpGet("choices/{pollid}")]
-        public async Task<ActionResult<IEnumerable<ChoiceDto>>> GetPollChoices(int pollid)
-        {
-            var choices = await _db.Choices
-                .Where(c => c.PollId == pollid)
-                .ToListAsync();
-
-            if (!choices.Any()) return NotFound();
-
-            var choiceDtos = choices.Select(c => new ChoiceDto
-            {
-                ChoiceId = c.ChoiceId,
-                Name = c.Name,
-                NumVotes = c.NumVotes
-            }).ToList();
-
-            return Ok(choiceDtos);
-        }
-
-        [HttpGet("suggestions/{userId}")]
-        public async Task<IActionResult> GetSuggestions(int userId)
-        {
-            var suggestions = await _db.Suggestions
-                .Where(s => s.UserId == userId)
-                .ToListAsync();
-
-            return Ok(suggestions);
-           
-        }
-
-        [HttpPatch("status")]
+        //Update status of poll to inactive
+        [HttpPatch("poll/status")]
         public async Task<IActionResult> UpdateStatus([FromBody] Poll poll)
         {
             if (DateTime.UtcNow >= poll.DateEnded && poll.IsActive == "t")
-            if (DateTime.UtcNow >= poll.DateEnded && poll.IsActive == "t")
-            {
-                poll.IsActive = "f";
-            }
+                if (DateTime.UtcNow >= poll.DateEnded && poll.IsActive == "t")
+                {
+                    poll.IsActive = "f";
+                }
             _db.SaveChangesAsync();
             return Ok();
         }
 
-        // make a poll inactive
+        //End a poll
         [HttpPatch("poll/{pollId}/end")]
         public async Task<IActionResult> EndPoll(int pollId)
         {
@@ -289,6 +270,7 @@ namespace MyVote.Server.Controllers
             return Ok(pollDto);
         }
 
+        //Create a suggestion for a poll
         [HttpPatch("poll/suggestion")]
         public async Task<IActionResult> UpdatePoll([FromBody] OptionDto optionDto)
         {
@@ -351,7 +333,8 @@ namespace MyVote.Server.Controllers
             return Ok(new { message = "Choice added successfully", choiceId = newChoice.ChoiceId });
         }
 
-        [HttpPatch("vote")]
+        //Vote on a poll
+        [HttpPatch("poll/vote")]
         public async Task<IActionResult> UpdateChoice([FromBody] VoteDto voteDto)
         {
             var choice = await _db.Choices
@@ -407,55 +390,18 @@ namespace MyVote.Server.Controllers
             try
             {
                 await hubContext.Clients.All.SendAsync("ReceiveVoteUpdate", updatedPollDto);
-             
+
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-            
+
 
             return Ok(new { message = "Vote submitted successfully!" });
         }
 
-        [HttpPost("suggestion")]
-        public async Task<IActionResult> SendOption([FromBody] OptionDto optionDto)
-        {
-            var suggestion = new Suggestion
-            {
-                SuggestionName = optionDto.SuggestionName,
-                PollId = optionDto.PollId,
-                UserId = optionDto.UserId,
-                PollName = optionDto.PollName,
-            };
-
-            _db.Suggestions.Add(suggestion);
-
-            await _db.SaveChangesAsync();
-
-            var updatedOptionDto = new OptionDto
-            {
-                SuggestionId = suggestion.SuggestionId, // Newly created ID
-                SuggestionName = suggestion.SuggestionName,
-                PollId = suggestion.PollId,
-                UserId = suggestion.UserId,
-                PollName = suggestion.PollName
-            };
-
-            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
-            try
-            {
-                await hubContext.Clients.All.SendAsync("ReceiveWriteInOption", updatedOptionDto);
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            return Ok(new { message = $"Option submitted to {optionDto.UserId}" });
-        }
-
-        // POST: /poll (Create new poll)
+        //Create a poll
         [HttpPost("poll")]
         public async Task<IActionResult> CreatePoll([FromBody] CreatePollDto newPollDto)
         {
@@ -503,40 +449,7 @@ namespace MyVote.Server.Controllers
             return CreatedAtAction(nameof(GetPoll), new { pollid = poll.PollId }, pollDto);
         }
 
-        // POST: /user (Create new user)
-        [HttpPost("user")]
-        public async Task<IActionResult> CreateUser([FromBody] CreateUserDto newUserDto)
-        {
-            var user = new User
-            {
-                FirstName = newUserDto.FirstName,
-                LastName = newUserDto.LastName
-            };
-
-            _db.Users.Add(user);
-            await _db.SaveChangesAsync();
-
-            return CreatedAtAction(nameof(GetUser), new { userid = user.UserId }, newUserDto);
-        }
-
-        // GET: /user/{userid} (Get user details)
-        [HttpGet("user/{userid}")]
-        public async Task<ActionResult<UserDto>> GetUser(int userid)
-        {
-            var user = await _db.Users.FindAsync(userid);
-            if (user == null)
-                return NotFound();
-
-            var userDto = new UserDto
-            {
-                UserId = user.UserId,
-                FirstName = user.FirstName,
-                LastName = user.LastName
-            };
-
-            return Ok(userDto);
-        }
-
+        //Delete a poll
         [HttpDelete("poll/{pollid}")]
         public async Task<IActionResult> DeletePoll(int pollid)
         {
@@ -562,22 +475,7 @@ namespace MyVote.Server.Controllers
             return NoContent();
         }
 
-        [HttpDelete("suggestion/{suggestionId}")]
-        public async Task<IActionResult> DeleteSuggestion(int suggestionId)
-        {
-            var suggestion = await _db.Suggestions.FirstOrDefaultAsync(s => s.SuggestionId == suggestionId);
-
-            if (suggestion == null)
-            {
-                return NotFound(new { message = "Suggestion not found" });
-            }
-
-            _db.Suggestions.Remove(suggestion);
-            await _db.SaveChangesAsync();
-
-            return Ok(new { message = "Suggestion deleted successfully" });
-        }
-
+        //Delete a poll only for a specific user
         [HttpDelete("{pollId}/user/{userId}")]
         public async Task<IActionResult> RemoveUserFromPoll(int pollId, int userId)
         {
@@ -594,6 +492,93 @@ namespace MyVote.Server.Controllers
             await _db.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        //Get poll choices
+        [HttpGet("choices/{pollid}")]
+        public async Task<ActionResult<IEnumerable<ChoiceDto>>> GetPollChoices(int pollid)
+        {
+            var choices = await _db.Choices
+                .Where(c => c.PollId == pollid)
+                .ToListAsync();
+
+            if (!choices.Any()) return NotFound();
+
+            var choiceDtos = choices.Select(c => new ChoiceDto
+            {
+                ChoiceId = c.ChoiceId,
+                Name = c.Name,
+                NumVotes = c.NumVotes
+            }).ToList();
+
+            return Ok(choiceDtos);
+        }
+
+        //Get suggestions for a user
+        [HttpGet("suggestions/{userId}")]
+        public async Task<IActionResult> GetSuggestions(int userId)
+        {
+            var suggestions = await _db.Suggestions
+                .Where(s => s.UserId == userId)
+                .ToListAsync();
+
+            return Ok(suggestions);
+           
+        }
+
+        //Post a suggestion
+        [HttpPost("suggestion")]
+        public async Task<IActionResult> SendOption([FromBody] OptionDto optionDto)
+        {
+            var suggestion = new Suggestion
+            {
+                SuggestionName = optionDto.SuggestionName,
+                PollId = optionDto.PollId,
+                UserId = optionDto.UserId,
+                PollName = optionDto.PollName,
+            };
+
+            _db.Suggestions.Add(suggestion);
+
+            await _db.SaveChangesAsync();
+
+            var updatedOptionDto = new OptionDto
+            {
+                SuggestionId = suggestion.SuggestionId, // Newly created ID
+                SuggestionName = suggestion.SuggestionName,
+                PollId = suggestion.PollId,
+                UserId = suggestion.UserId,
+                PollName = suggestion.PollName
+            };
+
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
+            try
+            {
+                await hubContext.Clients.All.SendAsync("ReceiveWriteInOption", updatedOptionDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return Ok(new { message = $"Option submitted to {optionDto.UserId}" });
+        }
+
+        //Delete a suggestion
+        [HttpDelete("suggestion/{suggestionId}")]
+        public async Task<IActionResult> DeleteSuggestion(int suggestionId)
+        {
+            var suggestion = await _db.Suggestions.FirstOrDefaultAsync(s => s.SuggestionId == suggestionId);
+
+            if (suggestion == null)
+            {
+                return NotFound(new { message = "Suggestion not found" });
+            }
+
+            _db.Suggestions.Remove(suggestion);
+            await _db.SaveChangesAsync();
+
+            return Ok(new { message = "Suggestion deleted successfully" });
         }
     }
 }

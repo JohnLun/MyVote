@@ -7,11 +7,7 @@ import UseAnimations from 'react-useanimations';
 import trash2 from 'react-useanimations/lib/trash2';
 
 export default function PollCard({ poll, onDelete, activeTab }) {
-    const API_BASE_URL =
-        window.location.hostname === "localhost"
-            ? "https://localhost:7054"
-            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
-
+    const { API_BASE_URL } = useUser();
     const navigate = useNavigate();
     const { userId } = useUser();
     const [showModal, setShowModal] = useState(false);
@@ -113,8 +109,8 @@ export default function PollCard({ poll, onDelete, activeTab }) {
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <p>Are you sure you want to delete this poll?</p>
                         <div className="modal-actions">
-                            <button onClick={() => setShowModal(false)}>Back</button>
-                            <button onClick={confirmDelete}>Delete</button>
+                            <button className="modal-btn"onClick={() => setShowModal(false)}>Back</button>
+                            <button className="modal-btn" onClick={confirmDelete}>Delete</button>
                         </div>
                     </div>
                 </div>

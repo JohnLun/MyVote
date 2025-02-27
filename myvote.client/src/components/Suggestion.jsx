@@ -8,10 +8,7 @@ function Suggestion({ suggestion, removeSuggestion }) {
     const navigate = useNavigate();
     const { setSuggestions } = useUser();
 
-    const API_BASE_URL =
-        window.location.hostname === "localhost"
-            ? "https://localhost:7054"
-            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
+    const { API_BASE_URL } = useUser();
 
     const handleNavigate = () => {
         navigate(`/poll/${suggestion.pollId}`);
