@@ -16,15 +16,12 @@ export const UserProvider = ({ children }) => {
     const [suggestions, setSuggestions] = useState([]);
 
     useEffect(() => {
-        console.log("Checking cookies:", document.cookie);
-
         fetch(`${API_BASE_URL}/api/track`, {
             method: "GET",
             credentials: "include",
         })
         .then(res => res.json())
         .then(data => {
-            console.log(data.userId);
             setUserId(data.userId);
         })
         .catch(error => console.error("Error tracking user:", error));
@@ -61,8 +58,6 @@ export const UserProvider = ({ children }) => {
 
         newConnection.start()
             .then(() => {
-                console.log("Ready to receive suggestions");
-
                 newConnection.on("ReceiveWriteInOption", (optionDto) => {
                     if (optionDto.userId == userId) {
                         toast.success(`Received suggestion for Poll #${optionDto.pollId}!`, 
@@ -80,8 +75,6 @@ export const UserProvider = ({ children }) => {
                         ])
                     }
                 });
-
-                console.log("Listener added");
             })
             .catch(err => console.error("SignalR Connection Error: ", err));
 

@@ -9,7 +9,6 @@ function NotifsPage() {
     const [animatedSuggestions, setAnimatedSuggestions] = useState(suggestions);
 
     useEffect(() => {
-        console.log(suggestions);
         setAnimatedSuggestions(suggestions); // Keep suggestions in sync
     }, [suggestions]);
 
