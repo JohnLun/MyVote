@@ -124,11 +124,18 @@
   color: #333;
 }
 
+    .modal-actions button:first-child:hover {
+        background: #808080;
+    }
+
 .modal-actions button:last-child {
   background: red;
   color: white;
 }
 
+    .modal-actions button:last-child:hover {
+        background: #750d0d;
+    }
 
 @media (max-width: 600px) {
     .poll-card {
