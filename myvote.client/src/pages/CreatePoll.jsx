@@ -97,7 +97,7 @@ const CreatePoll = () => {
         setErrors(newErrors);
 
         if (showErrorToast) {
-            toast.error('Please fill in all required fields');
+            toast.error('Please fill in all required fields' );
         }
 
         return Object.keys(newErrors).length === 0;
@@ -137,6 +137,7 @@ const CreatePoll = () => {
             const data = await response.json();
             toast.success('Poll created successfully!', {
                 autoClose: 3000,
+                theme: "dark",
                 onClick: () => toast.dismiss(),
                 style: { cursor: "pointer" }
             });

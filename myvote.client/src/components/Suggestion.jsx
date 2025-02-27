@@ -3,6 +3,7 @@ import { useUser } from "../contexts/UserContext";
 import "./Suggestion.css";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
+import { dark } from "@mui/material/styles/createPalette";
 
 function Suggestion({ suggestion, removeSuggestion }) {
     const navigate = useNavigate();
@@ -53,6 +54,7 @@ function Suggestion({ suggestion, removeSuggestion }) {
             if (patch.ok) {
                 toast.success("Choice added! Click to see changes", {
                     autoClose: 3000,
+                    theme: "dark",
                     onClick: () => {
                         toast.dismiss();
                         navigate(`/poll/${suggestion.pollId}`);
@@ -62,6 +64,7 @@ function Suggestion({ suggestion, removeSuggestion }) {
             } else if (patch.status === 410) {
                 toast.error("Poll no longer active", {
                     autoClose: 3000,
+                    theme: "colored",
                     onClick: () => {
                         toast.dismiss();
                     },
@@ -71,6 +74,7 @@ function Suggestion({ suggestion, removeSuggestion }) {
             } else {
                 toast.error("Poll no longer exists", {
                     autoClose: 3000,
+                    theme: "colored",
                     onClick: () => {
                         toast.dismiss();
                     },
