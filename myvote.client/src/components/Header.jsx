@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Header.css';
 import { FaUserCircle, FaHome, FaBell } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ function Header() {
     const navigate = useNavigate();
     const { suggestions } = useUser(); // Access suggestions from context
     const [ref, hovering] = useHover();
+    const [animate, setAnimate] = useState(false);
 
     const handleUserIconClick = () => {
         navigate('/user');
@@ -23,6 +24,21 @@ function Header() {
     const handleBellClick = () => {
         navigate('/notifications');
     };
+
+    useEffect(() => {
+        let interval;
+        if (suggestions.length > 0) {
+            setAnimate(true);
+            interval = setInterval(() => {
+                setAnimate(true);
+                setTimeout(() => setAnimate(false), 1000); // Fade out after 1 second
+            }, 5000); // Animate every 5 seconds
+        } else {
+            setAnimate(false);
+        }
+
+        return () => clearInterval(interval);
+    }, [suggestions.length]);
 
     return (
         <header className="header">
@@ -45,7 +61,7 @@ function Header() {
                     >
                         <FaBell
                             size={24}
-                            className={hovering ? 'bell-icon-animate' : ''}
+                            className={`${hovering || animate ? 'bell-icon-animate' : ''}`}
                             color='white'
                         />
                     </Badge>
