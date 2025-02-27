@@ -9,8 +9,8 @@
     margin: 10px;
     transition: transform 0.2s;
     cursor: pointer;
-    
 }
+
 @keyframes fadeOut {
   from {
     opacity: 1;
@@ -127,6 +127,10 @@
 .modal-actions button:last-child {
   background: red;
   color: white;
+}
+
+.modal-btn {
+  margin: 10px;
 }
 
 

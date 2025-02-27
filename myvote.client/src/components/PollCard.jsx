@@ -109,8 +109,8 @@ export default function PollCard({ poll, onDelete, activeTab }) {
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <p>Are you sure you want to delete this poll?</p>
                         <div className="modal-actions">
-                            <button onClick={() => setShowModal(false)}>Back</button>
-                            <button onClick={confirmDelete}>Delete</button>
+                            <button className="modal-btn"onClick={() => setShowModal(false)}>Back</button>
+                            <button className="modal-btn" onClick={confirmDelete}>Delete</button>
                         </div>
                     </div>
                 </div>
