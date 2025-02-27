@@ -9,10 +9,7 @@ import UseAnimations from 'react-useanimations';
 import trash2 from 'react-useanimations/lib/trash2';
 
 const CreatePoll = () => {
-    const API_BASE_URL =
-        window.location.hostname === 'localhost'
-            ? 'https://localhost:7054/api'
-            : 'https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api';
+    const { API_BASE_URL } = useUser();
 
     const TITLE_LIMIT = 100;
     const DESCRIPTION_LIMIT = 500;
@@ -126,7 +123,7 @@ const CreatePoll = () => {
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/poll`, {
+            const response = await fetch(`${API_BASE_URL}/api/poll`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newPollDto)
@@ -241,14 +238,12 @@ const CreatePoll = () => {
                     </div>
 
                     <div className="btm-choices">
-                        {/* Add Choice Button */}
                         <div className="add-container">
                             <button type="button" className="add-choice-button" onClick={addChoice}>
                                 <FaPlus className="plus-icon" /> Add Choice
                             </button>
                         </div>
 
-                        {/* Submit Button */}
                         <div className="button-container">
                             <button type="submit">Create Poll</button>
                         </div>

@@ -36,11 +36,7 @@ const PollDetails = () => {
     const [checkmarks, setCheckmarks] = useState([]);
     const [suggestionLimit, setSuggestionLimit] = useState(100);
 
-    const API_BASE_URL =
-        window.location.hostname === "localhost"
-            ? "https://localhost:7054"
-            : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net";
-
+    const { API_BASE_URL } = useUser();
     useEffect(() => {
         const fetchPoll = async () => {
             try {
@@ -162,7 +158,7 @@ const PollDetails = () => {
                 choiceId: choiceId,
                 userId: userId
             };
-            const response = await fetch(`${API_BASE_URL}/api/vote`, {
+            const response = await fetch(`${API_BASE_URL}/api/poll/vote`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json"
@@ -174,7 +170,6 @@ const PollDetails = () => {
                 const errorData = await response.json();
                 throw new Error(errorData.message || "Vote submission failed.");
             }
-
             setUserVoted(true);
             setSelectedChoice(choiceId);
 
@@ -427,6 +422,7 @@ const PollDetails = () => {
                                         setSuggestionLimit(100);
                                     }
                                 }}
+                                autoFocus
                             />
 
                             <div className="suggest-limit">{suggestionLimit}</div>
