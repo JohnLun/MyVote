@@ -169,11 +169,14 @@ const PollDetails = () => {
     
         if (!poll.multiSelect) {
             // Single choice poll: if selected, just return
-            if (selectedChoices[0] === choiceId) return;
-    
-            // Remove previous vote if any
-            if (selectedChoices.length > 0) {
-                await removeVote(selectedChoices[0]);
+            let choice = poll.choices.filter(c => c.choiceId == choiceId);
+            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
+                return;
+            }
+            const previousChoice = poll.choices.find(c => c.userIds.includes(userId));
+            if (previousChoice && previousChoice.choiceId !== choiceId) {
+                // Only remove the previous vote if it's a different choice
+                await removeVote(previousChoice.choiceId);
             }
     
             // Cast new vote
