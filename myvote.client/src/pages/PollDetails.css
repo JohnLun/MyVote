@@ -61,6 +61,7 @@
 
 .poll-results {
     border-radius: 10px;
+    width: 100%;
 }
 
 .poll-title, .poll-choice, .poll-description {
