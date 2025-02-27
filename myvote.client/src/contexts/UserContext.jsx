@@ -63,6 +63,7 @@ export const UserProvider = ({ children }) => {
                         toast.success(`Received suggestion for Poll #${optionDto.pollId}!`, 
                             {
                                 autoClose: 3000,
+                                theme: "dark",
                                 onClick: () => {
                                     toast.dismiss();
                                     navigate('/notifications');

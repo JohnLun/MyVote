@@ -45,6 +45,7 @@ const PollDetails = () => {
                     toast.error("Poll Not Found", {
                         autoClose: 3000,
                         onClick: () => toast.dismiss(),
+                        theme: "colored",
                         style: { cursor: 'pointer' }
                     })
                     navigate('/');
@@ -208,7 +209,7 @@ const PollDetails = () => {
 
     const handleSubmit = () => {
         if (suggestion.trim() === "") {
-            toast.error("Please enter a valid suggestion.", { position: "top-right" });
+            toast.error("Please enter a valid suggestion.", { position: "top-right", theme: "colored" });
             return;
         }
 
@@ -221,6 +222,7 @@ const PollDetails = () => {
             autoClose: 3000, // Closes after 3 seconds
             hideProgressBar: false,
             closeOnClick: true,
+            theme: "dark",
             pauseOnHover: true,
             draggable: true,
         });
