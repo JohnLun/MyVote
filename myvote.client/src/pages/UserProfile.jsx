@@ -18,9 +18,7 @@ const UserProfile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    const API_BASE_URL = window.location.hostname === "localhost"
-        ? "https://localhost:7054/api"
-        : "https://myvote-a3cthpgyajgue4c9.canadacentral-01.azurewebsites.net/api";
+    const { API_BASE_URL } = useUser();
 
     useEffect(() => {
         const fetchPolls = async () => {
@@ -31,8 +29,8 @@ const UserProfile = () => {
 
             try {
                 const [votedResponse, ownedResponse] = await Promise.all([
-                    fetch(`${API_BASE_URL}/polls/voted/${userId}`),
-                    fetch(`${API_BASE_URL}/polls/owned/${userId}`)
+                    fetch(`${API_BASE_URL}/api/polls/voted/${userId}`),
+                    fetch(`${API_BASE_URL}/api/polls/owned/${userId}`)
                 ]);
 
                 if (!votedResponse.ok || !ownedResponse.ok) {
