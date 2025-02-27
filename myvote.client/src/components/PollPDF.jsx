@@ -63,6 +63,8 @@ const PollPDF = ({ poll, graphImage }) => {
         }
     }
 
+    const totalVotes = poll.choices.reduce((sum, choice) => sum + choice.numVotes, 0);
+
     return (
         <Document>
             <Page size="A4" style={styles.page}>
@@ -86,12 +88,12 @@ const PollPDF = ({ poll, graphImage }) => {
                             }}
                         />
                     )}
+                    <Text style={styles.text}>Total Votes: {totalVotes}</Text>
                 </View>
 
                 <View style={styles.section}>
                     <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Choices</Text>
                     {poll.choices.map((choice, index) => {
-                        const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
                         const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
                         return (
                             <View key={index} style={styles.choiceContainer}>
@@ -107,5 +109,6 @@ const PollPDF = ({ poll, graphImage }) => {
     );
 };
 
-
 export default PollPDF;
+
+
