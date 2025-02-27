@@ -10,6 +10,8 @@ namespace MyVote.Server.Models
 
         public string Description { get; set; }
 
+        public bool MultiSelect { get; set; }
+
         public DateTime DateCreated { get; set; }
         
         public DateTime DateEnded { get; set; }

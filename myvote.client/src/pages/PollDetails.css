@@ -200,6 +200,13 @@
 transform: scale(1.15);
 }
 
+.poll-choice.selected {
+    background-color: #008c96; /* JMFamily Blue */
+    color: white;
+    font-weight: bold;
+    border: 2px solid #006b73;
+}
+
 
 .make-inactive-button{
     background: #b22222;

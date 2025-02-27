@@ -17,6 +17,7 @@ import CheckmarkAnimation from "../components/CheckmarkAnimation";
 const PollDetails = () => {
     const { pollId } = useParams();
     const { connection } = useUser();
+    const [selectedChoices, setSelectedChoices] = useState([]);
     const [poll, setPoll] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -37,6 +38,7 @@ const PollDetails = () => {
     const [suggestionLimit, setSuggestionLimit] = useState(100);
 
     const { API_BASE_URL } = useUser();
+
     useEffect(() => {
         const fetchPoll = async () => {
             try {
@@ -95,6 +97,18 @@ const PollDetails = () => {
     }, [pollId, userId]);
 
     useEffect(() => {
+        if (poll && poll.choices) {
+            const userVotes = poll.choices
+                .filter(choice => choice.userIds.includes(userId)) // Check if user voted for this choice
+                .map(choice => choice.choiceId); // Extract choiceId(s)
+    
+            setSelectedChoices(userVotes); // Set selected choices on load
+        }
+    }, [poll, userId]);
+    
+    
+
+    useEffect(() => {
         const newConnection = new signalR.HubConnectionBuilder()
             .withUrl(`${API_BASE_URL}/voteHub`, {
                 transport: signalR.HttpTransportType.WebSockets
@@ -151,30 +165,79 @@ const PollDetails = () => {
     }, [poll]);
 
     const handleVote = async (choiceId) => {
-        if (isPollExpired) return; // Prevent voting after expiration
-
+        if (isPollExpired) return;
+    
+        if (!poll.multiSelect) {
+            // Single choice poll: if selected, just return
+            if (selectedChoices[0] === choiceId) return;
+    
+            // Remove previous vote if any
+            if (selectedChoices.length > 0) {
+                await removeVote(selectedChoices[0]);
+            }
+    
+            // Cast new vote
+            await submitVote(choiceId);
+        } else {
+            let choice = poll.choices.filter(c => c.choiceId == choiceId);
+            // Multi-select poll: toggle selection
+            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
+                await removeVote(choiceId);
+            } else {
+                await submitVote(choiceId);
+            }
+        }
+    };
+    
+    const removeVote = async (choiceId) => {
+        
         try {
-            const responseBody = {
-                choiceId: choiceId,
-                userId: userId
-            };
+            const response = await fetch(`${API_BASE_URL}/api/poll/vote/remove`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, choiceId }),
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to remove vote");
+            }
+    
+            // Update UI after removal, preserving order by choiceId
+            setSelectedChoices((prev) => {
+                const updatedChoices = prev.filter((id) => id !== choiceId);
+                return updatedChoices; // Sort by choiceId
+            });
+        } catch (error) {
+            console.error("Error removing vote:", error);
+        }
+    };
+    
+    const submitVote = async (choiceId) => {
+        try {
             const response = await fetch(`${API_BASE_URL}/api/poll/vote`, {
                 method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(responseBody)
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, choiceId }),
             });
-
+    
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Vote submission failed.");
+                throw new Error("Failed to submit vote");
             }
+    
+            // Update UI after vote submission
+            setSelectedChoices((prev) => {
+                if (prev.includes(choiceId)) {
+                    // If the choiceId is already selected, remove it
+                    return prev.filter(id => id !== choiceId);
+                } else {
+                    // If the choiceId is not selected, add it
+                    return [...prev, choiceId];
+                }
+            });
+    
             setUserVoted(true);
-            setSelectedChoice(choiceId);
-
         } catch (error) {
-            alert(error.message);
+            console.error("Error submitting vote:", error);
         }
     };
 
@@ -376,22 +439,24 @@ const PollDetails = () => {
                     <p className="poll-description">{poll.description}</p>
                 )}
 
-                {/* Render Choices Only If Poll is Active and User Has Not Voted */}
-                {!isPollExpired && !userVoted && poll && poll.choices && poll.choices.length > 0 ? (
-                    poll.choices.map((choice) => (
-                        <button
-                            key={choice.choiceId}
-                            className="poll-choice"
-                            onClick={() => handleVote(choice.choiceId)}
-                            disabled={isPollExpired}
-                        >
-                            {choice.name}
-                        </button>
-                    ))
+                {!isPollExpired &&
+                    poll.choices && poll.choices.length > 0 && 
+                    poll.choices
+                        .sort((a, b) => a.choiceId - b.choiceId) // Sort choices by choiceId
+                        .map((choice) => {
+                            return(
+                                <button
+                                    key={choice.choiceId}
+                                    className={`poll-choice ${choice.userIds.includes(userId) ? "selected" : ""}`}
+                                    onClick={() => handleVote(choice.choiceId)}
+                                >
+                                    {choice.name}
+                                </button>
+                                );
+                            
+                        })
+                }
 
-                ) : (
-                    <p></p>
-                )}
                 {!isPollExpired &&
                     <>
                         <button
