@@ -32,7 +32,7 @@
     height: 100%;
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden; /* Safari */
-    display: flex;
+    /*display: flex;*/
     align-items: center;
     justify-content: center;
     flex-direction: column;
@@ -83,5 +83,12 @@
     -webkit-transform: rotateY(0deg);
 }
 
-
-
+/* Ensure the poll description wraps and is scrollable */
+.flip-card-back p {
+    word-wrap: break-word; /* Ensure long words break to the next line */
+    overflow-y: auto; /* Add vertical scrollbar if content overflows */
+    max-height: 100%; /* Ensure the content does not exceed the height of the card */
+    margin: 0; /* Remove default margin */
+    padding: 10px; /* Add padding for better readability */
+    box-sizing: border-box; /* Include padding in the element's total width and height */
+}
