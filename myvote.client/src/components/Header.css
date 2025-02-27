@@ -29,8 +29,12 @@
         transform: scale(1.15);
     }
 
+        .bell-icon:hover .bell-icon-animate {
+            animation: rotateBell 1s ease-in-out infinite;
+        }
+
 .bell-icon-animate {
-    animation: rotateBell 1s ease-in-out, fadeOut 1s ease-in-out 1s;
+    animation: rotateBell 1s ease-in-out;
 }
 
 @keyframes rotateBell {
@@ -44,16 +48,6 @@
 
     75% {
         transform: rotate(15deg);
-    }
-}
-
-@keyframes fadeOut {
-    0% {
-        opacity: 1;
-    }
-
-    100% {
-        opacity: 0;
     }
 }
 

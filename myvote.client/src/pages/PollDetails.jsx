@@ -394,7 +394,7 @@ const PollDetails = () => {
                 )}
                 {!isPollExpired &&
                     <>
-                        <button
+                        <button className="blue-button"
                             onClick={() => setIsModalOpen(true)}
                         >
                             Suggest <FaPen className="poll-icon-suggest" />
@@ -427,8 +427,9 @@ const PollDetails = () => {
 
                             <div className="suggest-limit">{suggestionLimit}</div>
 
-                            <div className="modal-buttons">
+                            <div className="modal-button">
                                 <button
+                                    className="blue-button"
                                     onClick={() => {
                                         setIsModalOpen(false);
                                         setSuggestion("");
@@ -438,6 +439,7 @@ const PollDetails = () => {
                                     Cancel
                                 </button>
                                 <button
+                                    className="blue-button"
                                     onClick={() => {
                                         if (isPollExpired) {
                                             setIsModalOpen(false);
