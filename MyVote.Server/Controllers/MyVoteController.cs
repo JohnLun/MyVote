@@ -381,7 +381,7 @@ namespace MyVote.Server.Controllers
 
             // Broadcast the update via SignalR
             var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<VoteHub>>();
-            await hubContext.Clients.All.SendAsync("ReceiveVoteUpdate", updatedPollDto);
+            await hubContext.Clients.All.SendAsync("RemoveVoteUpdate", updatedPollDto);
 
             return Ok(new { message = "Vote removed successfully!" });
         }

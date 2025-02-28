@@ -115,7 +115,6 @@ const CreatePoll = () => {
 
         const currentTimeUTC = new Date(Date.now());
         const pollEndTime = new Date(currentTimeUTC.getTime() + parseFloat(timeLimit) * 60 * 1000);
-        console.log(multiSelect);
         const newPollDto = {
             userId: userId,
             title: title,

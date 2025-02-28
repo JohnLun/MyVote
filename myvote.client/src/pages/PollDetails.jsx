@@ -130,6 +130,10 @@ const PollDetails = () => {
                         setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
                     }, 2000);
                 });
+                
+                newConnection.on("RemoveVoteUpdate", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                })
             })
             .catch(err => console.error("SignalR Connection Error: ", err));
 
