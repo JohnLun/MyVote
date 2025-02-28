@@ -21,7 +21,9 @@ function Home() {
             toast.error("Please enter Poll Code", {
                 autoClose: 3000,
                 onClick: () => toast.dismiss(),
-                style: { cursor: "pointer" }
+                
+                style: { cursor: "pointer" },
+                theme: 'colored'
             }); 
         }
     };

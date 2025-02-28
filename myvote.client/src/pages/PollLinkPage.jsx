@@ -18,6 +18,7 @@ const PollLinkPage = () => {
             .then(() => {
                 toast.success('Poll link copied to clipboard!', {
                     autoClose: 3000,
+                    theme: "dark",
                     onClick: () => toast.dismiss(),
                     style: { cursor: "pointer" }
                 })

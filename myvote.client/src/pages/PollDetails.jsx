@@ -47,6 +47,7 @@ const PollDetails = () => {
                     toast.error("Poll Not Found", {
                         autoClose: 3000,
                         onClick: () => toast.dismiss(),
+                        theme: "colored",
                         style: { cursor: 'pointer' }
                     })
                     navigate('/');
@@ -278,7 +279,7 @@ const PollDetails = () => {
 
     const handleSubmit = () => {
         if (suggestion.trim() === "") {
-            toast.error("Please enter a valid suggestion.", { position: "top-right" });
+            toast.error("Please enter a valid suggestion.", { position: "top-right", theme: "colored" });
             return;
         }
 
@@ -291,6 +292,7 @@ const PollDetails = () => {
             autoClose: 3000, // Closes after 3 seconds
             hideProgressBar: false,
             closeOnClick: true,
+            theme: "dark",
             pauseOnHover: true,
             draggable: true,
         });
@@ -466,7 +468,7 @@ const PollDetails = () => {
 
                 {!isPollExpired &&
                     <>
-                        <button
+                        <button className="blue-button"
                             onClick={() => setIsModalOpen(true)}
                         >
                             Suggest <FaPen className="poll-icon-suggest" />
@@ -499,8 +501,9 @@ const PollDetails = () => {
 
                             <div className="suggest-limit">{suggestionLimit}</div>
 
-                            <div className="modal-buttons">
+                            <div className="modal-button">
                                 <button
+                                    className="blue-button"
                                     onClick={() => {
                                         setIsModalOpen(false);
                                         setSuggestion("");
@@ -510,6 +513,7 @@ const PollDetails = () => {
                                     Cancel
                                 </button>
                                 <button
+                                    className="blue-button"
                                     onClick={() => {
                                         if (isPollExpired) {
                                             setIsModalOpen(false);
