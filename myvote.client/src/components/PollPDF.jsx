@@ -70,7 +70,7 @@ const PollPDF = ({ poll, graphImage }) => {
             <Page size="A4" style={styles.page}>
                 <View style={styles.section}>
                     <Text style={styles.title}>{poll.title}</Text>
-                    <Text style={styles.text}>Description: {poll.description}</Text>
+                    <Text style={styles.text}>Description: {poll?.description}</Text>
                     <Text style={styles.text}>Created: {new Date(poll.dateCreated).toLocaleString()}</Text>
                     <Text style={styles.text}>Expired: {new Date(poll.dateEnded).toLocaleString()}</Text>
                 </View>

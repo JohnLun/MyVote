@@ -42,8 +42,10 @@ const UserProfile = () => {
                     ownedResponse.json()
                 ]);
 
-                setVotedPolls(votedData);
-                setOwnedPolls(ownedData);
+                setVotedPolls([...votedData].sort((a, b) => (b.isActive === "t" ? 1 : 0) - (a.isActive === "t" ? 1 : 0)));
+                setOwnedPolls([...ownedData].sort((a, b) => (b.isActive === "t" ? 1 : 0) - (a.isActive === "t" ? 1 : 0)));
+
+
             } catch (error) {
                 setError(error.message);
             } finally {

@@ -4,6 +4,7 @@ import { FaPaperPlane } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../contexts/UserContext";
+import PollGraph from "../components/PollGraph";
 import PollDetailsFlip from "../components/PollDetailsFlip";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -17,6 +18,7 @@ import CheckmarkAnimation from "../components/CheckmarkAnimation";
 const PollDetails = () => {
     const { pollId } = useParams();
     const { connection } = useUser();
+    const [selectedChoices, setSelectedChoices] = useState([]);
     const [poll, setPoll] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -37,6 +39,7 @@ const PollDetails = () => {
     const [suggestionLimit, setSuggestionLimit] = useState(100);
 
     const { API_BASE_URL } = useUser();
+
     useEffect(() => {
         const fetchPoll = async () => {
             try {
@@ -96,32 +99,39 @@ const PollDetails = () => {
     }, [pollId, userId]);
 
     useEffect(() => {
-        const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl(`${API_BASE_URL}/voteHub`, {
-                transport: signalR.HttpTransportType.WebSockets
+        if (poll && poll.choices) {
+            const userVotes = poll.choices
+                .filter(choice => choice.userIds.includes(userId)) // Check if user voted for this choice
+                .map(choice => choice.choiceId); // Extract choiceId(s)
+    
+            setSelectedChoices(userVotes); // Set selected choices on load
+        }
+    }, [poll, userId]);
+    
+    
+
+    useEffect(() => {
+        if (connection) {
+            connection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                setPoll(updatedPoll);
+                const xPosition = 10 + Math.random() * 80;
+                const id = Date.now();
+                setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
+                setTimeout(() => {
+                    setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
+                }, 2000);
+            });
+            
+            connection.on("RemoveVoteUpdate", (updatedPoll) => {
+                setPoll(updatedPoll);
             })
-            .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
-
-        setConnection(newConnection);
-
-        newConnection.start()
-            .then(() => {
-                newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
-                    setPoll(updatedPoll);
-                    const xPosition = 10 + Math.random() * 80;
-                    const id = Date.now();
-                    setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
-                    setTimeout(() => {
-                        setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
-                    }, 2000);
-                });
-            })
-            .catch(err => console.error("SignalR Connection Error: ", err));
-
+        }
+                
         return () => {
-            newConnection.stop();
+            if (connection) {
+                connection.off("ReceiveVoteUpdate");
+                connection.off("RemoveVoteUpdate");
+            }
         };
     }, [pollId]);
 
@@ -152,30 +162,82 @@ const PollDetails = () => {
     }, [poll]);
 
     const handleVote = async (choiceId) => {
-        if (isPollExpired) return; // Prevent voting after expiration
-
+        if (isPollExpired) return;
+    
+        if (!poll.multiSelect) {
+            // Single choice poll: if selected, just return
+            let choice = poll.choices.filter(c => c.choiceId == choiceId);
+            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
+                return;
+            }
+            const previousChoice = poll.choices.find(c => c.userIds.includes(userId));
+            if (previousChoice && previousChoice.choiceId !== choiceId) {
+                // Only remove the previous vote if it's a different choice
+                await removeVote(previousChoice.choiceId);
+            }
+    
+            // Cast new vote
+            await submitVote(choiceId);
+        } else {
+            let choice = poll.choices.filter(c => c.choiceId == choiceId);
+            // Multi-select poll: toggle selection
+            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
+                await removeVote(choiceId);
+            } else {
+                await submitVote(choiceId);
+            }
+        }
+    };
+    
+    const removeVote = async (choiceId) => {
+        
         try {
-            const responseBody = {
-                choiceId: choiceId,
-                userId: userId
-            };
+            const response = await fetch(`${API_BASE_URL}/api/poll/vote/remove`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, choiceId }),
+            });
+    
+            if (!response.ok) {
+                throw new Error("Failed to remove vote");
+            }
+    
+            // Update UI after removal, preserving order by choiceId
+            setSelectedChoices((prev) => {
+                const updatedChoices = prev.filter((id) => id !== choiceId);
+                return updatedChoices; // Sort by choiceId
+            });
+        } catch (error) {
+            console.error("Error removing vote:", error);
+        }
+    };
+    
+    const submitVote = async (choiceId) => {
+        try {
             const response = await fetch(`${API_BASE_URL}/api/poll/vote`, {
                 method: "PATCH",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(responseBody)
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ userId, choiceId }),
             });
-
+    
             if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.message || "Vote submission failed.");
+                throw new Error("Failed to submit vote");
             }
+    
+            // Update UI after vote submission
+            setSelectedChoices((prev) => {
+                if (prev.includes(choiceId)) {
+                    // If the choiceId is already selected, remove it
+                    return prev.filter(id => id !== choiceId);
+                } else {
+                    // If the choiceId is not selected, add it
+                    return [...prev, choiceId];
+                }
+            });
+    
             setUserVoted(true);
-            setSelectedChoice(choiceId);
-
         } catch (error) {
-            alert(error.message);
+            console.error("Error submitting vote:", error);
         }
     };
 
@@ -326,18 +388,18 @@ const PollDetails = () => {
 
     return (
         <div className="poll-details-container" ref={pollDetailsRef}>
-            <div className="poll-details-card">
-                <h2 className="poll-title">{poll.title}</h2>
 
-                {/* Circular Timer */}
+            <div className="poll-vote-header">
+                <div className="poll-title-description">
+                    <h2 className="poll-title">{poll.title}</h2>
+                    <p className="poll-description">{poll?.description}</p>
+                </div>
                 <div className={`timer-container hide-in-pdf ${isFlashing ? "timer-flash" : ""}`}>
                     <svg width="100" height="100" viewBox="0 0 100 100">
                         <circle className="timer-background" cx="50" cy="50" r="45" />
                         <circle
                             className="timer-progress"
-                            cx="50"
-                            cy="50"
-                            r="45"
+                            cx="50" cy="50" r="45"
                             strokeDasharray="283"
                             strokeDashoffset={`${(progress / 100) * 283}`}
                             style={{ stroke: getTimerColor() }}
@@ -347,63 +409,61 @@ const PollDetails = () => {
                         </text>
                     </svg>
                 </div>
+            </div>
 
-                {/* Show Results if Poll is Expired or User Voted */}
-                {(isPollExpired || userVoted) ? (
-                    <>
-                        <PollDetailsFlip ref={pollDetailsFlipRef} poll={poll} />
-                        <div className="poll-results">
-                            {poll.choices && poll.choices.length > 0 ? (
-                                poll.choices.map((choice) => {
-                                    const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
-                                    const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
-                                    return (
-                                        <div key={choice.choiceId} className="poll-choice result-container">
-                                            <div
-                                                className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
-                                                style={{ width: `${percentage}%` }}
-                                            ></div>
-                                            <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
-                                                {choice.name} - {percentage}% ({choice.numVotes} votes)
-                                            </p>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p>No choices available.</p>
-                            )}
-                        </div>
-                    </>
-                ) : (
-                    <p className="poll-description">{poll.description}</p>
+            <div className="poll-details-card">
+                
+                
+                {/* Poll Results and Graph Card */}
+                <div className="poll-results-card">
+                    <h3>Results</h3>
+                    
+                    <div className="poll-graph">
+                        <PollGraph poll={poll} />
+                    </div>
+
+                    <div className="poll-results">
+                        {poll.choices?.length > 0 ? (
+                            poll.choices.map((choice) => {
+                                const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+                                const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+                                return (
+                                    <div key={choice.choiceId} className="result-container">
+                                        <div className="result-bar" style={{ width: `${percentage}%` }}></div>
+                                        <p>{choice.name} - {percentage}% ({choice.numVotes} votes)</p>
+                                    </div>
+                                );
+                            })
+                        ) : (
+                            <p>No choices available.</p>
+                        )}
+                    </div>
+                </div>
+                
+                {/* Vote Choices */}
+                {!isPollExpired && poll.choices?.length > 0 && (
+                    <div className="vote-choices">
+                        <p className="selection-info">{poll.multiSelect ? "Select multiple choices" : "Select one choice"}</p>
+                        {poll.choices.sort((a, b) => a.choiceId - b.choiceId).map((choice) => (
+                            <button
+                                key={choice.choiceId}
+                                className={`poll-choice ${choice.userIds.includes(userId) ? "selected" : ""}`}
+                                onClick={() => handleVote(choice.choiceId)}
+                            >
+                                {choice.name}
+                            </button>
+                        ))}
+                    </div>
                 )}
-
-                {/* Render Choices Only If Poll is Active and User Has Not Voted */}
-                {!isPollExpired && !userVoted && poll && poll.choices && poll.choices.length > 0 ? (
-                    poll.choices.map((choice) => (
-                        <button
-                            key={choice.choiceId}
-                            className="poll-choice"
-                            onClick={() => handleVote(choice.choiceId)}
-                            disabled={isPollExpired}
-                        >
-                            {choice.name}
-                        </button>
-                    ))
-
-                ) : (
-                    <p></p>
-                )}
-                {!isPollExpired &&
-                    <>
-                        <button className="blue-button"
-                            onClick={() => setIsModalOpen(true)}
-                        >
+                
+                {/* Suggest, End Poll, and Share Buttons */}
+                <div className="bttm-pdf-share">
+                    {!isPollExpired && (
+                        <button className="blue-button" onClick={() => setIsModalOpen(true)}>
                             Suggest <FaPen className="poll-icon-suggest" />
                         </button>
-                    </>
-                }
-                {isModalOpen && (
+                    )}
+                    {isModalOpen && (
                     <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
                         <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                             <h3 className="modal-title">Suggest an Edit</h3>
@@ -464,14 +524,8 @@ const PollDetails = () => {
                         </div>
                     </div>
                 )}
-
-
-                <div className="bttm-pdf-share">
                     {isPollExpired && (
-                        <PDFDownloadLink
-                            document={<PollPDF poll={poll} graphImage={graphImage} />}
-                            fileName={`poll-results-${poll.title}.pdf`}
-                        >
+                        <PDFDownloadLink document={<PollPDF poll={poll} graphImage={graphImage} />} fileName={`poll-results-${poll.title}.pdf`}>
                             {({ loading }) => (
                                 <button className="generate-pdf-button">
                                     {loading ? "Loading PDF..." : "Download PDF"}
@@ -479,23 +533,12 @@ const PollDetails = () => {
                             )}
                         </PDFDownloadLink>
                     )}
-
-
-                    {!isPollExpired && poll && poll.userId === userId && (
-                        <button className="make-inactive-button" onClick={handleMakeInactive}>
-                            End Poll
-                        </button>
+                    {!isPollExpired && poll.userId === userId && (
+                        <button className="make-inactive-button" onClick={handleMakeInactive}>End Poll</button>
                     )}
-
-                    <FaPaperPlane
-                        className="poll-icon-vote"
-                        onClick={handleShareClick}
-                    />
+                    <FaPaperPlane className="poll-icon-vote" onClick={handleShareClick} />
                 </div>
             </div>
-            {checkmarks.map((checkmark) => (
-                <CheckmarkAnimation key={checkmark.id} xPosition={checkmark.xPosition} />
-            ))}
         </div>
     );
 };

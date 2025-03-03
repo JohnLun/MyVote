@@ -6,9 +6,11 @@ namespace MyVote.Server.Dtos
     {
         public int PollId { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateEnded { get; set; }
+
+        public bool MultiSelect { get; set; }
         public string IsActive { get; set; }
         public int UserId { get; set; } // Add this field to track poll creator
         public List<ChoiceDto> Choices { get; set; }
@@ -42,10 +44,12 @@ namespace MyVote.Server.Dtos
     {
         public int UserId { get; set; }
         public string Title { get; set; }
-        public string Description { get; set; }
+        public string? Description { get; set; }
         public DateTime DateCreated { get; set; }
 
         public DateTime DateEnded { get; set; }
+
+        public bool MultiSelect { get; set; }
         public string IsActive { get; set; }
         public List<CreateChoiceDto> Choices { get; set; }
     }

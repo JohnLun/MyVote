@@ -15,6 +15,7 @@ const CreatePoll = () => {
     const DESCRIPTION_LIMIT = 500;
     const CHOICE_LIMIT = 100;
 
+    const [multiSelect, setMultiSelect] = useState(false);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
@@ -64,6 +65,10 @@ const CreatePoll = () => {
         setRemainingChars((prev) => ({ ...prev, choices: [...prev.choices, CHOICE_LIMIT] }));
     };
 
+    const handleToggleMultiSelect = () => {
+        setMultiSelect(!multiSelect);
+    }
+
     const removeChoice = (index) => {
         setChoices(choices.filter((_, i) => i !== index));
         setRemainingChars((prev) => ({
@@ -106,11 +111,8 @@ const CreatePoll = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
-
         const currentTimeUTC = new Date(Date.now());
         const pollEndTime = new Date(currentTimeUTC.getTime() + parseFloat(timeLimit) * 60 * 1000);
-
         const newPollDto = {
             userId: userId,
             title: title,
@@ -118,6 +120,7 @@ const CreatePoll = () => {
             timeLimit: parseFloat(timeLimit),
             dateCreated: currentTimeUTC.toISOString(),
             dateEnded: pollEndTime.toISOString(),
+            multiSelect: multiSelect,
             isActive: "t",
             choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
@@ -182,7 +185,6 @@ const CreatePoll = () => {
                         </div>
                         
                         <input
-                            required
                             type="text"
                             value={description}
                             onChange={handleDescriptionChange}
@@ -248,6 +250,16 @@ const CreatePoll = () => {
                         <div className="button-container">
                             <button type="submit">Create Poll</button>
                         </div>
+                        <div className="multiple-select">
+                            <label htmlFor="multiSelect">Multi Select?</label>
+                            <input
+                                type="checkbox"
+                                name="multiSelect"
+                                checked={multiSelect}
+                                onChange={handleToggleMultiSelect}
+                            />
+                        </div>
+                        
                     </div>
                 </form>
             </div>
