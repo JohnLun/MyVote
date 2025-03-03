@@ -126,13 +126,6 @@ const PollDetails = () => {
                 setPoll(updatedPoll);
             })
         }
-                
-        return () => {
-            if (connection) {
-                connection.off("ReceiveVoteUpdate");
-                connection.off("RemoveVoteUpdate");
-            }
-        };
     }, [pollId]);
 
     useEffect(() => {
@@ -148,13 +141,6 @@ const PollDetails = () => {
                 clearInterval(timerRef.current);
             });
         }
-
-        return () => {
-            if (connection) {
-                connection.off("UpdatedPoll");
-                connection.off("EndedPoll") // Clean up the listener
-            }
-        };
     }, [connection]);
 
     useEffect(() => {
