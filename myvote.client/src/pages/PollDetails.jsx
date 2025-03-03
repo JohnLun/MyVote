@@ -111,36 +111,27 @@ const PollDetails = () => {
     
 
     useEffect(() => {
-        const newConnection = new signalR.HubConnectionBuilder()
-            .withUrl(`${API_BASE_URL}/voteHub`, {
-                transport: signalR.HttpTransportType.WebSockets
+        if (connection) {
+            connection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                setPoll(updatedPoll);
+                const xPosition = 10 + Math.random() * 80;
+                const id = Date.now();
+                setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
+                setTimeout(() => {
+                    setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
+                }, 2000);
+            });
+            
+            connection.on("RemoveVoteUpdate", (updatedPoll) => {
+                setPoll(updatedPoll);
             })
-            .withAutomaticReconnect()
-            .configureLogging(signalR.LogLevel.Information)
-            .build();
-
-        setConnection(newConnection);
-
-        newConnection.start()
-            .then(() => {
-                newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
-                    setPoll(updatedPoll);
-                    const xPosition = 10 + Math.random() * 80;
-                    const id = Date.now();
-                    setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
-                    setTimeout(() => {
-                        setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
-                    }, 2000);
-                });
+        }
                 
-                newConnection.on("RemoveVoteUpdate", (updatedPoll) => {
-                    setPoll(updatedPoll);
-                })
-            })
-            .catch(err => console.error("SignalR Connection Error: ", err));
-
         return () => {
-            newConnection.stop();
+            if (connection) {
+                connection.off("ReceiveVoteUpdate");
+                connection.off("RemoveVoteUpdate");
+            }
         };
     }, [pollId]);
 
