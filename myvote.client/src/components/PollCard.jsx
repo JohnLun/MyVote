@@ -85,7 +85,7 @@ export default function PollCard({ poll, onDelete, activeTab }) {
                     <div className="poll-card-title">{poll.title}</div>
                     <FaPaperPlane className="poll-icon" onClick={handleShareClick} />
                 </div>
-                <div className="poll-card-description">{poll.description}</div>
+                <div className="poll-card-description">{poll?.description}</div>
                 <div className="status-container">
                     <p>
                         {timeRemaining > 0

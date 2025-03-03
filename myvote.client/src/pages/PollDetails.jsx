@@ -445,7 +445,7 @@ const PollDetails = () => {
                         </div>
                     </>
                 ) : (
-                    <p className="poll-description">{poll.description}</p>
+                    <p className="poll-description">{poll?.description}</p>
                 )}
 
                 {!isPollExpired &&
