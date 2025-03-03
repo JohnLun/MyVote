@@ -54,18 +54,6 @@ namespace MyVote.Server
                 }
             });
 
-            if (environment == "Production")
-{
-    builder.Services.AddSignalR().AddAzureSignalR(options =>
-    {
-        options.ConnectionString = builder.Configuration["ConnectionStrings:AzureSignalR"];
-    });
-}
-else
-{
-    builder.Services.AddSignalR(); // Use in-app SignalR
-}
-
             var app = builder.Build();
 
             app.UseDefaultFiles();
