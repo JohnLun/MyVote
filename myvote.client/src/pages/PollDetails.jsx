@@ -111,28 +111,41 @@ const PollDetails = () => {
     
 
     useEffect(() => {
-        if (connection) {
-            connection.on("ReceiveVoteUpdate", (updatedPoll) => {
-                setPoll(updatedPoll);
-    
-                // Generate a new checkmark position
-                const xPosition = 10 + Math.random() * 80;
-                const id = Date.now();
-    
-                // Only allow one checkmark at a time
-                setCheckmarks([{ id, xPosition }]);
-    
-                setTimeout(() => {
-                    setCheckmarks([]);
-                }, 2000);
-            });
-    
-            connection.on("RemoveVoteUpdate", (updatedPoll) => {
-                setPoll(updatedPoll);
-            });
-        }
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl(`${API_BASE_URL}/voteHub`, {
+                transport: signalR.HttpTransportType.WebSockets
+            })
+            .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        setConnection(newConnection);
+
+        newConnection.start()
+            .then(() => {
+                newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                    const xPosition = 10 + Math.random() * 80;
+                    const id = Date.now();
+        
+                    // Only allow one checkmark at a time
+                    setCheckmarks([{ id, xPosition }]);
+        
+                    setTimeout(() => {
+                        setCheckmarks([]);  // Clear checkmarks after 2 seconds
+                    }, 2000);
+                });
+                
+                newConnection.on("RemoveVoteUpdate", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                })
+            })
+            .catch(err => console.error("SignalR Connection Error: ", err));
+
+        return () => {
+            newConnection.stop();
+        };
     }, [pollId]);
-    
 
     useEffect(() => {
         if (connection) {
@@ -147,34 +160,40 @@ const PollDetails = () => {
                 clearInterval(timerRef.current);
             });
         }
+
+        return () => {
+            if (connection) {
+                connection.off("UpdatedPoll");
+                connection.off("EndedPoll") // Clean up the listener
+            }
+        };
     }, [connection]);
 
     useEffect(() => {
-        
         captureGraphImage();
     }, [poll]);
 
     const handleVote = async (choiceId) => {
         if (isPollExpired) return;
     
-        // Get current choice object
-        const choice = poll.choices.find(c => c.choiceId === choiceId);
-        const userHasVoted = choice?.userIds.includes(userId);
-    
         if (!poll.multiSelect) {
-            // Single choice poll: Prevent duplicate votes
-            if (userHasVoted) return;
-    
+            // Single choice poll: if selected, just return
+            let choice = poll.choices.filter(c => c.choiceId == choiceId);
+            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
+                return;
+            }
             const previousChoice = poll.choices.find(c => c.userIds.includes(userId));
             if (previousChoice && previousChoice.choiceId !== choiceId) {
+                // Only remove the previous vote if it's a different choice
                 await removeVote(previousChoice.choiceId);
             }
     
             // Cast new vote
             await submitVote(choiceId);
         } else {
-            // Multi-select poll: Toggle selection
-            if (userHasVoted) {
+            let choice = poll.choices.filter(c => c.choiceId == choiceId);
+            // Multi-select poll: toggle selection
+            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
                 await removeVote(choiceId);
             } else {
                 await submitVote(choiceId);
@@ -183,6 +202,7 @@ const PollDetails = () => {
     };
     
     const removeVote = async (choiceId) => {
+        
         try {
             const response = await fetch(`${API_BASE_URL}/api/poll/vote/remove`, {
                 method: "PATCH",
@@ -194,8 +214,11 @@ const PollDetails = () => {
                 throw new Error("Failed to remove vote");
             }
     
-            // Update UI state correctly
-            updatePollState(choiceId, false);
+            // Update UI after removal, preserving order by choiceId
+            setSelectedChoices((prev) => {
+                const updatedChoices = prev.filter((id) => id !== choiceId);
+                return updatedChoices; // Sort by choiceId
+            });
         } catch (error) {
             console.error("Error removing vote:", error);
         }
@@ -213,25 +236,23 @@ const PollDetails = () => {
                 throw new Error("Failed to submit vote");
             }
     
-            // Update UI state correctly
-            updatePollState(choiceId, true);
+            // Update UI after vote submission
+            setSelectedChoices((prev) => {
+                if (prev.includes(choiceId)) {
+                    // If the choiceId is already selected, remove it
+                    return prev.filter(id => id !== choiceId);
+                } else {
+                    // If the choiceId is not selected, add it
+                    return [...prev, choiceId];
+                }
+            });
+    
+            setUserVoted(true);
         } catch (error) {
             console.error("Error submitting vote:", error);
         }
     };
-    
-    // Helper function to update poll state correctly
-    const updatePollState = (choiceId, isAdding) => {
-        setPoll(prevPoll => ({
-            ...prevPoll,
-            choices: prevPoll.choices.map(choice =>
-                choice.choiceId === choiceId
-                    ? { ...choice, userIds: isAdding ? [...choice.userIds, userId] : choice.userIds.filter(id => id !== userId) }
-                    : choice
-            ),
-        }));
-    };
-    
+
     const handleSuggest = async (uId, pId, suggestion, pName) => {
         try {
             const responseBody = {
@@ -434,7 +455,6 @@ const PollDetails = () => {
                 {/* Vote Choices */}
                 {!isPollExpired && poll.choices?.length > 0 && (
                     <div className="vote-choices">
-                        <p className="selection-info">{poll.multiSelect ? "Select multiple choices" : "Select one choice"}</p>
                         {poll.choices.sort((a, b) => a.choiceId - b.choiceId).map((choice) => (
                             <button
                                 key={choice.choiceId}
@@ -538,4 +558,3 @@ const PollDetails = () => {
 };
 
 export default PollDetails;
-

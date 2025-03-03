@@ -75,6 +75,7 @@ namespace MyVote.Server
 
             app.UseAuthorization();
 
+            app.MapHub<VoteHub>("/voteHub");
             app.MapHub<GlobalHub>("/globalHub");
 
             app.MapControllers();
