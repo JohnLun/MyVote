@@ -4,6 +4,7 @@ import { FaPaperPlane } from "react-icons/fa";
 import { FaPen } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import { useUser } from "../contexts/UserContext";
+import PollGraph from "../components/PollGraph";
 import PollDetailsFlip from "../components/PollDetailsFlip";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
@@ -396,18 +397,18 @@ const PollDetails = () => {
 
     return (
         <div className="poll-details-container" ref={pollDetailsRef}>
-            <div className="poll-details-card">
-                <h2 className="poll-title">{poll.title}</h2>
 
-                {/* Circular Timer */}
+            <div className="poll-vote-header">
+                <div className="poll-title-description">
+                    <h2 className="poll-title">{poll.title}</h2>
+                    <p className="poll-description">{poll.description}</p>
+                </div>
                 <div className={`timer-container hide-in-pdf ${isFlashing ? "timer-flash" : ""}`}>
                     <svg width="100" height="100" viewBox="0 0 100 100">
                         <circle className="timer-background" cx="50" cy="50" r="45" />
                         <circle
                             className="timer-progress"
-                            cx="50"
-                            cy="50"
-                            r="45"
+                            cx="50" cy="50" r="45"
                             strokeDasharray="283"
                             strokeDashoffset={`${(progress / 100) * 283}`}
                             style={{ stroke: getTimerColor() }}
@@ -417,133 +418,61 @@ const PollDetails = () => {
                         </text>
                     </svg>
                 </div>
+            </div>
 
-                {/* Show Results if Poll is Expired or User Voted */}
-                {(isPollExpired || userVoted) ? (
-                    <>
-                        <PollDetailsFlip ref={pollDetailsFlipRef} poll={poll} />
-                        <div className="poll-results">
-                            {poll.choices && poll.choices.length > 0 ? (
-                                poll.choices.map((choice) => {
-                                    const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
-                                    const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
-                                    return (
-                                        <div key={choice.choiceId} className="poll-choice result-container">
-                                            <div
-                                                className={`result-bar ${choice.choiceId === selectedChoice ? "selected-bar" : ""}`}
-                                                style={{ width: `${percentage}%` }}
-                                            ></div>
-                                            <p className={choice.choiceId === selectedChoice ? "selected" : ""}>
-                                                {choice.name} - {percentage}% ({choice.numVotes} votes)
-                                            </p>
-                                        </div>
-                                    );
-                                })
-                            ) : (
-                                <p>No choices available.</p>
-                            )}
-                        </div>
-                    </>
-                ) : (
-                    <p className="poll-description">{poll.description}</p>
-                )}
+            <div className="poll-details-card">
+                
+                
+                {/* Poll Results and Graph Card */}
+                <div className="poll-results-card">
+                    <h3>Results</h3>
+                    
+                    <div className="poll-graph">
+                        <PollGraph poll={poll} />
+                    </div>
 
-                {!isPollExpired &&
-                    poll.choices && poll.choices.length > 0 && 
-                    poll.choices
-                        .sort((a, b) => a.choiceId - b.choiceId) // Sort choices by choiceId
-                        .map((choice) => {
-                            return(
-                                <button
-                                    key={choice.choiceId}
-                                    className={`poll-choice ${choice.userIds.includes(userId) ? "selected" : ""}`}
-                                    onClick={() => handleVote(choice.choiceId)}
-                                >
-                                    {choice.name}
-                                </button>
+                    <div className="poll-results">
+                        {poll.choices?.length > 0 ? (
+                            poll.choices.map((choice) => {
+                                const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+                                const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+                                return (
+                                    <div key={choice.choiceId} className="result-container">
+                                        <div className="result-bar" style={{ width: `${percentage}%` }}></div>
+                                        <p>{choice.name} - {percentage}% ({choice.numVotes} votes)</p>
+                                    </div>
                                 );
-                            
-                        })
-                }
-
-                {!isPollExpired &&
-                    <>
-                        <button className="blue-button"
-                            onClick={() => setIsModalOpen(true)}
-                        >
-                            Suggest <FaPen className="poll-icon-suggest" />
-                        </button>
-                    </>
-                }
-                {isModalOpen && (
-                    <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
-                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                            <h3 className="modal-title">Suggest an Edit</h3>
-
-                            <input
-                                type="text"
-                                value={suggestion}
-                                onChange={(e) => {
-                                    setSuggestion(e.target.value);
-                                    setSuggestionLimit(100 - e.target.value.length);
-                                }}
-                                placeholder="Enter your suggestion"
-                                maxLength={100}
-                                onKeyDown={(e) => {
-                                    if (e.key === "Enter") {
-                                        e.preventDefault(); // Prevents new line if input is a textarea
-                                        handleSubmit();
-                                        setSuggestionLimit(100);
-                                    }
-                                }}
-                                autoFocus
-                            />
-
-                            <div className="suggest-limit">{suggestionLimit}</div>
-
-                            <div className="modal-button">
-                                <button
-                                    className="blue-button"
-                                    onClick={() => {
-                                        setIsModalOpen(false);
-                                        setSuggestion("");
-                                        setSuggestionLimit(100);
-                                    }}
-                                >
-                                    Cancel
-                                </button>
-                                <button
-                                    className="blue-button"
-                                    onClick={() => {
-                                        if (isPollExpired) {
-                                            setIsModalOpen(false);
-                                            toast.error("Poll no longer active", {
-                                                autoClose: 3000,
-                                                onClick: () => {
-                                                    toast.dismiss();
-                                                },
-                                                style: { cursor: "pointer" },
-                                            })
-                                        } else {
-                                            handleSubmit();
-                                            setSuggestionLimit(100);
-                                        }
-                                    }}
-                                >
-                                    Submit
-                                </button>
-                            </div>
-                        </div>
+                            })
+                        ) : (
+                            <p>No choices available.</p>
+                        )}
+                    </div>
+                </div>
+                
+                {/* Vote Choices */}
+                {!isPollExpired && poll.choices?.length > 0 && (
+                    <div className="vote-choices">
+                        {poll.choices.sort((a, b) => a.choiceId - b.choiceId).map((choice) => (
+                            <button
+                                key={choice.choiceId}
+                                className={`poll-choice ${choice.userIds.includes(userId) ? "selected" : ""}`}
+                                onClick={() => handleVote(choice.choiceId)}
+                            >
+                                {choice.name}
+                            </button>
+                        ))}
                     </div>
                 )}
-
-
+                
+                {/* Suggest, End Poll, and Share Buttons */}
                 <div className="bttm-pdf-share">
+                    {!isPollExpired && (
+                        <button className="blue-button" onClick={() => setIsModalOpen(true)}>
+                            Suggest <FaPen className="poll-icon-suggest" />
+                        </button>
+                    )}
                     {isPollExpired && (
-                        <PDFDownloadLink
-                            document={<PollPDF poll={poll} graphImage={graphImage} />}
-                            fileName={`poll-results-${poll.title}.pdf`}
-                        >
+                        <PDFDownloadLink document={<PollPDF poll={poll} graphImage={graphImage} />} fileName={`poll-results-${poll.title}.pdf`}>
                             {({ loading }) => (
                                 <button className="generate-pdf-button">
                                     {loading ? "Loading PDF..." : "Download PDF"}
@@ -551,23 +480,12 @@ const PollDetails = () => {
                             )}
                         </PDFDownloadLink>
                     )}
-
-
-                    {!isPollExpired && poll && poll.userId === userId && (
-                        <button className="make-inactive-button" onClick={handleMakeInactive}>
-                            End Poll
-                        </button>
+                    {!isPollExpired && poll.userId === userId && (
+                        <button className="make-inactive-button" onClick={handleMakeInactive}>End Poll</button>
                     )}
-
-                    <FaPaperPlane
-                        className="poll-icon-vote"
-                        onClick={handleShareClick}
-                    />
+                    <FaPaperPlane className="poll-icon-vote" onClick={handleShareClick} />
                 </div>
             </div>
-            {checkmarks.map((checkmark) => (
-                <CheckmarkAnimation key={checkmark.id} xPosition={checkmark.xPosition} />
-            ))}
         </div>
     );
 };
