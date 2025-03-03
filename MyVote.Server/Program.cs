@@ -71,7 +71,6 @@ else
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            // ✅ Add UseRouting before anything that relies on routing
             app.UseRouting();
 
             if (app.Environment.IsDevelopment() || app.Environment.IsProduction())
@@ -82,16 +81,12 @@ else
 
             app.UseHttpsRedirection();
 
-            // ✅ Apply CORS before mapping hubs/controllers
             app.UseCors("AllowSpecificOrigin");
 
-            // ✅ Enable WebSockets before SignalR
             app.UseWebSockets();
 
-            // ✅ Map SignalR hub inside routing
             app.UseAuthorization();
 
-            app.MapHub<VoteHub>("/voteHub");
             app.MapHub<GlobalHub>("/globalHub");
 
             app.MapControllers();
