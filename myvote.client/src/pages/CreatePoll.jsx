@@ -111,8 +111,6 @@ const CreatePoll = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!validateForm()) return;
-
         const currentTimeUTC = new Date(Date.now());
         const pollEndTime = new Date(currentTimeUTC.getTime() + parseFloat(timeLimit) * 60 * 1000);
         const newPollDto = {
@@ -187,7 +185,6 @@ const CreatePoll = () => {
                         </div>
                         
                         <input
-                            required
                             type="text"
                             value={description}
                             onChange={handleDescriptionChange}
