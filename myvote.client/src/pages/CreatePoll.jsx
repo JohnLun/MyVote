@@ -185,7 +185,6 @@ const CreatePoll = () => {
                         </div>
                         
                         <input
-                            required
                             type="text"
                             value={description}
                             onChange={handleDescriptionChange}
