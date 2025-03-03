@@ -272,13 +272,13 @@ namespace MyVote.Server.Controllers
             return Ok(pollDto);
         }
 
-        //Create a suggestion for a poll
         [HttpPatch("poll/suggestion")]
         public async Task<IActionResult> UpdatePoll([FromBody] OptionDto optionDto)
         {
-            // Find the poll with choices and user choices
+            // Find the poll with choices and user choices, including UserChoices for each Choice
             var poll = await _db.Polls
-                .Include(p => p.Choices)
+                .Include(p => p.Choices) // Include Choices
+                .ThenInclude(c => c.UserChoices) // Eagerly load UserChoices for each Choice
                 .FirstOrDefaultAsync(p => p.PollId == optionDto.PollId);
 
             if (poll == null)
@@ -305,6 +305,7 @@ namespace MyVote.Server.Controllers
             // Save to database
             await _db.SaveChangesAsync();
 
+            // Construct the updated PollDto with UserIds
             var updatedPollDto = new PollDto
             {
                 UserId = poll.UserId,
@@ -320,9 +321,11 @@ namespace MyVote.Server.Controllers
                     ChoiceId = c.ChoiceId,
                     Name = c.Name,
                     NumVotes = c.NumVotes,
-                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList()
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList() // Ensure UserIds are populated
                 }).ToList()
             };
+
+            // Broadcast the updated poll
             var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
             try
             {
@@ -335,6 +338,7 @@ namespace MyVote.Server.Controllers
 
             return Ok(new { message = "Choice added successfully", choiceId = newChoice.ChoiceId });
         }
+
 
         [HttpPatch("poll/vote/remove")]
         public async Task<IActionResult> RemoveChoice([FromBody] VoteDto voteDto)
