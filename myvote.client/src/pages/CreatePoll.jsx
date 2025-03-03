@@ -253,13 +253,16 @@ const CreatePoll = () => {
                         <div className="button-container">
                             <button type="submit">Create Poll</button>
                         </div>
-                        <label htmlFor="multiSelect">Multi Select?</label>
-                        <input
-                            type="checkbox"
-                            name="multiSelect"
-                            checked={multiSelect}
-                            onChange={handleToggleMultiSelect}
-                        />
+                        <div className="multiple-select">
+                            <label htmlFor="multiSelect">Multi Select?</label>
+                            <input
+                                type="checkbox"
+                                name="multiSelect"
+                                checked={multiSelect}
+                                onChange={handleToggleMultiSelect}
+                            />
+                        </div>
+                        
                     </div>
                 </form>
             </div>
