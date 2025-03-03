@@ -401,7 +401,7 @@ const PollDetails = () => {
             <div className="poll-vote-header">
                 <div className="poll-title-description">
                     <h2 className="poll-title">{poll.title}</h2>
-                    <p className="poll-description">{poll.description}</p>
+                    <p className="poll-description">{poll?.description}</p>
                 </div>
                 <div className={`timer-container hide-in-pdf ${isFlashing ? "timer-flash" : ""}`}>
                     <svg width="100" height="100" viewBox="0 0 100 100">
@@ -471,6 +471,67 @@ const PollDetails = () => {
                             Suggest <FaPen className="poll-icon-suggest" />
                         </button>
                     )}
+                    {isModalOpen && (
+                    <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+                        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                            <h3 className="modal-title">Suggest an Edit</h3>
+
+                            <input
+                                type="text"
+                                value={suggestion}
+                                onChange={(e) => {
+                                    setSuggestion(e.target.value);
+                                    setSuggestionLimit(100 - e.target.value.length);
+                                }}
+                                placeholder="Enter your suggestion"
+                                maxLength={100}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") {
+                                        e.preventDefault(); // Prevents new line if input is a textarea
+                                        handleSubmit();
+                                        setSuggestionLimit(100);
+                                    }
+                                }}
+                                autoFocus
+                            />
+
+                            <div className="suggest-limit">{suggestionLimit}</div>
+
+                            <div className="modal-button">
+                                <button
+                                    className="blue-button"
+                                    onClick={() => {
+                                        setIsModalOpen(false);
+                                        setSuggestion("");
+                                        setSuggestionLimit(100);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    className="blue-button"
+                                    onClick={() => {
+                                        if (isPollExpired) {
+                                            setIsModalOpen(false);
+                                            toast.error("Poll no longer active", {
+                                                autoClose: 3000,
+                                                onClick: () => {
+                                                    toast.dismiss();
+                                                },
+                                                style: { cursor: "pointer" },
+                                            })
+                                        } else {
+                                            handleSubmit();
+                                            setSuggestionLimit(100);
+                                        }
+                                    }}
+                                >
+                                    Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )}
                     {isPollExpired && (
                         <PDFDownloadLink document={<PollPDF poll={poll} graphImage={graphImage} />} fileName={`poll-results-${poll.title}.pdf`}>
                             {({ loading }) => (

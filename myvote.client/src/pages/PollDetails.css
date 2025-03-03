@@ -31,10 +31,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    /* border-radius: 10px;
+    width:100%;
+    border-radius: 10px;
     border-width: 1px;
     border-style:solid;
-    border-color: #f9fcfc; */
+    border-color: #f9fcfc;
 }
 
 .poll-title {
@@ -88,8 +89,7 @@
 .poll-results {
     margin-top: 5px;
     border-radius: 10px;
-    
-
+    margin-bottom: 5px;
 }
 
 .poll-title, .poll-choice, .poll-description {
@@ -112,6 +112,10 @@
     color: white;
     border-radius: 5px;
     overflow: hidden;
+}
+
+.result-container:hover{
+    cursor: not-allowed;
 }
 
 .result-bar {
