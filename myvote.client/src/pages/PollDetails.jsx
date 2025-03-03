@@ -111,21 +111,40 @@ const PollDetails = () => {
     
 
     useEffect(() => {
-        if (connection) {
-            connection.on("ReceiveVoteUpdate", (updatedPoll) => {
-                setPoll(updatedPoll);
-                const xPosition = 10 + Math.random() * 80;
-                const id = Date.now();
-                setCheckmarks((prevCheckmarks) => [...prevCheckmarks, { id, xPosition }]);
-                setTimeout(() => {
-                    setCheckmarks((prevCheckmarks) => prevCheckmarks.filter((checkmark) => checkmark.id !== id));
-                }, 2000);
-            });
-            
-            connection.on("RemoveVoteUpdate", (updatedPoll) => {
-                setPoll(updatedPoll);
+        const newConnection = new signalR.HubConnectionBuilder()
+            .withUrl(`${API_BASE_URL}/voteHub`, {
+                transport: signalR.HttpTransportType.WebSockets
             })
-        }
+            .withAutomaticReconnect()
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        setConnection(newConnection);
+
+        newConnection.start()
+            .then(() => {
+                newConnection.on("ReceiveVoteUpdate", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                    const xPosition = 10 + Math.random() * 80;
+                    const id = Date.now();
+        
+                    // Only allow one checkmark at a time
+                    setCheckmarks([{ id, xPosition }]);
+        
+                    setTimeout(() => {
+                        setCheckmarks([]);  // Clear checkmarks after 2 seconds
+                    }, 2000);
+                });
+                
+                newConnection.on("RemoveVoteUpdate", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                })
+            })
+            .catch(err => console.error("SignalR Connection Error: ", err));
+
+        return () => {
+            newConnection.stop();
+        };
     }, [pollId]);
 
     useEffect(() => {
@@ -141,6 +160,13 @@ const PollDetails = () => {
                 clearInterval(timerRef.current);
             });
         }
+
+        return () => {
+            if (connection) {
+                connection.off("UpdatedPoll");
+                connection.off("EndedPoll") // Clean up the listener
+            }
+        };
     }, [connection]);
 
     useEffect(() => {
@@ -429,7 +455,6 @@ const PollDetails = () => {
                 {/* Vote Choices */}
                 {!isPollExpired && poll.choices?.length > 0 && (
                     <div className="vote-choices">
-                        <p className="selection-info">{poll.multiSelect ? "Select multiple choices" : "Select one choice"}</p>
                         {poll.choices.sort((a, b) => a.choiceId - b.choiceId).map((choice) => (
                             <button
                                 key={choice.choiceId}
@@ -525,9 +550,11 @@ const PollDetails = () => {
                     <FaPaperPlane className="poll-icon-vote" onClick={handleShareClick} />
                 </div>
             </div>
+            {checkmarks.map((checkmark) => (
+                <CheckmarkAnimation key={checkmark.id} xPosition={checkmark.xPosition} />
+            ))}
         </div>
     );
 };
 
 export default PollDetails;
-

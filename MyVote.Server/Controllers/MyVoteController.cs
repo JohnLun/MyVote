@@ -33,7 +33,7 @@ namespace MyVote.Server.Controllers
 
             if (!string.IsNullOrEmpty(existingCookie))
             {
-               var existingUser = _db.Users.FirstOrDefault(u => u.LastName == existingCookie);
+                var existingUser = _db.Users.FirstOrDefault(u => u.LastName == existingCookie);
 
                 if (existingUser != null)
                 {
@@ -45,14 +45,14 @@ namespace MyVote.Server.Controllers
 
             var newUser = new User
             {
-                FirstName = "Guest", 
+                FirstName = "Guest",
                 LastName = newUserCookie,
             };
 
             _db.Users.Add(newUser);
             _db.SaveChanges();
 
-      
+
             var cookieOptions = new CookieOptions
             {
                 HttpOnly = true,
@@ -380,7 +380,7 @@ namespace MyVote.Server.Controllers
             };
 
             // Broadcast the update via SignalR
-            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<VoteHub>>();
             await hubContext.Clients.All.SendAsync("RemoveVoteUpdate", updatedPollDto);
 
             return Ok(new { message = "Vote removed successfully!" });
@@ -444,7 +444,7 @@ namespace MyVote.Server.Controllers
             };
 
             // Broadcast the updated poll using SignalR
-            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<GlobalHub>>();
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<VoteHub>>();
             try
             {
                 await hubContext.Clients.All.SendAsync("ReceiveVoteUpdate", updatedPollDto);
@@ -582,7 +582,7 @@ namespace MyVote.Server.Controllers
                 .ToListAsync();
 
             return Ok(suggestions);
-           
+
         }
 
         //Post a suggestion
