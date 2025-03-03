@@ -92,7 +92,11 @@
     margin-bottom: 5px;
 }
 
-.poll-title, .poll-choice, .poll-description {
+.poll-choice{
+    font-weight: 350;
+}
+
+.poll-title,  .poll-description {
     word-wrap: break-word;
     overflow-wrap: break-word;
     white-space: normal;
