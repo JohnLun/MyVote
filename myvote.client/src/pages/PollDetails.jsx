@@ -455,6 +455,7 @@ const PollDetails = () => {
                 {/* Vote Choices */}
                 {!isPollExpired && poll.choices?.length > 0 && (
                     <div className="vote-choices">
+                        <p className="selection-info">{poll.multiSelect ? "Select multiple choices" : "Select one choice"}</p>
                         {poll.choices.sort((a, b) => a.choiceId - b.choiceId).map((choice) => (
                             <button
                                 key={choice.choiceId}
