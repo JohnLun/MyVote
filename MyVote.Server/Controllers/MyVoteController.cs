@@ -194,7 +194,7 @@ namespace MyVote.Server.Controllers
                 Description = poll.Description,
                 DateCreated = poll.DateCreated,
                 DateEnded = poll.DateEnded,
-                MultiSelect = poll.MultiSelect,
+                PollType = poll.PollType,
                 IsActive = poll.IsActive,
                 UserId = poll.UserId, // Ensure the UserId of the poll creator is included
                 Choices = poll.Choices.Select(c => new ChoiceDto
@@ -248,7 +248,7 @@ namespace MyVote.Server.Controllers
                 DateCreated = poll.DateCreated,
                 DateEnded = poll.DateEnded,
                 IsActive = poll.IsActive,
-                MultiSelect = poll.MultiSelect,
+                PollType = poll.PollType,
                 UserId = poll.UserId, // Ensure the UserId of the poll creator is included
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {
@@ -314,7 +314,7 @@ namespace MyVote.Server.Controllers
                 Description = poll.Description,
                 DateCreated = poll.DateCreated,
                 DateEnded = poll.DateEnded,
-                MultiSelect = poll.MultiSelect,
+                PollType = poll.PollType,
                 IsActive = poll.IsActive,
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {
@@ -330,6 +330,73 @@ namespace MyVote.Server.Controllers
             try
             {
                 await hubContext.Clients.All.SendAsync("UpdatedPoll", updatedPollDto);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
+            return Ok(new { message = "Choice added successfully", choiceId = newChoice.ChoiceId });
+        }
+
+        [HttpPatch("poll/survey/opinion")]
+        public async Task<IActionResult> AddOpinion([FromBody] OpinionDto opinionDto)
+        {
+            // Find the poll with choices and user choices, including UserChoices for each Choice
+            var poll = await _db.Polls
+                .Include(p => p.Choices) // Include Choices
+                .ThenInclude(c => c.UserChoices) // Eagerly load UserChoices for each Choice
+                .FirstOrDefaultAsync(p => p.PollId == opinionDto.PollId);
+
+            if (poll == null)
+            {
+                return NotFound(new { message = "Poll not found" });
+            }
+
+            if (poll.IsActive == "f")
+            {
+                return StatusCode(410, new { message = "Poll is no longer active." });
+            }
+
+            // Create a new choice using the suggestion
+            var newChoice = new Choice
+            {
+                Name = opinionDto.OpinionName,
+                PollId = opinionDto.PollId,
+                NumVotes = 0
+            };
+
+            // Add to poll
+            poll.Choices.Add(newChoice);
+
+            // Save to database
+            await _db.SaveChangesAsync();
+
+            // Construct the updated PollDto with UserIds
+            var updatedPollDto = new PollDto
+            {
+                UserId = poll.UserId,
+                PollId = poll.PollId,
+                Title = poll.Title,
+                Description = poll.Description,
+                DateCreated = poll.DateCreated,
+                DateEnded = poll.DateEnded,
+                PollType = poll.PollType,
+                IsActive = poll.IsActive,
+                Choices = poll.Choices.Select(c => new ChoiceDto
+                {
+                    ChoiceId = c.ChoiceId,
+                    Name = c.Name,
+                    NumVotes = c.NumVotes,
+                    UserIds = c.UserChoices.Select(uc => uc.UserId).ToList() // Ensure UserIds are populated
+                }).ToList()
+            };
+
+            // Broadcast the updated poll
+            var hubContext = HttpContext.RequestServices.GetRequiredService<IHubContext<VoteHub>>();
+            try
+            {
+                await hubContext.Clients.All.SendAsync("ReceivedOpinion", updatedPollDto);
             }
             catch (Exception e)
             {
@@ -372,7 +439,7 @@ namespace MyVote.Server.Controllers
                 Description = updatedPoll.Description,
                 DateCreated = updatedPoll.DateCreated,
                 DateEnded = updatedPoll.DateEnded,
-                MultiSelect = updatedPoll.MultiSelect,
+                PollType = updatedPoll.PollType,
                 IsActive = updatedPoll.IsActive,
                 Choices = updatedPoll.Choices.Select(c => new ChoiceDto
                 {
@@ -436,7 +503,7 @@ namespace MyVote.Server.Controllers
                 Description = updatedPoll.Description,
                 DateCreated = updatedPoll.DateCreated,
                 DateEnded = updatedPoll.DateEnded,
-                MultiSelect = updatedPoll.MultiSelect,
+                PollType = updatedPoll.PollType,
                 IsActive = updatedPoll.IsActive,
                 Choices = updatedPoll.Choices.Select(c => new ChoiceDto
                 {
@@ -480,7 +547,7 @@ namespace MyVote.Server.Controllers
                 Description = newPollDto.Description,
                 DateCreated = newPollDto.DateCreated,
                 DateEnded = newPollDto.DateEnded,
-                MultiSelect = newPollDto.MultiSelect,
+                PollType = newPollDto.PollType,
                 IsActive = newPollDto.IsActive,
                 Choices = newPollDto.Choices.Select(c => new Choice
                 {
@@ -499,7 +566,7 @@ namespace MyVote.Server.Controllers
                 Description = poll.Description,
                 DateCreated = poll.DateCreated,
                 DateEnded = poll.DateEnded,
-                MultiSelect = poll.MultiSelect,
+                PollType = poll.PollType,
                 IsActive = poll.IsActive,
                 Choices = poll.Choices.Select(c => new ChoiceDto
                 {

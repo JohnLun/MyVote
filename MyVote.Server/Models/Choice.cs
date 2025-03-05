@@ -14,6 +14,5 @@ namespace MyVote.Server.Models
         //[ForeignKey("PollId")]
         public int PollId {get; set; }
         public Poll Poll {get; set; }
-
     }
 }

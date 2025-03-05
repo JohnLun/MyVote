@@ -16,6 +16,7 @@ const CreatePoll = () => {
     const CHOICE_LIMIT = 100;
 
     const [multiSelect, setMultiSelect] = useState(false);
+    const [pollType, setPollType] = useState(0);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [timeLimit, setTimeLimit] = useState('');
@@ -29,6 +30,11 @@ const CreatePoll = () => {
 
     const { userId } = useUser();
     const navigate = useNavigate();
+
+    const handlePollTypeChange = (e) => {
+        const value = e.target.value;
+        setPollType(Number(value));
+    }
 
     const handleTitleChange = (e) => {
         const value = e.target.value;
@@ -120,7 +126,7 @@ const CreatePoll = () => {
             timeLimit: parseFloat(timeLimit),
             dateCreated: currentTimeUTC.toISOString(),
             dateEnded: pollEndTime.toISOString(),
-            multiSelect: multiSelect,
+            pollType: pollType,
             isActive: "t",
             choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
@@ -160,6 +166,13 @@ const CreatePoll = () => {
             <div className="create-poll-card">
                 <h2 className="create-poll-header">Create a Poll</h2>
                 <form onSubmit={handleSubmit}>
+                    <select
+                        onChange={handlePollTypeChange}
+                    >
+                        <option value={0}>Multiple Choice</option>
+                        <option value={1}>Multiple Select</option>
+                        <option value={2}>Survey</option>
+                    </select>
                     {/* Title */}
                     <div className="form-group">
                         <div className="insert-format">
@@ -208,58 +221,57 @@ const CreatePoll = () => {
                     </div>
 
                     {/* Choices */}
-                    <div className="form-group">
-                        <label>Choices {errors.choices && <span className="error-asterisk">*</span>}</label>
-                        {choices.map((choice, index) => (
-                            <div key={index} className="choice-container">
-                                <div className="insert-format-choices">
-                                    <small className="char-rem">{remainingChars.choices[index]} characters</small>
-                                    <input
-                                    required
-                                    type="text"
-                                    value={choice}
-                                    onChange={(e) => handleChoiceChange(index, e)}
-                                    maxLength={CHOICE_LIMIT}
-                                    />
-                                </div>
-                                
-                                
-                                
-                                {index >= 2 ? (
-                                    <UseAnimations animation={trash2}
-                                        strokeColor="white"
-                                        size="40"
-                                        className="trash-icon"
-                                        onClick={() => {
-                                            removeChoice(index)
-                                        }}/>
-                                ) : (
-                                    <div className="placeholder-icon"></div>
-                                )}
+                    {pollType != 2 && (
+                        <>
+                            <div className="form-group">
+                                <label>Choices {errors.choices && <span className="error-asterisk">*</span>}</label>
+                                {choices.map((choice, index) => (
+                                    <div key={index} className="choice-container">
+                                        <div className="insert-format-choices">
+                                            <small className="char-rem">{remainingChars.choices[index]} characters</small>
+                                            <input
+                                            required
+                                            type="text"
+                                            value={choice}
+                                            onChange={(e) => handleChoiceChange(index, e)}
+                                            maxLength={CHOICE_LIMIT}
+                                            />
+                                        </div>
+                                        
+                                        
+                                        
+                                        {index >= 2 ? (
+                                            <UseAnimations animation={trash2}
+                                                strokeColor="white"
+                                                size="40"
+                                                className="trash-icon"
+                                                onClick={() => {
+                                                    removeChoice(index)
+                                                }}/>
+                                        ) : (
+                                            <div className="placeholder-icon"></div>
+                                        )}
+                                    </div>
+                                ))}
                             </div>
-                        ))}
-                    </div>
+                            <div className="btm-choices">
+                                <div className="add-container">
+                                    <button type="button" className="add-choice-button" onClick={addChoice}>
+                                        <FaPlus className="plus-icon" /> Add Choice
+                                    </button>
+                                </div>
 
-                    <div className="btm-choices">
-                        <div className="add-container">
-                            <button type="button" className="add-choice-button" onClick={addChoice}>
-                                <FaPlus className="plus-icon" /> Add Choice
-                            </button>
-                        </div>
+                            
+                            
 
-                        <div className="button-container">
-                            <button type="submit">Create Poll</button>
-                        </div>
-                        <div className="multiple-select">
-                            <label htmlFor="multiSelect">Multi Select?</label>
-                            <input
-                                type="checkbox"
-                                name="multiSelect"
-                                checked={multiSelect}
-                                onChange={handleToggleMultiSelect}
-                            />
-                        </div>
-                        
+                            </div>
+                        </>
+                    )}
+                    
+
+                    
+                    <div className="button-container">
+                        <button type="submit">Create Poll</button>
                     </div>
                 </form>
             </div>
