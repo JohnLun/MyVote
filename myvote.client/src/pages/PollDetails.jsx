@@ -37,6 +37,7 @@ const PollDetails = () => {
     const pollDetailsFlipRef = useRef();
     const [checkmarks, setCheckmarks] = useState([]);
     const [suggestionLimit, setSuggestionLimit] = useState(100);
+    const pollGraphRef = useRef();
 
     const { API_BASE_URL } = useUser();
 
@@ -369,8 +370,8 @@ const PollDetails = () => {
     };
 
     const captureGraphImage = async () => {
-        if (pollDetailsFlipRef.current && pollDetailsFlipRef.current.captureGraph) {
-            const graphImage = await pollDetailsFlipRef.current.captureGraph();
+        if (pollGraphRef.current && pollGraphRef.current.captureGraph) {
+            const graphImage = await pollGraphRef.current.captureGraph();
 
             const img = new Image();
             img.src = graphImage;
@@ -431,7 +432,7 @@ const PollDetails = () => {
                     <h3>Results</h3>
                     
                     <div className="poll-graph">
-                        <PollGraph poll={poll} />
+                        <PollGraph poll={poll} ref={pollGraphRef}/>
                     </div>
 
                     <div className="poll-results">

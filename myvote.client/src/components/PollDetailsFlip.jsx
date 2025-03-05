@@ -31,12 +31,12 @@ const PollDetailsFlip = forwardRef(({ poll }, ref) => {
                         <PollGraph ref={graphRef} poll={poll} />
                     </div>
                     {/* <i className="flip-icon fas fa-sync-alt"></i> */}
-                    <HiArrowUturnRight className="flip-icon fas fa-sync-alt"/>
+                    <HiArrowUturnRight className="flip-icon fas fa-sync-alt" />
                 </div>
                 <div className="flip-card-back hide-in-pdf">
                     <p>{poll?.description}</p>
                     {/* <i className="flip-icon fas fa-sync-alt"></i> */}
-                    <HiArrowUturnLeft className="flip-icon fas fa-sync-alt"/>
+                    <HiArrowUturnLeft className="flip-icon fas fa-sync-alt" />
                 </div>
             </div>
         </div>
