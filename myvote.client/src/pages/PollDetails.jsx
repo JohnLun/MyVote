@@ -478,7 +478,13 @@ const PollDetails = () => {
                 {/* Poll Results and Graph Card */}
                 
                 <div className="poll-results-card">
-                    <h3>Results</h3>
+                    <h3>
+                        {poll.pollType == 2 ? (
+                            <h3>Responses: {poll.choices.length}</h3>
+                        ) : (
+                            <h3>Results</h3>
+                        )}
+                    </h3>
                     
                     {poll.pollType != 2 ? (
                         <>

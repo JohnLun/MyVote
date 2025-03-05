@@ -117,6 +117,10 @@ const CreatePoll = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        if (pollType == 2) {
+            setChoices([])
+        }
+
         const currentTimeUTC = new Date(Date.now());
         const pollEndTime = new Date(currentTimeUTC.getTime() + parseFloat(timeLimit) * 60 * 1000);
         const newPollDto = {
@@ -128,8 +132,9 @@ const CreatePoll = () => {
             dateEnded: pollEndTime.toISOString(),
             pollType: pollType,
             isActive: "t",
-            choices: choices.map(choice => ({ Name: choice, NumVotes: 0 }))
+            choices: pollType === 2 ? [] : choices.map(choice => ({ Name: choice, NumVotes: 0 }))
         };
+        
 
         try {
             const response = await fetch(`${API_BASE_URL}/api/poll`, {
@@ -260,10 +265,6 @@ const CreatePoll = () => {
                                         <FaPlus className="plus-icon" /> Add Choice
                                     </button>
                                 </div>
-
-                            
-                            
-
                             </div>
                         </>
                     )}
