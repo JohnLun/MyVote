@@ -7,6 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import './CreatePoll.css';
 import UseAnimations from 'react-useanimations';
 import trash2 from 'react-useanimations/lib/trash2';
+import Select from '@mui/material/Select';
+import { MenuItem } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
 
 const CreatePoll = () => {
     const { API_BASE_URL } = useUser();
@@ -169,15 +173,49 @@ const CreatePoll = () => {
     return (
         <div className="create-poll-container">
             <div className="create-poll-card">
-                <h2 className="create-poll-header">Create a Poll</h2>
-                <form onSubmit={handleSubmit}>
-                    <select
-                        onChange={handlePollTypeChange}
+                <div className="create-poll-header-container">
+                    <h2 className="create-poll-header">Create a Poll</h2>
+                    {/* Material UI Select for filtering */}
+                    <FormControl
+                        sx={{
+                            minWidth: 150,
+                            "& .MuiInputLabel-root": {
+                                color: "white", // Label color
+                            },
+                            "& .MuiOutlinedInput-root": {
+                                color: "white", // Text color
+                                fontSize: "15px",
+                                "& fieldset": {
+                                    borderColor: "white", // Border color
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "white", // Hover border color
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "white", // Focus border color
+                                },
+                                "& .MuiSvgIcon-root": {
+                                    color: "white", // Dropdown arrow color
+                                },
+                            },
+                        }}
                     >
-                        <option value={0}>Multiple Choice</option>
-                        <option value={1}>Multiple Select</option>
-                        <option value={2}>Survey</option>
-                    </select>
+                        {/* <InputLabel id="poll-filter-label">Filter</InputLabel> */}
+                        <Select
+                            className="poll-type-select"
+                            value={pollType}
+                            onChange={handlePollTypeChange}
+                        >
+                            <MenuItem value={0}>Multiple Choice</MenuItem>
+                            <MenuItem value={1}>Multiple Select</MenuItem>
+                            <MenuItem value={2}>Survey</MenuItem>
+                        </Select>
+                        
+                    </FormControl>
+                </div>
+                
+                <form onSubmit={handleSubmit}>
+                    
                     {/* Title */}
                     <div className="form-group">
                         <div className="insert-format">
@@ -265,6 +303,8 @@ const CreatePoll = () => {
                                         <FaPlus className="plus-icon" /> Add Choice
                                     </button>
                                 </div>
+
+                                
                             </div>
                         </>
                     )}
