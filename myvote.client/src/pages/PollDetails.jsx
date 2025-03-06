@@ -145,12 +145,10 @@ const PollDetails = () => {
 
                 newConnection.on("ReceivedOpinion", (updatedPoll) => {
                     setPoll(updatedPoll);
-                    console.log(updatedPoll);
                     
                     const latestOpinion = updatedPoll.choices[updatedPoll.choices.length - 1].name;
-                    console.log(latestOpinion);
                     
-                    setOpinions((prevOpinions) => [...prevOpinions, latestOpinion]); // ✅ Ensures proper state update
+                    setOpinions((prevOpinions) => [...prevOpinions, latestOpinion]);
                 });
                 
             })
@@ -402,7 +400,8 @@ const PollDetails = () => {
         }
     };
 
-    const handleSubmitOpinion = async() => {
+    const handleSubmitOpinion = async(e) => {
+        e.preventDefault();
         try {
             
             const patch = await fetch(`${API_BASE_URL}/api/poll/survey/opinion`, {
@@ -478,13 +477,13 @@ const PollDetails = () => {
                 {/* Poll Results and Graph Card */}
                 
                 <div className="poll-results-card">
-                    <h3>
+                    <>
                         {poll.pollType == 2 ? (
                             <h3>Responses: {poll.choices.length}</h3>
                         ) : (
                             <h3>Results</h3>
                         )}
-                    </h3>
+                    </>
                     
                     {poll.pollType != 2 ? (
                         <>
@@ -546,24 +545,23 @@ const PollDetails = () => {
 
                 {poll.pollType == 2 && !isPollExpired && (
                     <>
-                        <div>
-                            <textarea
-                                type="textarea"
-                                placeholder="Input whatever here TO BE CHANGED"
-                                onChange={handleSurveyChange}
-                                value={surveyOpinion}
-                            />
-                        </div>
-                        <div>
-                            <button
-                                onClick={handleSubmitOpinion}
-                            >
-                                Submit
-                            </button>
-                            
-                        </div>
+                        <form 
+                            onSubmit={handleSubmitOpinion}
+                            className="survey-text-area"
+                        >
+                            <div >
+                                <textarea
+                                    placeholder="Input whatever here TO BE CHANGED"
+                                    onChange={handleSurveyChange}
+                                    value={surveyOpinion}
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <button type="submit">Submit</button>
+                            </div>
+                        </form>
                     </>
-                    
                 )}
                 
                 {/* Suggest, End Poll, and Share Buttons */}

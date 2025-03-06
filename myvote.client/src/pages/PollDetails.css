@@ -253,6 +253,10 @@ transform: scale(1.15);
     border: 2px solid #f9fcfc;
 }
 
+.survey-text-area {
+    align-items: center;
+}
+
 
 .make-inactive-button{
     background: #b22222;
