@@ -39,6 +39,7 @@ const PollDetails = () => {
     const pollDetailsFlipRef = useRef();
     const [checkmarks, setCheckmarks] = useState([]);
     const [suggestionLimit, setSuggestionLimit] = useState(100);
+    const [isCooldown, setIsCooldown] = useState(false);
     const pollGraphRef = useRef();
 
     const { API_BASE_URL } = useUser();
@@ -193,30 +194,46 @@ const PollDetails = () => {
     const handleVote = async (choiceId) => {
         if (isPollExpired) return;
     
-        if (poll.pollType == 0) {
-            // Single choice poll: if selected, just return
-            let choice = poll.choices.filter(c => c.choiceId == choiceId);
-            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
-                return;
-            }
-            const previousChoice = poll.choices.find(c => c.userIds.includes(userId));
-            if (previousChoice && previousChoice.choiceId !== choiceId) {
-                // Only remove the previous vote if it's a different choice
-                await removeVote(previousChoice.choiceId);
-            }
+        // Apply cooldown only for single-choice polls
+        if (poll.pollType === 0 && isCooldown) return;
     
-            // Cast new vote
-            await submitVote(choiceId);
-        } else {
-            let choice = poll.choices.filter(c => c.choiceId == choiceId);
-            // Multi-select poll: toggle selection
-            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
-                await removeVote(choiceId);
-            } else {
+        if (poll.pollType === 0) {
+            setIsCooldown(true); // Activate cooldown for single choice polls
+        }
+    
+        try {
+            if (poll.pollType === 0) {
+                // Single choice poll
+                let choice = poll.choices.find(c => c.choiceId === choiceId);
+                if (choice && choice.userIds.includes(userId)) return;
+    
+                const previousChoice = poll.choices.find(c => c.userIds.includes(userId));
+                if (previousChoice && previousChoice.choiceId !== choiceId) {
+                    await removeVote(previousChoice.choiceId);
+                }
+    
                 await submitVote(choiceId);
+            } else {
+                // Multi-select poll (no cooldown)
+                let choice = poll.choices.find(c => c.choiceId === choiceId);
+                if (choice && choice.userIds.includes(userId)) {
+                    await removeVote(choiceId);
+                } else {
+                    await submitVote(choiceId);
+                }
+            }
+        } catch (error) {
+            console.error("Error handling vote:", error);
+        } finally {
+            // Reset cooldown only for single-choice polls
+            if (poll.pollType === 0) {
+                setTimeout(() => {
+                    setIsCooldown(false);
+                }, 1000); // 1-second cooldown
             }
         }
     };
+    
     
     const removeVote = async (choiceId) => {
         
