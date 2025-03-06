@@ -7,6 +7,8 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import './UserProfile.css';
 
 const UserProfile = () => {
@@ -73,32 +75,40 @@ const UserProfile = () => {
             setOwnedPolls(prevPolls => prevPolls.filter(poll => poll.pollId !== pollId));
             setVotedPolls(prevPolls => prevPolls.filter(poll => poll.pollId !== pollId));
         }
+        toast.success("Poll deleted", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+        });
     };
 
     return (
         <div className="user-profile">
-            
+            <ToastContainer />
             <div className="title-nav">
                 <div className="heading-div">
                     <h2 className="headingtext">Your Polls</h2>
-
                 </div>
-                
+
                 <div className="button-div">
-                    
+
                     {/* Material UI Toggle Buttons for tabs */}
                     <ToggleButtonGroup
                         sx={{
                             marginBottom: "10px",
                             "& .MuiToggleButton-root": {
-                            color: "white",
-                            fontSize: "12px",
-                            backgroundColor: "#37383e",
-                            minWidth: "75px",
-                            "&.Mui-selected": {
-                                backgroundColor: "#365FB7",
                                 color: "white",
-                            },
+                                fontSize: "12px",
+                                backgroundColor: "#37383e",
+                                minWidth: "75px",
+                                "&.Mui-selected": {
+                                    backgroundColor: "#365FB7",
+                                    color: "white",
+                                },
                             },
                         }}
                         color="primary"
@@ -108,7 +118,7 @@ const UserProfile = () => {
                             if (newTab !== null) setActiveTab(newTab);
                         }}
                         aria-label="Poll tabs"
-                        >
+                    >
                         <ToggleButton value="voted">Voted</ToggleButton>
                         <ToggleButton value="owned">Created</ToggleButton>
                     </ToggleButtonGroup>
@@ -119,26 +129,26 @@ const UserProfile = () => {
                         sx={{
                             minWidth: 150,
                             "& .MuiInputLabel-root": {
-                            color: "white", // Label color
+                                color: "white", // Label color
                             },
                             "& .MuiOutlinedInput-root": {
-                            color: "white", // Text color
-                            fontSize: "15px",
-                            "& fieldset": {
-                                borderColor: "white", // Border color
-                            },
-                            "&:hover fieldset": {
-                                borderColor: "white", // Hover border color
-                            },
-                            "&.Mui-focused fieldset": {
-                                borderColor: "white", // Focus border color
-                            },
-                            "& .MuiSvgIcon-root": {
-                                color: "white", // Dropdown arrow color
-                            },
+                                color: "white", // Text color
+                                fontSize: "15px",
+                                "& fieldset": {
+                                    borderColor: "white", // Border color
+                                },
+                                "&:hover fieldset": {
+                                    borderColor: "white", // Hover border color
+                                },
+                                "&.Mui-focused fieldset": {
+                                    borderColor: "white", // Focus border color
+                                },
+                                "& .MuiSvgIcon-root": {
+                                    color: "white", // Dropdown arrow color
+                                },
                             },
                         }}
-                        >
+                    >
                         <InputLabel id="poll-filter-label">Filter</InputLabel>
                         <Select
                             labelId="poll-filter-label"
@@ -162,7 +172,7 @@ const UserProfile = () => {
                 ) : error ? (
                     <p className="error">Error: {error}</p>
                 ) : getFilteredPolls().length > 0 ? (
-                    getFilteredPolls().map((poll) => <PollCard key={poll.pollId} poll={poll} onDelete={handlePollDelete} activeTab={activeTab}/>)
+                    getFilteredPolls().map((poll) => <PollCard key={poll.pollId} poll={poll} onDelete={handlePollDelete} activeTab={activeTab} />)
                 ) : (
                     <p>No polls found.</p>
                 )}
@@ -172,3 +182,4 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
