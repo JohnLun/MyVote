@@ -109,10 +109,17 @@ export default function PollCard({ poll, onDelete, activeTab }) {
                     <div className="modal" onClick={(e) => e.stopPropagation()}>
                         <p>Are you sure you want to delete this poll?</p> 
                         <p>
-                            {poll.userId === userId
-                                ? "This poll will be deleted for all voters."
-                                : "This poll will only be deleted from your view, but others can still see it."}
+                            <em>
+                                {activeTab != "voted"
+                                    ? "This poll will be deleted for " 
+                                    : "This poll will only be deleted from your view, but others can still see it."}
+                                <strong>{activeTab != "voted" ? "all" : ""}</strong>
+                                {activeTab != "voted" ? " voters." : ""}
+                            </em>
                         </p>
+
+
+
                         <div className="modal-actions">
                             <button className="modal-btn"onClick={() => setShowModal(false)}>Back</button>
                             <button className="modal-btn" onClick={confirmDelete}>Delete</button>
