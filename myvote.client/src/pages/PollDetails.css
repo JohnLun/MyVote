@@ -34,6 +34,7 @@
     width:100%;
     border-radius: 10px;
     border-width: 1px;
+    margin-top: 5px;
     border-style:solid;
     border-color: #f9fcfc;
 }
@@ -255,6 +256,7 @@ transform: scale(1.15);
 
 .survey-text-area {
     align-items: center;
+    width: 100%;
 }
 
 
@@ -271,6 +273,40 @@ transform: scale(1.15);
     display: flex;
     flex-direction: row-reverse;
     font-size: small;
+}
+
+.survey-form-input{
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    justify-content: space-between;
+}
+
+.survey-text-input{
+    resize: none;
+    width: 60svw;
+    height: 40px;
+    border-radius: 10px;
+    font-family: 'Roboto';
+}
+
+.go-btn-survey{
+    background-color: #DEE0E3;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 20px;
+}
+
+.bttm-pdf-share{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }
 
 @media (max-width: 600px){

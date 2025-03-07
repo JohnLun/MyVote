@@ -14,6 +14,7 @@ import "./PollDetails.css";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PollPDF from "../components/PollPDF";
 import CheckmarkAnimation from "../components/CheckmarkAnimation";
+import { FaArrowUpLong } from "react-icons/fa6";
 
 const PollDetails = () => {
     const { pollId } = useParams();
@@ -526,6 +527,7 @@ const PollDetails = () => {
                             </div>
                         </>
                     ) : (
+                        //survey responses
                         <>
                             {opinions.map((opinion, index) => (
                                 <div key={index} className="row mb-2 p-2 border">
@@ -566,16 +568,26 @@ const PollDetails = () => {
                             onSubmit={handleSubmitOpinion}
                             className="survey-text-area"
                         >
-                            <div >
+                            <div className="survey-form-input">
+                                
                                 <textarea
-                                    placeholder="Input whatever here TO BE CHANGED"
+                                    className="survey-text-input"
+                                    placeholder="Enter response here"
                                     onChange={handleSurveyChange}
                                     value={surveyOpinion}
                                     required
-                                />
-                            </div>
-                            <div>
-                                <button type="submit">Submit</button>
+                                    // onKeyDown={(event) => {
+                                    //     if (event.key === "Enter" && !event.shiftKey) {
+                                    //         event.preventDefault(); // Prevents a new line from being added
+                                    //         handleSubmitOpinion; // Call your submit function
+                                    //     }
+                                    // }}
+                                />                            
+                                
+                                <button className="go-btn-survey" type="submit" >
+                                    <FaArrowUpLong className="searchArrow"/>
+                                </button>
+                                
                             </div>
                         </form>
                     </>
