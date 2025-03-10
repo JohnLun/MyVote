@@ -13,7 +13,7 @@ const WordCloud = ({ opinions }) => {
         const svg = d3.select(svgRef.current)
             .attr("width", width)
             .attr("height", height)
-            .style("background", "#f8f9fa");
+            .style("background", "transparent");
 
         svg.selectAll("*").remove();
 
