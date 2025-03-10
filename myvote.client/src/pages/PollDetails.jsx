@@ -14,6 +14,7 @@ import "./PollDetails.css";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PollPDF from "../components/PollPDF";
 import CheckmarkAnimation from "../components/CheckmarkAnimation";
+import WordCloud from '../components/WordCloud';
 import { FaArrowUpLong } from "react-icons/fa6";
 
 const PollDetails = () => {
@@ -528,15 +529,9 @@ const PollDetails = () => {
                         </>
                     ) : (
                         //survey responses
-                        <>
-                            {opinions.map((opinion, index) => (
-                                <div key={index} className="row mb-2 p-2 border">
-                                    <div className="col">
-                                        <p className="mb-1">{opinion}</p>
-                                    </div>
-                                </div>
-                            ))}
-                        </>
+                        <div className="poll-wordcloud">
+                            <WordCloud opinions={opinions} />
+                        </div>
                         
                     )}
                     
