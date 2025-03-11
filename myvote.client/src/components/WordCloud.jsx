@@ -59,12 +59,14 @@ const WordCloud = ({ opinions }) => {
 
         // Position opinions randomly
         wordElements
-            .attr("x", () => Math.random() * width * 0.8 + width * 0.1)
-            .attr("y", () => Math.random() * height * 0.8 + height * 0.1)
+            .attr("x", d => Math.random() * (width - d.size * 2) + d.size)
+            .attr("y", d => Math.random() * (height - d.size * 2) + d.size)
             .transition()
             .duration(1000)
-            .attr("x", d => Math.random() * (width - d.size))
-            .attr("y", d => Math.random() * (height - d.size));
+            
+            .attr("x", d => Math.random() * (width - d.size) + d.size / 2)  // Ensures words stay within left & right bounds
+            .attr("y", d => Math.random() * (height - d.size) + d.size / 2); // Ensures words stay within top & bottom bounds
+
     }, [opinions, dimensions]);
 
     return <svg ref={svgRef} style={{ maxWidth: "100%", width: "70svw", height: "30svh" }} />;
