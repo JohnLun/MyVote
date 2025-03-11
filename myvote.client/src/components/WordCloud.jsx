@@ -67,7 +67,7 @@ const WordCloud = ({ opinions }) => {
             .attr("y", d => Math.random() * (height - d.size));
     }, [opinions, dimensions]);
 
-    return <svg ref={svgRef} style={{ width: "70svw", height: "30svh" }} />;
+    return <svg ref={svgRef} style={{ maxWidth: "100%", width: "70svw", height: "30svh" }} />;
 };
 
 export default WordCloud;
