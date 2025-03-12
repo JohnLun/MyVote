@@ -10,7 +10,7 @@ namespace MyVote.Server.Models
 
         public string? Description { get; set; }
 
-        public bool MultiSelect { get; set; }
+        public PollType PollType { get; set; }
 
         public DateTime DateCreated { get; set; }
         
@@ -22,6 +22,13 @@ namespace MyVote.Server.Models
 
         public int UserId { get; set; }
         public User User { get; set; }
+    }
+
+    public enum PollType
+    {
+        MultipleChoice,
+        MultipleSelect,
+        Survey
     }
 
 }

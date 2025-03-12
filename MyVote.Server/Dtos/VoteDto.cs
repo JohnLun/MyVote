@@ -9,8 +9,7 @@ namespace MyVote.Server.Dtos
         public string? Description { get; set; }
         public DateTime DateCreated { get; set; }
         public DateTime DateEnded { get; set; }
-
-        public bool MultiSelect { get; set; }
+        public PollType PollType { get; set; }
         public string IsActive { get; set; }
         public int UserId { get; set; } // Add this field to track poll creator
         public List<ChoiceDto> Choices { get; set; }
@@ -49,7 +48,7 @@ namespace MyVote.Server.Dtos
 
         public DateTime DateEnded { get; set; }
 
-        public bool MultiSelect { get; set; }
+        public PollType PollType { get; set; }
         public string IsActive { get; set; }
         public List<CreateChoiceDto> Choices { get; set; }
     }
@@ -74,6 +73,13 @@ namespace MyVote.Server.Dtos
         public int PollId { get; set; }
 
         public string PollName { get; set; }
+    }
+
+    public class OpinionDto
+    {
+        public int PollId { get; set; }
+
+        public string OpinionName { get; set; }
     }
 
 }

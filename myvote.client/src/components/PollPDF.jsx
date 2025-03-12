@@ -92,13 +92,13 @@ const PollPDF = ({ poll, graphImage }) => {
                 </View>
 
                 <View style={styles.section}>
-                    <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>Choices</Text>
+                    <Text style={{ fontSize: 16, fontWeight: 'bold', marginBottom: 5 }}>{poll.pollType != 2 ? "Choices" : "Responses"}</Text>
                     {poll.choices.map((choice, index) => {
                         const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
                         return (
                             <View key={index} style={styles.choiceContainer}>
                                 <Text style={styles.choiceText}>
-                                    {index + 1}. {choice.name} - {percentage}% ({choice.numVotes} votes)
+                                    {index + 1}. {choice.name} {poll.pollType != 2 ? `- ${percentage}% (${choice.numVotes} votes)` : ""}
                                 </Text>
                             </View>
                         );

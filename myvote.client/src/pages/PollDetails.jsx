@@ -14,6 +14,8 @@ import "./PollDetails.css";
 import { PDFDownloadLink } from '@react-pdf/renderer';
 import PollPDF from "../components/PollPDF";
 import CheckmarkAnimation from "../components/CheckmarkAnimation";
+import WordCloud from '../components/WordCloud';
+import { FaArrowUpLong } from "react-icons/fa6";
 
 const PollDetails = () => {
     const { pollId } = useParams();
@@ -28,6 +30,8 @@ const PollDetails = () => {
     const [isPollExpired, setIsPollExpired] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [suggestion, setSuggestion] = useState("");
+    const [surveyOpinion, setSurveyOpinion] = useState("");
+    const [opinions, setOpinions] = useState([]);
     const { userId } = useUser();
     const navigate = useNavigate();
     const pollDetailsRef = useRef();
@@ -37,6 +41,7 @@ const PollDetails = () => {
     const pollDetailsFlipRef = useRef();
     const [checkmarks, setCheckmarks] = useState([]);
     const [suggestionLimit, setSuggestionLimit] = useState(100);
+    const [isCooldown, setIsCooldown] = useState(false);
     const pollGraphRef = useRef();
 
     const { API_BASE_URL } = useUser();
@@ -140,6 +145,15 @@ const PollDetails = () => {
                 newConnection.on("RemoveVoteUpdate", (updatedPoll) => {
                     setPoll(updatedPoll);
                 })
+
+                newConnection.on("ReceivedOpinion", (updatedPoll) => {
+                    setPoll(updatedPoll);
+                    
+                    const latestOpinion = updatedPoll.choices[updatedPoll.choices.length - 1].name;
+                    
+                    setOpinions((prevOpinions) => [...prevOpinions, latestOpinion]);
+                });
+                
             })
             .catch(err => console.error("SignalR Connection Error: ", err));
 
@@ -174,33 +188,54 @@ const PollDetails = () => {
         captureGraphImage();
     }, [poll]);
 
+    const handleSurveyChange = (e) => {
+        const value = e.target.value;
+        setSurveyOpinion(value);
+    }
+
     const handleVote = async (choiceId) => {
         if (isPollExpired) return;
     
-        if (!poll.multiSelect) {
-            // Single choice poll: if selected, just return
-            let choice = poll.choices.filter(c => c.choiceId == choiceId);
-            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
-                return;
-            }
-            const previousChoice = poll.choices.find(c => c.userIds.includes(userId));
-            if (previousChoice && previousChoice.choiceId !== choiceId) {
-                // Only remove the previous vote if it's a different choice
-                await removeVote(previousChoice.choiceId);
-            }
+        // Apply cooldown only for single-choice polls
+        if (poll.pollType === 0 && isCooldown) return;
     
-            // Cast new vote
-            await submitVote(choiceId);
-        } else {
-            let choice = poll.choices.filter(c => c.choiceId == choiceId);
-            // Multi-select poll: toggle selection
-            if (choice.length > 0 && choice[0].userIds.includes(userId)) {
-                await removeVote(choiceId);
-            } else {
+        if (poll.pollType === 0) {
+            setIsCooldown(true); // Activate cooldown for single choice polls
+        }
+    
+        try {
+            if (poll.pollType === 0) {
+                // Single choice poll
+                let choice = poll.choices.find(c => c.choiceId === choiceId);
+                if (choice && choice.userIds.includes(userId)) return;
+    
+                const previousChoice = poll.choices.find(c => c.userIds.includes(userId));
+                if (previousChoice && previousChoice.choiceId !== choiceId) {
+                    await removeVote(previousChoice.choiceId);
+                }
+    
                 await submitVote(choiceId);
+            } else {
+                // Multi-select poll (no cooldown)
+                let choice = poll.choices.find(c => c.choiceId === choiceId);
+                if (choice && choice.userIds.includes(userId)) {
+                    await removeVote(choiceId);
+                } else {
+                    await submitVote(choiceId);
+                }
+            }
+        } catch (error) {
+            console.error("Error handling vote:", error);
+        } finally {
+            // Reset cooldown only for single-choice polls
+            if (poll.pollType === 0) {
+                setTimeout(() => {
+                    setIsCooldown(false);
+                }, 1000); // 1-second cooldown
             }
         }
     };
+    
     
     const removeVote = async (choiceId) => {
         
@@ -384,6 +419,37 @@ const PollDetails = () => {
         }
     };
 
+    const handleSubmitOpinion = async(e) => {
+        e.preventDefault();
+        try {
+            
+            const patch = await fetch(`${API_BASE_URL}/api/poll/survey/opinion`, {
+                method: "PATCH",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    opinionName: surveyOpinion,
+                    pollId: poll.pollId,
+                }),
+            });
+            setSurveyOpinion("");
+
+            if (patch.ok) {
+                toast.success("Answer submitted!", {
+                    position: "top-right",
+                    autoClose: 3000, // Closes after 3 seconds
+                    hideProgressBar: false,
+                    closeOnClick: true,
+                    theme: "dark",
+                    pauseOnHover: true,
+                    draggable: true,
+                });
+            }
+        } catch (e) {
+            console.log(e.message);
+        }
+        
+    }
+
 
     const handleShareClick = (event) => {
         event.stopPropagation(); // Prevents the poll card click event
@@ -428,35 +494,57 @@ const PollDetails = () => {
                 
                 
                 {/* Poll Results and Graph Card */}
+                
                 <div className="poll-results-card">
-                    <h3>Results</h3>
-                    
-                    <div className="poll-graph">
-                        <PollGraph poll={poll} ref={pollGraphRef}/>
-                    </div>
-
-                    <div className="poll-results">
-                        {poll.choices?.length > 0 ? (
-                            poll.choices.map((choice) => {
-                                const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
-                                const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
-                                return (
-                                    <div key={choice.choiceId} className="result-container">
-                                        <div className="result-bar" style={{ width: `${percentage}%` }}></div>
-                                        <p>{choice.name} - {percentage}% ({choice.numVotes} votes)</p>
-                                    </div>
-                                );
-                            })
+                    <>
+                        {poll.pollType == 2 ? (
+                            <h3>Responses: {poll.choices.length}</h3>
                         ) : (
-                            <p>No choices available.</p>
+                            <h3>Results</h3>
                         )}
-                    </div>
+                    </>
+                    
+                    {poll.pollType != 2 ? (
+                        <>
+                            <div className="poll-graph">
+                                <PollGraph poll={poll} ref={pollGraphRef}/>
+                            </div>
+
+                            <div className="poll-results">
+                                {poll.choices?.length > 0 ? (
+                                    poll.choices.map((choice) => {
+                                        const totalVotes = poll.choices.reduce((sum, c) => sum + c.numVotes, 0);
+                                        const percentage = totalVotes > 0 ? ((choice.numVotes / totalVotes) * 100).toFixed(1) : 0;
+                                        return (
+                                            <div key={choice.choiceId} className="result-container">
+                                                <div className="result-bar" style={{ width: `${percentage}%` }}></div>
+                                                <p>{choice.name} - {percentage}% ({choice.numVotes} votes)</p>
+                                            </div>
+                                        );
+                                    })
+                                ) : (
+                                    <p>No choices available.</p>
+                                )}
+                            </div>
+                        </>
+                    ) : (
+                        //survey responses
+                        <div className="poll-wordcloud">
+                            <WordCloud opinions={opinions} />
+                        </div>
+                        
+                    )}
+                    
                 </div>
                 
                 {/* Vote Choices */}
-                {!isPollExpired && poll.choices?.length > 0 && (
+                {(poll.pollType == 0 || poll.pollType == 1) && !isPollExpired && poll.choices?.length > 0 && (
                     <div className="vote-choices">
-                        <p className="selection-info">{poll.multiSelect ? "Select multiple choices" : "Select one choice"}</p>
+                        <p className="selection-info">
+                            {poll.pollType == 0 ? 
+                            "Select one choice" : poll.PollType == 1 ? 
+                            "Select all that apply" : "Submit your opinion"
+                            }</p>
                         {poll.choices.sort((a, b) => a.choiceId - b.choiceId).map((choice) => (
                             <button
                                 key={choice.choiceId}
@@ -468,10 +556,41 @@ const PollDetails = () => {
                         ))}
                     </div>
                 )}
+
+                {poll.pollType == 2 && !isPollExpired && (
+                    <>
+                        <form 
+                            onSubmit={handleSubmitOpinion}
+                            className="survey-text-area"
+                        >
+                            <div className="survey-form-input">
+                                <textarea
+                                    className="survey-text-input"
+                                    placeholder="Enter response here"
+                                    onChange={handleSurveyChange}
+                                    value={surveyOpinion}
+                                    required
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter" && !event.shiftKey) {
+                                            event.preventDefault();
+                                            if (surveyOpinion.trim() === "") return;
+                                            handleSubmitOpinion(new Event("submit"));
+                                        }
+                                    }}
+                                />                            
+                                
+                                <button className="go-btn-survey" type="submit">
+                                    <FaArrowUpLong className="searchArrow"/>
+                                </button>
+                            </div>
+                        </form>
+
+                    </>
+                )}
                 
                 {/* Suggest, End Poll, and Share Buttons */}
                 <div className="bttm-pdf-share">
-                    {!isPollExpired && (
+                    {!isPollExpired && poll.pollType != 2 && (
                         <button className="blue-button" onClick={() => setIsModalOpen(true)}>
                             Suggest <FaPen className="poll-icon-suggest" />
                         </button>
@@ -537,7 +656,7 @@ const PollDetails = () => {
                         </div>
                     </div>
                 )}
-                    {isPollExpired && (
+                    {isPollExpired && (poll.userId == userId || poll.pollType != 2) && (
                         <PDFDownloadLink document={<PollPDF poll={poll} graphImage={graphImage} />} fileName={`poll-results-${poll.title}.pdf`}>
                             {({ loading }) => (
                                 <button className="generate-pdf-button">
@@ -546,6 +665,7 @@ const PollDetails = () => {
                             )}
                         </PDFDownloadLink>
                     )}
+                    
                     {!isPollExpired && poll.userId === userId && (
                         <button className="make-inactive-button" onClick={handleMakeInactive}>End Poll</button>
                     )}

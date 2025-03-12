@@ -7,6 +7,12 @@
     margin: 30px; */
 }
 
+.create-poll-header-container{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 .create-poll-header{
     margin-bottom: 10px;
     font-weight: 300;
@@ -71,7 +77,7 @@
         display: flex;
         justify-content: center;
         flex-direction: column;
-        align-items: center;
+        align-items: flex-end;
     }
 
         .create-poll-card .button-container button {
@@ -108,7 +114,7 @@
     padding: 6px;
     font-size: 16px;
     max-width: 450px;
-    min-width: 20svw;
+    min-width: 30svw;
 }
 
 
@@ -188,6 +194,10 @@ select:focus {
     flex-direction: column;
     align-items: center;
 }
+
+/* .poll-type-select{
+
+} */
 
 @media (max-width: 600px){
     .btm-choices{
