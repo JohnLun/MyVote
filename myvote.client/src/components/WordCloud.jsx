@@ -69,7 +69,10 @@ const WordCloud = ({ opinions }) => {
 
     }, [opinions, dimensions]);
 
-    return <svg ref={svgRef} style={{ maxWidth: "100%", width: "70svw", height: "30svh" }} />;
+    return (
+        <svg ref={svgRef} style={{ maxWidth: "100%", width: "70svw", Eheight: "30svh", fontWeight: "bold", pointerEvents:"none" }} />
+    );
+    
 };
 
 export default WordCloud;
