@@ -145,6 +145,13 @@
   background: #750d0d;
 }
 
+.small-text {
+  font-size: 0.8em;
+  color: gray;
+  margin-top: 5px;
+}
+
+
 @media (max-width: 600px) {
     .poll-card {
         width: 65vw;

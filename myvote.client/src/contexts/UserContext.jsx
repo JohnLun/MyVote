@@ -65,8 +65,6 @@ export const UserProvider = ({ children }) => {
 
         newConnection.start()
             .then(() => {
-                console.log("SignalR Connected");
-
                 newConnection.on("ReceiveWriteInOption", (optionDto) => {
                     if (optionDto.userId === userId) {
                         toast.success(`Received suggestion for Poll #${optionDto.pollId}!`, {

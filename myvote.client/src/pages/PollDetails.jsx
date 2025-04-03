@@ -564,27 +564,27 @@ const PollDetails = () => {
                             className="survey-text-area"
                         >
                             <div className="survey-form-input">
-                                
                                 <textarea
                                     className="survey-text-input"
                                     placeholder="Enter response here"
                                     onChange={handleSurveyChange}
                                     value={surveyOpinion}
                                     required
-                                    // onKeyDown={(event) => {
-                                    //     if (event.key === "Enter" && !event.shiftKey) {
-                                    //         event.preventDefault(); // Prevents a new line from being added
-                                    //         handleSubmitOpinion; // Call your submit function
-                                    //     }
-                                    // }}
+                                    onKeyDown={(event) => {
+                                        if (event.key === "Enter" && !event.shiftKey) {
+                                            event.preventDefault();
+                                            if (surveyOpinion.trim() === "") return;
+                                            handleSubmitOpinion(new Event("submit"));
+                                        }
+                                    }}
                                 />                            
                                 
-                                <button className="go-btn-survey" type="submit" >
+                                <button className="go-btn-survey" type="submit">
                                     <FaArrowUpLong className="searchArrow"/>
                                 </button>
-                                
                             </div>
                         </form>
+
                     </>
                 )}
                 

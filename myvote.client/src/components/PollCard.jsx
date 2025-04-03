@@ -117,16 +117,16 @@ export default function PollCard({ poll, onDelete, activeTab }) {
                                 {activeTab != "voted" ? " voters." : ""}
                             </em>
                         </p>
-
-
+                        <p className="small-text">Don't forget to download the results!</p>
 
                         <div className="modal-actions">
-                            <button className="modal-btn"onClick={() => setShowModal(false)}>Back</button>
+                            <button className="modal-btn" onClick={() => setShowModal(false)}>Back</button>
                             <button className="modal-btn" onClick={confirmDelete}>Delete</button>
                         </div>
                     </div>
                 </div>
             )}
+
 
         </>
     );
