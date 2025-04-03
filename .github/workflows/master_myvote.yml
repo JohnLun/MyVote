@@ -16,18 +16,18 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Set environment to production
-        run: echo "NODE_ENV=production" >> $GITHUB_ENV
+        run: |
+          echo "NODE_ENV=production" >> $GITHUB_ENV
+          echo "VITE_HTTPS=false" >> $GITHUB_ENV  # 👈 Disables Vite HTTPS
+          echo "ASPNETCORE_URLS=http://localhost:5000" >> $GITHUB_ENV  # 👈 Forces .NET to use HTTP
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
-      - name: Disable HTTPS enforcement
-        run: |
-          echo "Skipping HTTPS certificate setup..."
-          dotnet dev-certs https --clean
-        shell: pwsh
+      - name: Remove any HTTPS certificates (Fix error)
+        run: dotnet dev-certs https --clean || echo "No certs to clean"
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -41,10 +41,14 @@ jobs:
       - name: Run frontend tests
         run: npm test
         working-directory: myvote.client
+        env:
+          VITE_HTTPS: false  # 👈 Ensures Vite does not use HTTPS
 
       - name: Build frontend
         run: npm run build
         working-directory: myvote.client
+        env:
+          VITE_HTTPS: false  # 👈 Ensures Vite does not use HTTPS
 
       - name: Restore backend dependencies
         run: dotnet restore
@@ -54,17 +58,15 @@ jobs:
         run: dotnet test --no-restore --verbosity normal
         working-directory: myvote.server
         env:
-          DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
-          ASPNETCORE_URLS: http://localhost:5000
-          DOTNET_DEV_CERTS: false
+          ASPNETCORE_URLS: http://localhost:5000  # 👈 Forces .NET to use HTTP
+          DOTNET_DEV_CERTS: false  # 👈 Skips certs
 
       - name: Build backend
         run: dotnet publish -c Release -o ${{ github.workspace }}/publish
         working-directory: myvote.server
         env:
-          DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
-          ASPNETCORE_URLS: http://localhost:5000
-          DOTNET_DEV_CERTS: false
+          ASPNETCORE_URLS: http://localhost:5000  # 👈 Forces .NET to use HTTP
+          DOTNET_DEV_CERTS: false  # 👈 Skips certs
 
       - name: Verify published files
         run: dir ${{ github.workspace }}/publish
