@@ -53,7 +53,7 @@ function Header() {
                 <div className="home-icon">
                     <FaHome size={24} onClick={handleHomeIconClick} />
                 </div>
-                <div className="bell-icon" onClick={handleBellClick} ref={ref}>
+                <div className="bell-icon" onClick={handleBellClick} ref={ref} data-testid="bell-icon">
                     <Badge
                         badgeContent={suggestions.length}
                         color="secondary"
@@ -63,11 +63,15 @@ function Header() {
                             size={24}
                             className={`${hovering || animate ? 'bell-icon-animate' : ''}`}
                             color='white'
+                            aria-label="bell icon"
                         />
                     </Badge>
                 </div>
-                <div className="header-icon" onClick={handleUserIconClick}>
-                    <FaUserCircle size={24} />
+                <div className="header-icon" onClick={handleUserIconClick} data-testid="header-icon">
+                    <FaUserCircle
+                        size={24}
+                        aria-label="header-icon"
+                    />
                 </div>
             </div>
         </header>
