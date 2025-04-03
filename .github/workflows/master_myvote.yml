@@ -28,13 +28,25 @@ jobs:
         with:
           node-version: '18.x'
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: npm install --legacy-peer-deps
+        working-directory: myvote.client
+
+      - name: Run frontend tests
+        run: npm test
         working-directory: myvote.client
 
       - name: Build frontend
         run: npm run build
         working-directory: myvote.client
+
+      - name: Restore backend dependencies
+        run: dotnet restore
+        working-directory: myvote.server
+
+      - name: Run backend tests
+        run: dotnet test --no-restore --verbosity normal
+        working-directory: myvote.server
 
       - name: Build backend
         run: dotnet publish -c Release -o ${{ github.workspace }}/publish
