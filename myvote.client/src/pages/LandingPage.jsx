@@ -34,18 +34,18 @@ function Home() {
             <h1>Welcome!</h1>
             <div className="search-poll">
                 
-                <div className="header-search">
-                    <label className={pollId ? "floating-label active" : "floating-label"}>
-                        Enter Poll Code
-                    </label>
-                    <input
-                        type="text"
-                        
-                        value={pollId}
-                        onChange={(e) => setPollId(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleGoClick()}
-                    />
-                </div>
+            <div className="header-search">
+                <label htmlFor="pollCode" className={pollId ? "floating-label active" : "floating-label"}>
+                    Enter Poll Code
+                </label>
+                <input
+                    type="text"
+                    id="pollCode"  // Added id to associate with the label
+                    value={pollId}
+                    onChange={(e) => setPollId(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && handleGoClick()}
+                />
+            </div>
                 
 
                 <button className="go-btn" type="button" onClick={handleGoClick}>

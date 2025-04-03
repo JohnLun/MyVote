@@ -28,7 +28,7 @@ namespace MyVote.Server
             builder.Services.AddSwaggerGen();
            
             var environment = builder.Environment.IsProduction() ? "Production" : "Local";
-            var connectionString = builder.Configuration.GetConnectionString(environment);
+            var connectionString = builder.Configuration.GetConnectionString("Production");
 
             if (environment == "Production")
             {
@@ -44,14 +44,7 @@ namespace MyVote.Server
 
             builder.Services.AddDbContext<AppDbContext>(options =>
             {
-                if (environment == "Production")
-                {
-                    options.UseSqlServer(connectionString);
-                }
-                else
-                {
-                    options.UseNpgsql(connectionString);
-                }
+               options.UseSqlServer(connectionString);
             });
 
             var app = builder.Build();
