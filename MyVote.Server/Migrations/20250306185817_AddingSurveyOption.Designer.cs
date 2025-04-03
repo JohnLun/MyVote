@@ -11,8 +11,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyVote.Server.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250220194359_SuggestionsUpdate")]
-    partial class SuggestionsUpdate
+    [Migration("20250306185817_AddingSurveyOption")]
+    partial class AddingSurveyOption
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -64,12 +64,14 @@ namespace MyVote.Server.Migrations
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("IsActive")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("PollType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()
