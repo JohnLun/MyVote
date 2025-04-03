@@ -26,17 +26,7 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
-
-      - name: **FORCE REMOVE ALL HTTPS CERTIFICATES**
-        run: |
-          dotnet dev-certs https --clean --verbose
-          rm -rf $HOME/.aspnet/https
-          rm -rf ~/.aspnet/https
-          rm -rf C:\Users\runneradmin\AppData\Roaming\ASP.NET\Https
-          mkdir -p ~/.aspnet/https
-          chmod 777 ~/.aspnet/https
-        continue-on-error: true
-
+          
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -46,7 +36,7 @@ jobs:
         run: npm install --legacy-peer-deps
         working-directory: myvote.client
 
-      - name: **Run frontend tests (Ignore HTTPS issues)**
+      - name: Run frontend tests (Ignore HTTPS issues)
         run: npm test || echo "Ignoring test failures due to HTTPS errors"
         working-directory: myvote.client
         env:
@@ -62,7 +52,7 @@ jobs:
         run: dotnet restore
         working-directory: myvote.server
 
-      - name: **Run backend tests (Ignore HTTPS)**
+      - name: Run backend tests (Ignore HTTPS)
         run: dotnet test --no-restore --verbosity normal || echo "Ignoring test failures due to HTTPS errors"
         working-directory: myvote.server
         env:
