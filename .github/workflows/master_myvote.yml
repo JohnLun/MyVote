@@ -23,6 +23,13 @@ jobs:
         with:
           dotnet-version: '8.x'
 
+      - name: Disable HTTPS certificate export
+        run: |
+          mkdir -p $env:USERPROFILE\.aspnet\https
+          dotnet dev-certs https --clean
+          dotnet dev-certs https --trust || true
+        shell: pwsh
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
@@ -47,10 +54,18 @@ jobs:
       - name: Run backend tests
         run: dotnet test --no-restore --verbosity normal
         working-directory: myvote.server
+        env:
+          DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
+          ASPNETCORE_URLS: http://localhost:5000
+          DOTNET_DEV_CERTS: false
 
       - name: Build backend
         run: dotnet publish -c Release -o ${{ github.workspace }}/publish
         working-directory: myvote.server
+        env:
+          DOTNET_SYSTEM_NET_HTTP_USESOCKETSHTTPHANDLER: 0
+          ASPNETCORE_URLS: http://localhost:5000
+          DOTNET_DEV_CERTS: false
 
       - name: Verify published files
         run: dir ${{ github.workspace }}/publish
