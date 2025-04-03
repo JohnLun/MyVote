@@ -1,5 +1,5 @@
 import { fileURLToPath, URL } from 'node:url';
-import react from "@vitejs/plugin-react";
+
 import { defineConfig } from 'vite';
 import plugin from '@vitejs/plugin-react';
 import fs from 'fs';
@@ -42,6 +42,7 @@ const target = env.ASPNETCORE_HTTPS_PORT
 export default defineConfig({
     plugins: [plugin()],
     test: {
+        globals: true,
         environment: "jsdom",
         setupFiles: "./src/tests/setup.js"
     },
