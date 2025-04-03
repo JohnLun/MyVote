@@ -18,16 +18,20 @@ jobs:
       - name: Set environment to production
         run: |
           echo "NODE_ENV=production" >> $GITHUB_ENV
-          echo "VITE_HTTPS=false" >> $GITHUB_ENV  # 👈 Disables Vite HTTPS
-          echo "ASPNETCORE_URLS=http://localhost:5000" >> $GITHUB_ENV  # 👈 Forces .NET to use HTTP
+          echo "VITE_HTTPS=false" >> $GITHUB_ENV
+          echo "ASPNETCORE_URLS=http://localhost:5000" >> $GITHUB_ENV
+          echo "DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1" >> $GITHUB_ENV  # Prevents HTTPS issues
 
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.x'
 
-      - name: Remove any HTTPS certificates (Fix error)
-        run: dotnet dev-certs https --clean || echo "No certs to clean"
+      - name: Remove all HTTPS certificates (Final Fix)
+        run: |
+          dotnet dev-certs https --clean
+          mkdir -p ~/.aspnet/https && chmod 777 ~/.aspnet/https
+        continue-on-error: true  # Don't fail if no certs exist
 
       - name: Install Node.js
         uses: actions/setup-node@v3
@@ -42,13 +46,13 @@ jobs:
         run: npm test
         working-directory: myvote.client
         env:
-          VITE_HTTPS: false  # 👈 Ensures Vite does not use HTTPS
+          VITE_HTTPS: false
 
       - name: Build frontend
         run: npm run build
         working-directory: myvote.client
         env:
-          VITE_HTTPS: false  # 👈 Ensures Vite does not use HTTPS
+          VITE_HTTPS: false
 
       - name: Restore backend dependencies
         run: dotnet restore
@@ -58,15 +62,15 @@ jobs:
         run: dotnet test --no-restore --verbosity normal
         working-directory: myvote.server
         env:
-          ASPNETCORE_URLS: http://localhost:5000  # 👈 Forces .NET to use HTTP
-          DOTNET_DEV_CERTS: false  # 👈 Skips certs
+          ASPNETCORE_URLS: http://localhost:5000
+          DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1  # Another HTTPS fix
 
       - name: Build backend
         run: dotnet publish -c Release -o ${{ github.workspace }}/publish
         working-directory: myvote.server
         env:
-          ASPNETCORE_URLS: http://localhost:5000  # 👈 Forces .NET to use HTTP
-          DOTNET_DEV_CERTS: false  # 👈 Skips certs
+          ASPNETCORE_URLS: http://localhost:5000
+          DOTNET_SYSTEM_GLOBALIZATION_INVARIANT: 1
 
       - name: Verify published files
         run: dir ${{ github.workspace }}/publish
