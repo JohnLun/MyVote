@@ -67,8 +67,8 @@ namespace MyVote.Server.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<bool>("MultiSelect")
-                        .HasColumnType("boolean");
+                    b.Property<int>("PollType")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Title")
                         .IsRequired()

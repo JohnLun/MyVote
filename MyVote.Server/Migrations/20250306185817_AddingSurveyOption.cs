@@ -7,11 +7,27 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyVote.Server.Migrations
 {
     /// <inheritdoc />
-    public partial class Update2 : Migration
+    public partial class AddingSurveyOption : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Suggestions",
+                columns: table => new
+                {
+                    SuggestionId = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    SuggestionName = table.Column<string>(type: "text", nullable: false),
+                    UserId = table.Column<int>(type: "integer", nullable: false),
+                    PollId = table.Column<int>(type: "integer", nullable: false),
+                    PollName = table.Column<string>(type: "text", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Suggestions", x => x.SuggestionId);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
@@ -33,7 +49,8 @@ namespace MyVote.Server.Migrations
                     PollId = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Title = table.Column<string>(type: "text", nullable: false),
-                    Description = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: true),
+                    PollType = table.Column<int>(type: "integer", nullable: false),
                     DateCreated = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     DateEnded = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     IsActive = table.Column<string>(type: "text", nullable: false),
@@ -143,6 +160,9 @@ namespace MyVote.Server.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Suggestions");
+
             migrationBuilder.DropTable(
                 name: "UserChoices");
 
