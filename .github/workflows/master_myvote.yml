@@ -36,6 +36,11 @@ jobs:
         run: npm install --legacy-peer-deps
         working-directory: myvote.client
 
+      - name: Run ESLint (Linting for Frontend)
+        run: npx eslint . --ext .js,.ts,.tsx,.vue
+        working-directory: myvote.client
+        continue-on-error: true
+
       - name: Run frontend tests (Ignore HTTPS issues)
         run: npm test || echo "Ignoring test failures due to HTTPS errors"
         working-directory: myvote.client
@@ -43,7 +48,7 @@ jobs:
           VITE_HTTPS: false
 
       - name: Build frontend
-        run: npm run build
+        run: npm run build -- --config ./vite.config.js
         working-directory: myvote.client
         env:
           VITE_HTTPS: false
@@ -51,6 +56,11 @@ jobs:
       - name: Restore backend dependencies
         run: dotnet restore
         working-directory: myvote.server
+
+      - name: Run .NET Code Formatting Check
+        run: dotnet format --verify-no-changes
+        working-directory: myvote.server
+        continue-on-error: true
 
       - name: Run backend tests (Ignore HTTPS)
         run: dotnet test --no-restore --verbosity normal || echo "Ignoring test failures due to HTTPS errors"
