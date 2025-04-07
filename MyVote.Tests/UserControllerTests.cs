@@ -31,6 +31,32 @@ public class UserControllerTests
     }
 
     [Fact]
+public async Task GetVotedPolls_ReturnsPolls_WhenUserHasVoted()
+{
+    // Arrange
+    var user = new User { UserId = 1, FirstName = "Jane", LastName = "Doe" };
+    var poll = new Poll { PollId = 1, Title = "Sample Poll", UserId = 2 };
+    var choice = new Choice { ChoiceId = 1, Poll = poll, Name = "Option 1" };
+    var userChoice = new UserChoice { UserId = 1, Choice = choice };
+
+    _dbContext.Users.Add(user);
+    _dbContext.Polls.Add(poll);
+    _dbContext.Choices.Add(choice);
+    _dbContext.UserChoices.Add(userChoice);
+    await _dbContext.SaveChangesAsync();
+
+    // Act
+    var result = await _controller.GetVotedPolls(1);
+
+    // Assert
+    var okResult = Assert.IsType<OkObjectResult>(result.Result);
+    var polls = Assert.IsType<List<Poll>>(okResult.Value);
+    Assert.Single(polls);
+    Assert.Equal("Sample Poll", polls[0].Title);
+}
+
+
+    [Fact]
     public async Task GetUser_ReturnsUser_WhenUserExists()
     {
         // Arrange: Add a test user
